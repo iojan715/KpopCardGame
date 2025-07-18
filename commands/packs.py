@@ -120,7 +120,7 @@ class PacksGroup(app_commands.Group):
                     "item": "🎒",
                     "performance": "🎬",
                     "redeemable": "🎟️",
-                    "idol": "🧑‍🎤",
+                    "idol": "👤",
                     "error": "❌"
                 }
 
@@ -163,7 +163,7 @@ class PacksGroup(app_commands.Group):
                     color = TYPE_COLORS.get(tipo, discord.Color.random())
 
                     if tipo == "idol":
-                        emoji = "🧑‍🎤"
+                        emoji = "👤"
                         for nombre_r, color_r in RARITY_COLORS.items():
                             if nombre_r in descripcion:
                                 color = color_r
@@ -558,7 +558,7 @@ async def open_pack(unique_id: str, user_id: int):
                     if card['type'] == "outfit":
                         item_desc = "👗"
                     if card['type'] == "accessory":
-                        item_desc = "💍"
+                        item_desc = "🎀"
                     if card['type'] == "consumable":
                         item_desc = "🧃"
                     item_desc += f" {card['name']}"
@@ -659,9 +659,9 @@ async def open_pack(unique_id: str, user_id: int):
                     """, new_id, user_id, card["card_id"], card["idol_id"], card["set_id"], card["rarity_id"])
                     if card["rarity"] == "Regular" and card["rarity_id"].startswith("R") and len(card["rarity_id"]) == 3:
                         modelo = card["rarity_id"][1]
-                        results.append(("idol", f"🧑‍🎤 {card['idol_name']} `{card['set_name']}`\n(Regular {modelo})", card["card_id"], new_id))
+                        results.append(("idol", f"👤 {card['idol_name']} `{card['set_name']}`\n(Regular {modelo})", card["card_id"], new_id))
                     else:
-                        results.append(("idol", f"🧑‍🎤 {card['idol_name']} `{card['set_name']}`\n({card['rarity']})", card["card_id"], new_id))
+                        results.append(("idol", f"👤 {card['idol_name']} `{card['set_name']}`\n({card['rarity']})", card["card_id"], new_id))
 
     return results, pack_row['name']
 

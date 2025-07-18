@@ -28,7 +28,7 @@ class StartView(discord.ui.View):
             not_your_button = get_translation("en", "error.not_your_button")
             return await interaction.response.send_message(not_your_button, ephemeral=True)
 
-        await interaction.response.send_message("Select your language:", view=LanguageView(self), ephemeral=True)
+        await interaction.response.edit_message(content="Select your language:", view=LanguageView(self))
 
 
 class LanguageView(discord.ui.View):
