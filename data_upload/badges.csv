@@ -1,0 +1,45 @@
+badge_id,name,category,set_id,idol_id
+BDGCOLL001,Full Collector: `Uncut Gem`,collection,UNGM,
+BDGCOLL002,Dedicated Fan: Haum `Uncut Gem`,collection,UNGM,HUM
+BDGCOLL003,Dedicated Fan: Leesol `Uncut Gem`,collection,UNGM,LSL
+BDGCOLL004,Dedicated Fan: Jiyu `Uncut Gem`,collection,UNGM,JYU
+BDGCOLL005,Dedicated Fan: Kya `Uncut Gem`,collection,UNGM,KYA
+BDGCOLL006,Dedicated Fan: Sui `Uncut Gem`,collection,UNGM,SUI
+BDGCOLL007,Full Collector: `Cabin Fever`,collection,CBFV,
+BDGCOLL008,Dedicated Fan: Yuki `Cabin Fever`,collection,CBFV,YUK
+BDGCOLL009,Dedicated Fan: Chaein `Cabin Fever`,collection,CBFV,CHN
+BDGCOLL010,Dedicated Fan: Swan `Cabin Fever`,collection,CBFV,SWN
+BDGCOLL011,Dedicated Fan: Goeun `Cabin Fever`,collection,CBFV,NGE
+BDGCOLL012,Dedicated Fan: Dosie `Cabin Fever`,collection,CBFV,DOS
+BDGCOLL013,Dedicated Fan: Ireh `Cabin Fever`,collection,CBFV,IRH
+BDGCOLL014,Full Collector: `Fe3O4 Break`,collection,FBRK,
+BDGCOLL015,Dedicated Fan: Lily `Fe3O4 Break`,collection,FBRK,LLY
+BDGCOLL016,Dedicated Fan: Jiwoo `Fe3O4 Break`,collection,FBRK,KJW
+BDGCOLL017,Dedicated Fan: Kyujin `Fe3O4 Break`,collection,FBRK,KYU
+BDGCOLL018,Dedicated Fan: Sullyoon `Fe3O4 Break`,collection,FBRK,SLY
+BDGCOLL019,Dedicated Fan: Bae `Fe3O4 Break`,collection,FBRK,BAE
+BDGCOLL020,Dedicated Fan: Haewon `Fe3O4 Break`,collection,FBRK,OHW
+BDGCUST001,Early Tester,custom,,
+BDGCUST002,Founder,custom,,
+BDGCUST003,Final Tester,custom,,
+BDGCUST004,Economy Supporter,custom,,
+BDGCUST005,Guide Helper,custom,,
+BDGCUST006,Anniversary Guest,custom,,
+BDGCUST007,Bug Hunter,custom,,
+BDGEVNT001,Golden Leader (Top 1),event,,
+BDGEVNT002,Silver Challenger (Top 2),event,,
+BDGEVNT003,Final Lineup (Top 3),event,,
+BDGEVNT004,Stage Presence,event,,
+BDGEVNT005,Return Spotlight,event,,
+BDGLVL001,First Steps (Lv. 1),level,,
+BDGLVL005,Practice Office (Lv. 5),level,,
+BDGLVL010,Rookie Recruiter (Lv. 10),level,,
+BDGLVL015,Talent Scout (Lv. 15),level,,
+BDGLVL020,Training Squad (Lv. 20),level,,
+BDGLVL025,Mid-Tier Management (Lv. 25),level,,
+BDGLVL030,Showcase Coordinator (Lv. 30),level,,
+BDGLVL035,Influential Strategist (Lv. 35),level,,
+BDGLVL040,K-Industry Partner (Lv. 40),level,,
+BDGLVL045,Promotions Lead (Lv. 45),level,,
+BDGLVL050,Executive Producer (Lv. 50),level,,
+BDGEVNT006,Star Hunter,event,,

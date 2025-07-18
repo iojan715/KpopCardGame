@@ -1,0 +1,872 @@
+card_id,idol_id,set_id,rarity_id,idol_name,group_name,set_name,rarity,theme,vocal,rap,dance,visual,energy,p_skill,a_skill,s_skill,u_skill,weight,value
+AYJEMPTR11,AYJ,EMPT,R11,Yujin,IVE,Ive Empathy,Regular,,25,20,25,30,85,Composed Presence,,,,267,400
+AYJEMPTR12,AYJ,EMPT,R12,Yujin,IVE,Ive Empathy,Regular,,25,20,25,30,90,Composed Presence,,,,267,600
+AYJEMPTR13,AYJ,EMPT,R13,Yujin,IVE,Ive Empathy,Regular,,25,20,25,30,95,Composed Presence,,,,267,1000
+AYJEMPTR21,AYJ,EMPT,R21,Yujin,IVE,Ive Empathy,Regular,,25,20,25,30,85,,Max Effort,,,267,400
+AYJEMPTR22,AYJ,EMPT,R22,Yujin,IVE,Ive Empathy,Regular,,25,20,25,30,90,,Max Effort,,,267,600
+AYJEMPTR23,AYJ,EMPT,R23,Yujin,IVE,Ive Empathy,Regular,,25,20,25,30,95,,Max Effort,,,267,1000
+AYJEMPTR31,AYJ,EMPT,R31,Yujin,IVE,Ive Empathy,Regular,,25,20,25,30,85,,,Total Reinforcement,,267,400
+AYJEMPTR32,AYJ,EMPT,R32,Yujin,IVE,Ive Empathy,Regular,,25,20,25,30,90,,,Total Reinforcement,,267,600
+AYJEMPTR33,AYJ,EMPT,R33,Yujin,IVE,Ive Empathy,Regular,,25,20,25,30,95,,,Total Reinforcement,,267,1000
+AYJEMPTSPC,AYJ,EMPT,SPC,Yujin,IVE,Ive Empathy,Special,,25,20,25,30,90,Composed Presence,Max Effort,,,267,2500
+AYJEMPTLMT,AYJ,EMPT,LMT,Yujin,IVE,Ive Empathy,Limited,,25,20,25,30,95,,,Total Reinforcement,Full Bloom,267,2000
+AYJEMPTFCR,AYJ,EMPT,FCR,Yujin,IVE,Ive Empathy,FCR,,25,20,25,30,95,,Max Effort,,Full Bloom,267,2000
+AYJEMPTPOB,AYJ,EMPT,POB,Yujin,IVE,Ive Empathy,POB,,25,20,25,30,100,,Max Effort,Total Reinforcement,,267,2500
+BAEFBRKR11,BAE,FBRK,R11,Bae,NMIXX,Fe3O4 Break,Regular,,51,26,54,59,80,,,Hype Link,,267,400
+BAEFBRKR12,BAE,FBRK,R12,Bae,NMIXX,Fe3O4 Break,Regular,,61,31,59,69,90,,,Hype Link,,267,600
+BAEFBRKR13,BAE,FBRK,R13,Bae,NMIXX,Fe3O4 Break,Regular,,71,36,64,79,100,,,Hype Link,,267,1000
+BAEFBRKR21,BAE,FBRK,R21,Bae,NMIXX,Fe3O4 Break,Regular,,56,26,54,54,80,Swift Lead,,,,267,400
+BAEFBRKR22,BAE,FBRK,R22,Bae,NMIXX,Fe3O4 Break,Regular,,71,31,59,59,90,Swift Lead,,,,267,600
+BAEFBRKR23,BAE,FBRK,R23,Bae,NMIXX,Fe3O4 Break,Regular,,76,36,69,69,100,Swift Lead,,,,267,1000
+BAEFBRKR31,BAE,FBRK,R31,Bae,NMIXX,Fe3O4 Break,Regular,,51,36,49,54,80,,Balanced Stage,,,267,400
+BAEFBRKR32,BAE,FBRK,R32,Bae,NMIXX,Fe3O4 Break,Regular,,61,41,59,59,90,,Balanced Stage,,,267,600
+BAEFBRKR33,BAE,FBRK,R33,Bae,NMIXX,Fe3O4 Break,Regular,,71,46,64,69,100,,Balanced Stage,,,267,1000
+BAEFBRKSPC,BAE,FBRK,SPC,Bae,NMIXX,Fe3O4 Break,Special,,76,41,69,74,100,Swift Lead,,Hype Link,,267,2500
+BAEFBRKLMT,BAE,FBRK,LMT,Bae,NMIXX,Fe3O4 Break,Limited,,71,41,69,64,95,Comeback Path,,,Hype Overflow,267,2000
+BAEFBRKFCR,BAE,FBRK,FCR,Bae,NMIXX,Fe3O4 Break,FCR,,61,36,64,59,90,Resilient Core,Tactic Focus,,Hyper Rest,267,2000
+BAEFBRKPOB,BAE,FBRK,POB,Bae,NMIXX,Fe3O4 Break,POB,,66,36,64,64,100,Crowd Inspiration,Full Impact,Stage Coordination,,267,2500
+BNAUNNAR11,BNA,UNNA,R11,Bona,WJSN,Unnatural,Regular,,25,16,25,34,85,Stylish Execution,,,,200,400
+BNAUNNAR12,BNA,UNNA,R12,Bona,WJSN,Unnatural,Regular,,25,16,25,34,90,Stylish Execution,,,,200,600
+BNAUNNAR13,BNA,UNNA,R13,Bona,WJSN,Unnatural,Regular,,25,16,25,34,95,Stylish Execution,,,,200,1000
+BNAUNNAR21,BNA,UNNA,R21,Bona,WJSN,Unnatural,Regular,,25,16,25,34,85,,Main Visual,,,200,400
+BNAUNNAR22,BNA,UNNA,R22,Bona,WJSN,Unnatural,Regular,,25,16,25,34,90,,Main Visual,,,200,600
+BNAUNNAR23,BNA,UNNA,R23,Bona,WJSN,Unnatural,Regular,,25,16,25,34,95,,Main Visual,,,200,1000
+BNAUNNAR31,BNA,UNNA,R31,Bona,WJSN,Unnatural,Regular,,25,16,25,34,85,,,Spotlight Focus,,200,400
+BNAUNNAR32,BNA,UNNA,R32,Bona,WJSN,Unnatural,Regular,,25,16,25,34,90,,,Spotlight Focus,,200,600
+BNAUNNAR33,BNA,UNNA,R33,Bona,WJSN,Unnatural,Regular,,25,16,25,34,95,,,Spotlight Focus,,200,1000
+BNAUNNASPC,BNA,UNNA,SPC,Bona,WJSN,Unnatural,Special,,25,16,25,34,90,Stylish Execution,Main Visual,,,200,2500
+BNAUNNALMT,BNA,UNNA,LMT,Bona,WJSN,Unnatural,Limited,,25,16,25,34,95,,,Spotlight Focus,Full Bloom,200,2000
+BNAUNNAFCR,BNA,UNNA,FCR,Bona,WJSN,Unnatural,FCR,,25,16,25,34,95,,Main Visual,,Full Bloom,200,2000
+BNAUNNAPOB,BNA,UNNA,POB,Bona,WJSN,Unnatural,POB,,25,16,25,34,100,,Main Visual,Spotlight Focus,,200,2500
+CHNCBFVR11,CHN,CBFV,R11,Chaein,Purple Kiss,Cabin Fever,Regular,,30,20,30,20,85,Composed Presence,,,,267,400
+CHNCBFVR12,CHN,CBFV,R12,Chaein,Purple Kiss,Cabin Fever,Regular,,30,20,30,20,90,Composed Presence,,,,267,600
+CHNCBFVR13,CHN,CBFV,R13,Chaein,Purple Kiss,Cabin Fever,Regular,,30,20,30,20,95,Composed Presence,,,,267,1000
+CHNCBFVR21,CHN,CBFV,R21,Chaein,Purple Kiss,Cabin Fever,Regular,,30,20,30,20,85,,Max Effort,,,267,400
+CHNCBFVR22,CHN,CBFV,R22,Chaein,Purple Kiss,Cabin Fever,Regular,,30,20,30,20,90,,Max Effort,,,267,600
+CHNCBFVR23,CHN,CBFV,R23,Chaein,Purple Kiss,Cabin Fever,Regular,,30,20,30,20,95,,Max Effort,,,267,1000
+CHNCBFVR31,CHN,CBFV,R31,Chaein,Purple Kiss,Cabin Fever,Regular,,30,20,30,20,85,,,Total Reinforcement,,267,400
+CHNCBFVR32,CHN,CBFV,R32,Chaein,Purple Kiss,Cabin Fever,Regular,,30,20,30,20,90,,,Total Reinforcement,,267,600
+CHNCBFVR33,CHN,CBFV,R33,Chaein,Purple Kiss,Cabin Fever,Regular,,30,20,30,20,95,,,Total Reinforcement,,267,1000
+CHNCBFVSPC,CHN,CBFV,SPC,Chaein,Purple Kiss,Cabin Fever,Special,,30,20,30,20,90,Composed Presence,Max Effort,,,267,2500
+CHNCBFVLMT,CHN,CBFV,LMT,Chaein,Purple Kiss,Cabin Fever,Limited,,30,20,30,20,95,,,Total Reinforcement,Full Bloom,267,2000
+CHNCBFVFCR,CHN,CBFV,FCR,Chaein,Purple Kiss,Cabin Fever,FCR,,30,20,30,20,95,,Max Effort,,Full Bloom,267,2000
+CHNCBFVPOB,CHN,CBFV,POB,Chaein,Purple Kiss,Cabin Fever,POB,,30,20,30,20,100,,Max Effort,Total Reinforcement,,267,2500
+CHWAA25R11,CHW,AA25,R11,Chaewon,tripleS,Assemble25,Regular,,27,12,28,33,85,Stylish Execution,,,,225,400
+CHWAA25R12,CHW,AA25,R12,Chaewon,tripleS,Assemble25,Regular,,27,12,28,33,90,Stylish Execution,,,,225,600
+CHWAA25R13,CHW,AA25,R13,Chaewon,tripleS,Assemble25,Regular,,27,12,28,33,95,Stylish Execution,,,,225,1000
+CHWAA25R21,CHW,AA25,R21,Chaewon,tripleS,Assemble25,Regular,,27,12,28,33,85,,Main Visual,,,225,400
+CHWAA25R22,CHW,AA25,R22,Chaewon,tripleS,Assemble25,Regular,,27,12,28,33,90,,Main Visual,,,225,600
+CHWAA25R23,CHW,AA25,R23,Chaewon,tripleS,Assemble25,Regular,,27,12,28,33,95,,Main Visual,,,225,1000
+CHWAA25R31,CHW,AA25,R31,Chaewon,tripleS,Assemble25,Regular,,27,12,28,33,85,,,Spotlight Focus,,225,400
+CHWAA25R32,CHW,AA25,R32,Chaewon,tripleS,Assemble25,Regular,,27,12,28,33,90,,,Spotlight Focus,,225,600
+CHWAA25R33,CHW,AA25,R33,Chaewon,tripleS,Assemble25,Regular,,27,12,28,33,95,,,Spotlight Focus,,225,1000
+CHWAA25SPC,CHW,AA25,SPC,Chaewon,tripleS,Assemble25,Special,,27,12,28,33,90,Stylish Execution,Main Visual,,,225,2500
+CHWAA25LMT,CHW,AA25,LMT,Chaewon,tripleS,Assemble25,Limited,summer,27,12,28,33,95,,,Spotlight Focus,Full Bloom,225,2000
+CHWAA25FCR,CHW,AA25,FCR,Chaewon,tripleS,Assemble25,FCR,,27,12,28,33,95,,Main Visual,,Full Bloom,225,2000
+CHWAA25POB,CHW,AA25,POB,Chaewon,tripleS,Assemble25,POB,,27,12,28,33,100,,Main Visual,Spotlight Focus,,225,2500
+DAYUNNAR11,DAY,UNNA,R11,Dayoung,WJSN,Unnatural,Regular,,31,16,32,21,85,Composed Presence,,,,200,400
+DAYUNNAR12,DAY,UNNA,R12,Dayoung,WJSN,Unnatural,Regular,,31,16,32,21,90,Composed Presence,,,,200,600
+DAYUNNAR13,DAY,UNNA,R13,Dayoung,WJSN,Unnatural,Regular,,31,16,32,21,95,Composed Presence,,,,200,1000
+DAYUNNAR21,DAY,UNNA,R21,Dayoung,WJSN,Unnatural,Regular,,31,16,32,21,85,,Max Effort,,,200,400
+DAYUNNAR22,DAY,UNNA,R22,Dayoung,WJSN,Unnatural,Regular,,31,16,32,21,90,,Max Effort,,,200,600
+DAYUNNAR23,DAY,UNNA,R23,Dayoung,WJSN,Unnatural,Regular,,31,16,32,21,95,,Max Effort,,,200,1000
+DAYUNNAR31,DAY,UNNA,R31,Dayoung,WJSN,Unnatural,Regular,,31,16,32,21,85,,,Total Reinforcement,,200,400
+DAYUNNAR32,DAY,UNNA,R32,Dayoung,WJSN,Unnatural,Regular,,31,16,32,21,90,,,Total Reinforcement,,200,600
+DAYUNNAR33,DAY,UNNA,R33,Dayoung,WJSN,Unnatural,Regular,,31,16,32,21,95,,,Total Reinforcement,,200,1000
+DAYUNNASPC,DAY,UNNA,SPC,Dayoung,WJSN,Unnatural,Special,,31,16,32,21,90,Composed Presence,Max Effort,,,200,2500
+DAYUNNALMT,DAY,UNNA,LMT,Dayoung,WJSN,Unnatural,Limited,,31,16,32,21,95,,,Total Reinforcement,Full Bloom,200,2000
+DAYUNNAFCR,DAY,UNNA,FCR,Dayoung,WJSN,Unnatural,FCR,,31,16,32,21,95,,Max Effort,,Full Bloom,200,2000
+DAYUNNAPOB,DAY,UNNA,POB,Dayoung,WJSN,Unnatural,POB,,31,16,32,21,100,,Max Effort,Total Reinforcement,,200,2500
+DOSCBFVR11,DOS,CBFV,R11,Dosie,Purple Kiss,Cabin Fever,Regular,,20,20,35,25,85,Sharp Moves,,,,267,400
+DOSCBFVR12,DOS,CBFV,R12,Dosie,Purple Kiss,Cabin Fever,Regular,,20,20,35,25,90,Sharp Moves,,,,267,600
+DOSCBFVR13,DOS,CBFV,R13,Dosie,Purple Kiss,Cabin Fever,Regular,,20,20,35,25,95,Sharp Moves,,,,267,1000
+DOSCBFVR21,DOS,CBFV,R21,Dosie,Purple Kiss,Cabin Fever,Regular,,20,20,35,25,85,,Main Dancer,,,267,400
+DOSCBFVR22,DOS,CBFV,R22,Dosie,Purple Kiss,Cabin Fever,Regular,,20,20,35,25,90,,Main Dancer,,,267,600
+DOSCBFVR23,DOS,CBFV,R23,Dosie,Purple Kiss,Cabin Fever,Regular,,20,20,35,25,95,,Main Dancer,,,267,1000
+DOSCBFVR31,DOS,CBFV,R31,Dosie,Purple Kiss,Cabin Fever,Regular,,20,20,35,25,85,,,Power Sync,,267,400
+DOSCBFVR32,DOS,CBFV,R32,Dosie,Purple Kiss,Cabin Fever,Regular,,20,20,35,25,90,,,Power Sync,,267,600
+DOSCBFVR33,DOS,CBFV,R33,Dosie,Purple Kiss,Cabin Fever,Regular,,20,20,35,25,95,,,Power Sync,,267,1000
+DOSCBFVSPC,DOS,CBFV,SPC,Dosie,Purple Kiss,Cabin Fever,Special,,20,20,35,25,90,Sharp Moves,Main Dancer,,,267,2500
+DOSCBFVLMT,DOS,CBFV,LMT,Dosie,Purple Kiss,Cabin Fever,Limited,,20,20,35,25,95,,,Power Sync,Full Bloom,267,2000
+DOSCBFVFCR,DOS,CBFV,FCR,Dosie,Purple Kiss,Cabin Fever,FCR,,20,20,35,25,95,,Main Dancer,,Full Bloom,267,2000
+DOSCBFVPOB,DOS,CBFV,POB,Dosie,Purple Kiss,Cabin Fever,POB,,20,20,35,25,100,,Main Dancer,Power Sync,,267,2500
+DWNUNNAR11,DWN,UNNA,R11,Dawon,WJSN,Unnatural,Regular,,37,9,25,29,85,Vocal Boost,,,,200,400
+DWNUNNAR12,DWN,UNNA,R12,Dawon,WJSN,Unnatural,Regular,,37,9,25,29,90,Vocal Boost,,,,200,600
+DWNUNNAR13,DWN,UNNA,R13,Dawon,WJSN,Unnatural,Regular,,37,9,25,29,95,Vocal Boost,,,,200,1000
+DWNUNNAR21,DWN,UNNA,R21,Dawon,WJSN,Unnatural,Regular,,37,9,25,29,85,,Main Vocal,,,200,400
+DWNUNNAR22,DWN,UNNA,R22,Dawon,WJSN,Unnatural,Regular,,37,9,25,29,90,,Main Vocal,,,200,600
+DWNUNNAR23,DWN,UNNA,R23,Dawon,WJSN,Unnatural,Regular,,37,9,25,29,95,,Main Vocal,,,200,1000
+DWNUNNAR31,DWN,UNNA,R31,Dawon,WJSN,Unnatural,Regular,,37,9,25,29,85,,,Echo Effect,,200,400
+DWNUNNAR32,DWN,UNNA,R32,Dawon,WJSN,Unnatural,Regular,,37,9,25,29,90,,,Echo Effect,,200,600
+DWNUNNAR33,DWN,UNNA,R33,Dawon,WJSN,Unnatural,Regular,,37,9,25,29,95,,,Echo Effect,,200,1000
+DWNUNNASPC,DWN,UNNA,SPC,Dawon,WJSN,Unnatural,Special,,37,9,25,29,90,Vocal Boost,Main Vocal,,,200,2500
+DWNUNNALMT,DWN,UNNA,LMT,Dawon,WJSN,Unnatural,Limited,,37,9,25,29,95,,,Echo Effect,Full Bloom,200,2000
+DWNUNNAFCR,DWN,UNNA,FCR,Dawon,WJSN,Unnatural,FCR,,37,9,25,29,95,,Main Vocal,,Full Bloom,200,2000
+DWNUNNAPOB,DWN,UNNA,POB,Dawon,WJSN,Unnatural,POB,,37,9,25,29,100,,Main Vocal,Echo Effect,,200,2500
+EUNUNNAR11,EUN,UNNA,R11,Eunseo,WJSN,Unnatural,Regular,,27,22,23,28,85,Stylish Execution,,,,200,400
+EUNUNNAR12,EUN,UNNA,R12,Eunseo,WJSN,Unnatural,Regular,,27,22,23,28,90,Stylish Execution,,,,200,600
+EUNUNNAR13,EUN,UNNA,R13,Eunseo,WJSN,Unnatural,Regular,,27,22,23,28,95,Stylish Execution,,,,200,1000
+EUNUNNAR21,EUN,UNNA,R21,Eunseo,WJSN,Unnatural,Regular,,27,22,23,28,85,,Main Visual,,,200,400
+EUNUNNAR22,EUN,UNNA,R22,Eunseo,WJSN,Unnatural,Regular,,27,22,23,28,90,,Main Visual,,,200,600
+EUNUNNAR23,EUN,UNNA,R23,Eunseo,WJSN,Unnatural,Regular,,27,22,23,28,95,,Main Visual,,,200,1000
+EUNUNNAR31,EUN,UNNA,R31,Eunseo,WJSN,Unnatural,Regular,,27,22,23,28,85,,,Spotlight Focus,,200,400
+EUNUNNAR32,EUN,UNNA,R32,Eunseo,WJSN,Unnatural,Regular,,27,22,23,28,90,,,Spotlight Focus,,200,600
+EUNUNNAR33,EUN,UNNA,R33,Eunseo,WJSN,Unnatural,Regular,,27,22,23,28,95,,,Spotlight Focus,,200,1000
+EUNUNNASPC,EUN,UNNA,SPC,Eunseo,WJSN,Unnatural,Special,,27,22,23,28,90,Stylish Execution,Main Visual,,,200,2500
+EUNUNNALMT,EUN,UNNA,LMT,Eunseo,WJSN,Unnatural,Limited,,27,22,23,28,95,,,Spotlight Focus,Full Bloom,200,2000
+EUNUNNAFCR,EUN,UNNA,FCR,Eunseo,WJSN,Unnatural,FCR,,27,22,23,28,95,,Main Visual,,Full Bloom,200,2000
+EUNUNNAPOB,EUN,UNNA,POB,Eunseo,WJSN,Unnatural,POB,,27,22,23,28,100,,Main Visual,Spotlight Focus,,200,2500
+EXYUNNAR11,EXY,UNNA,R11,Exy,WJSN,Unnatural,Regular,,22,37,23,18,85,Technical Flow,,,,200,400
+EXYUNNAR12,EXY,UNNA,R12,Exy,WJSN,Unnatural,Regular,,22,37,23,18,90,Technical Flow,,,,200,600
+EXYUNNAR13,EXY,UNNA,R13,Exy,WJSN,Unnatural,Regular,,22,37,23,18,95,Technical Flow,,,,200,1000
+EXYUNNAR21,EXY,UNNA,R21,Exy,WJSN,Unnatural,Regular,,22,37,23,18,85,,Main Rapper,,,200,400
+EXYUNNAR22,EXY,UNNA,R22,Exy,WJSN,Unnatural,Regular,,22,37,23,18,90,,Main Rapper,,,200,600
+EXYUNNAR23,EXY,UNNA,R23,Exy,WJSN,Unnatural,Regular,,22,37,23,18,95,,Main Rapper,,,200,1000
+EXYUNNAR31,EXY,UNNA,R31,Exy,WJSN,Unnatural,Regular,,22,37,23,18,85,,,Hyper Rhythm,,200,400
+EXYUNNAR32,EXY,UNNA,R32,Exy,WJSN,Unnatural,Regular,,22,37,23,18,90,,,Hyper Rhythm,,200,600
+EXYUNNAR33,EXY,UNNA,R33,Exy,WJSN,Unnatural,Regular,,22,37,23,18,95,,,Hyper Rhythm,,200,1000
+EXYUNNASPC,EXY,UNNA,SPC,Exy,WJSN,Unnatural,Special,,22,37,23,18,90,Technical Flow,Main Rapper,,,200,2500
+EXYUNNALMT,EXY,UNNA,LMT,Exy,WJSN,Unnatural,Limited,,22,37,23,18,95,,,Hyper Rhythm,Full Bloom,200,2000
+EXYUNNAFCR,EXY,UNNA,FCR,Exy,WJSN,Unnatural,FCR,,22,37,23,18,95,,Main Rapper,,Full Bloom,200,2000
+EXYUNNAPOB,EXY,UNNA,POB,Exy,WJSN,Unnatural,POB,,22,37,23,18,100,,Main Rapper,Hyper Rhythm,,200,2500
+GAEEMPTR11,GAE,EMPT,R11,Gaeul,IVE,Ive Empathy,Regular,,20,35,25,20,85,Technical Flow,,,,267,400
+GAEEMPTR12,GAE,EMPT,R12,Gaeul,IVE,Ive Empathy,Regular,,20,35,25,20,90,Technical Flow,,,,267,600
+GAEEMPTR13,GAE,EMPT,R13,Gaeul,IVE,Ive Empathy,Regular,,20,35,25,20,95,Technical Flow,,,,267,1000
+GAEEMPTR21,GAE,EMPT,R21,Gaeul,IVE,Ive Empathy,Regular,,20,35,25,20,85,,Main Rapper,,,267,400
+GAEEMPTR22,GAE,EMPT,R22,Gaeul,IVE,Ive Empathy,Regular,,20,35,25,20,90,,Main Rapper,,,267,600
+GAEEMPTR23,GAE,EMPT,R23,Gaeul,IVE,Ive Empathy,Regular,,20,35,25,20,95,,Main Rapper,,,267,1000
+GAEEMPTR31,GAE,EMPT,R31,Gaeul,IVE,Ive Empathy,Regular,,20,35,25,20,85,,,Hyper Rhythm,,267,400
+GAEEMPTR32,GAE,EMPT,R32,Gaeul,IVE,Ive Empathy,Regular,,20,35,25,20,90,,,Hyper Rhythm,,267,600
+GAEEMPTR33,GAE,EMPT,R33,Gaeul,IVE,Ive Empathy,Regular,,20,35,25,20,95,,,Hyper Rhythm,,267,1000
+GAEEMPTSPC,GAE,EMPT,SPC,Gaeul,IVE,Ive Empathy,Special,,20,35,25,20,90,Technical Flow,Main Rapper,,,267,2500
+GAEEMPTLMT,GAE,EMPT,LMT,Gaeul,IVE,Ive Empathy,Limited,,20,35,25,20,95,,,Hyper Rhythm,Full Bloom,267,2000
+GAEEMPTFCR,GAE,EMPT,FCR,Gaeul,IVE,Ive Empathy,FCR,,20,35,25,20,95,,Main Rapper,,Full Bloom,267,2000
+GAEEMPTPOB,GAE,EMPT,POB,Gaeul,IVE,Ive Empathy,POB,,20,35,25,20,100,,Main Rapper,Hyper Rhythm,,267,2500
+GSLARMGR11,GSL,ARMG,R11,Giselle,Aespa,Armageddon,Regular,,20,30,25,25,85,Technical Flow,,,,350,400
+GSLARMGR12,GSL,ARMG,R12,Giselle,Aespa,Armageddon,Regular,,20,30,25,25,90,Technical Flow,,,,350,600
+GSLARMGR13,GSL,ARMG,R13,Giselle,Aespa,Armageddon,Regular,,20,30,25,25,95,Technical Flow,,,,350,1000
+GSLARMGR21,GSL,ARMG,R21,Giselle,Aespa,Armageddon,Regular,,20,30,25,25,85,,Main Rapper,,,350,400
+GSLARMGR22,GSL,ARMG,R22,Giselle,Aespa,Armageddon,Regular,,20,30,25,25,90,,Main Rapper,,,350,600
+GSLARMGR23,GSL,ARMG,R23,Giselle,Aespa,Armageddon,Regular,,20,30,25,25,95,,Main Rapper,,,350,1000
+GSLARMGR31,GSL,ARMG,R31,Giselle,Aespa,Armageddon,Regular,,20,30,25,25,85,,,Hyper Rhythm,,350,400
+GSLARMGR32,GSL,ARMG,R32,Giselle,Aespa,Armageddon,Regular,,20,30,25,25,90,,,Hyper Rhythm,,350,600
+GSLARMGR33,GSL,ARMG,R33,Giselle,Aespa,Armageddon,Regular,,20,30,25,25,95,,,Hyper Rhythm,,350,1000
+GSLARMGSPC,GSL,ARMG,SPC,Giselle,Aespa,Armageddon,Special,,20,30,25,25,90,Technical Flow,Main Rapper,,,350,2500
+GSLARMGLMT,GSL,ARMG,LMT,Giselle,Aespa,Armageddon,Limited,,20,30,25,25,95,,,Hyper Rhythm,Full Bloom,350,2000
+GSLARMGFCR,GSL,ARMG,FCR,Giselle,Aespa,Armageddon,FCR,,20,30,25,25,95,,Main Rapper,,Full Bloom,350,2000
+GSLARMGPOB,GSL,ARMG,POB,Giselle,Aespa,Armageddon,POB,,20,30,25,25,100,,Main Rapper,Hyper Rhythm,,350,2500
+GYBAA25R11,GYB,AA25,R11,Yubin,tripleS,Assemble25,Regular,,27,23,28,22,85,Composed Presence,,,,225,400
+GYBAA25R12,GYB,AA25,R12,Yubin,tripleS,Assemble25,Regular,,27,23,28,22,90,Composed Presence,,,,225,600
+GYBAA25R13,GYB,AA25,R13,Yubin,tripleS,Assemble25,Regular,,27,23,28,22,95,Composed Presence,,,,225,1000
+GYBAA25R21,GYB,AA25,R21,Yubin,tripleS,Assemble25,Regular,,27,23,28,22,85,,Max Effort,,,225,400
+GYBAA25R22,GYB,AA25,R22,Yubin,tripleS,Assemble25,Regular,,27,23,28,22,90,,Max Effort,,,225,600
+GYBAA25R23,GYB,AA25,R23,Yubin,tripleS,Assemble25,Regular,,27,23,28,22,95,,Max Effort,,,225,1000
+GYBAA25R31,GYB,AA25,R31,Yubin,tripleS,Assemble25,Regular,,27,23,28,22,85,,,Total Reinforcement,,225,400
+GYBAA25R32,GYB,AA25,R32,Yubin,tripleS,Assemble25,Regular,,27,23,28,22,90,,,Total Reinforcement,,225,600
+GYBAA25R33,GYB,AA25,R33,Yubin,tripleS,Assemble25,Regular,,27,23,28,22,95,,,Total Reinforcement,,225,1000
+GYBAA25SPC,GYB,AA25,SPC,Yubin,tripleS,Assemble25,Special,,27,23,28,22,90,Composed Presence,Max Effort,,,225,2500
+GYBAA25LMT,GYB,AA25,LMT,Yubin,tripleS,Assemble25,Limited,summer,27,23,28,22,95,,,Total Reinforcement,Full Bloom,225,2000
+GYBAA25FCR,GYB,AA25,FCR,Yubin,tripleS,Assemble25,FCR,,27,23,28,22,95,,Max Effort,,Full Bloom,225,2000
+GYBAA25POB,GYB,AA25,POB,Yubin,tripleS,Assemble25,POB,,27,23,28,22,100,,Max Effort,Total Reinforcement,,225,2500
+HAYAA25R11,HAY,AA25,R11,Hayeon,tripleS,Assemble25,Regular,,27,18,21,34,85,Stylish Execution,,,,225,400
+HAYAA25R12,HAY,AA25,R12,Hayeon,tripleS,Assemble25,Regular,,27,18,21,34,90,Stylish Execution,,,,225,600
+HAYAA25R13,HAY,AA25,R13,Hayeon,tripleS,Assemble25,Regular,,27,18,21,34,95,Stylish Execution,,,,225,1000
+HAYAA25R21,HAY,AA25,R21,Hayeon,tripleS,Assemble25,Regular,,27,18,21,34,85,,Main Visual,,,225,400
+HAYAA25R22,HAY,AA25,R22,Hayeon,tripleS,Assemble25,Regular,,27,18,21,34,90,,Main Visual,,,225,600
+HAYAA25R23,HAY,AA25,R23,Hayeon,tripleS,Assemble25,Regular,,27,18,21,34,95,,Main Visual,,,225,1000
+HAYAA25R31,HAY,AA25,R31,Hayeon,tripleS,Assemble25,Regular,,27,18,21,34,85,,,Spotlight Focus,,225,400
+HAYAA25R32,HAY,AA25,R32,Hayeon,tripleS,Assemble25,Regular,,27,18,21,34,90,,,Spotlight Focus,,225,600
+HAYAA25R33,HAY,AA25,R33,Hayeon,tripleS,Assemble25,Regular,,27,18,21,34,95,,,Spotlight Focus,,225,1000
+HAYAA25SPC,HAY,AA25,SPC,Hayeon,tripleS,Assemble25,Special,,27,18,21,34,90,Stylish Execution,Main Visual,,,225,2500
+HAYAA25LMT,HAY,AA25,LMT,Hayeon,tripleS,Assemble25,Limited,summer,27,18,21,34,95,,,Spotlight Focus,Full Bloom,225,2000
+HAYAA25FCR,HAY,AA25,FCR,Hayeon,tripleS,Assemble25,FCR,,27,18,21,34,95,,Main Visual,,Full Bloom,225,2000
+HAYAA25POB,HAY,AA25,POB,Hayeon,tripleS,Assemble25,POB,,27,18,21,34,100,,Main Visual,Spotlight Focus,,225,2500
+HUMUNGMR11,HUM,UNGM,R11,Haum,KiiiKiii,Uncut Gem,Regular,,61,26,46,62,75,Visual Mastery,,,,300,400
+HUMUNGMR12,HUM,UNGM,R12,Haum,KiiiKiii,Uncut Gem,Regular,,66,31,56,72,85,Visual Mastery,,,,300,600
+HUMUNGMR13,HUM,UNGM,R13,Haum,KiiiKiii,Uncut Gem,Regular,,81,36,61,82,90,Visual Mastery,,,,300,1000
+HUMUNGMR21,HUM,UNGM,R21,Haum,KiiiKiii,Uncut Gem,Regular,,61,21,46,62,80,,Signature Move,,,300,400
+HUMUNGMR22,HUM,UNGM,R22,Haum,KiiiKiii,Uncut Gem,Regular,,71,26,51,72,90,,Signature Move,,,300,600
+HUMUNGMR23,HUM,UNGM,R23,Haum,KiiiKiii,Uncut Gem,Regular,,81,31,56,82,100,,Signature Move,,,300,1000
+HUMUNGMR31,HUM,UNGM,R31,Haum,KiiiKiii,Uncut Gem,Regular,,56,36,46,57,75,,,Tactic Rest,,300,400
+HUMUNGMR32,HUM,UNGM,R32,Haum,KiiiKiii,Uncut Gem,Regular,,66,41,51,67,85,,,Tactic Rest,,300,600
+HUMUNGMR33,HUM,UNGM,R33,Haum,KiiiKiii,Uncut Gem,Regular,,76,46,56,77,95,,,Tactic Rest,,300,1000
+HUMUNGMSPC,HUM,UNGM,SPC,Haum,KiiiKiii,Uncut Gem,Special,,81,36,56,87,100,Visual Mastery,Signature Move,,,300,2500
+HUMUNGMLMT,HUM,UNGM,LMT,Haum,KiiiKiii,Uncut Gem,Limited,,76,36,56,82,90,,Max Effort,,All Eyes On Me,300,2000
+HUMUNGMFCR,HUM,UNGM,FCR,Haum,KiiiKiii,Uncut Gem,FCR,,66,31,51,72,90,Encore Spirit,Risky Play,,Mic Drop,300,2000
+HUMUNGMPOB,HUM,UNGM,POB,Haum,KiiiKiii,Uncut Gem,POB,,71,36,51,72,100,Dazzling Smile,Charming Wink,Spotlight Focus,,300,2500
+HWYERLUR11,HWY,ERLU,R11,Hwayeon,ifeye,Erlu Blue,Regular,,38,2,20,40,85,Stylish Execution,,,,267,400
+HWYERLUR12,HWY,ERLU,R12,Hwayeon,ifeye,Erlu Blue,Regular,,38,2,20,40,90,Stylish Execution,,,,267,600
+HWYERLUR13,HWY,ERLU,R13,Hwayeon,ifeye,Erlu Blue,Regular,,38,2,20,40,95,Stylish Execution,,,,267,1000
+HWYERLUR21,HWY,ERLU,R21,Hwayeon,ifeye,Erlu Blue,Regular,,38,2,20,40,85,,Main Visual,,,267,400
+HWYERLUR22,HWY,ERLU,R22,Hwayeon,ifeye,Erlu Blue,Regular,,38,2,20,40,90,,Main Visual,,,267,600
+HWYERLUR23,HWY,ERLU,R23,Hwayeon,ifeye,Erlu Blue,Regular,,38,2,20,40,95,,Main Visual,,,267,1000
+HWYERLUR31,HWY,ERLU,R31,Hwayeon,ifeye,Erlu Blue,Regular,,38,2,20,40,85,,,Spotlight Focus,,267,400
+HWYERLUR32,HWY,ERLU,R32,Hwayeon,ifeye,Erlu Blue,Regular,,38,2,20,40,90,,,Spotlight Focus,,267,600
+HWYERLUR33,HWY,ERLU,R33,Hwayeon,ifeye,Erlu Blue,Regular,,38,2,20,40,95,,,Spotlight Focus,,267,1000
+HWYERLUSPC,HWY,ERLU,SPC,Hwayeon,ifeye,Erlu Blue,Special,,38,2,20,40,90,Stylish Execution,Main Visual,,,267,2500
+HWYERLULMT,HWY,ERLU,LMT,Hwayeon,ifeye,Erlu Blue,Limited,,38,2,20,40,95,,,Spotlight Focus,Full Bloom,267,2000
+HWYERLUFCR,HWY,ERLU,FCR,Hwayeon,ifeye,Erlu Blue,FCR,,38,2,20,40,95,,Main Visual,,Full Bloom,267,2000
+HWYERLUPOB,HWY,ERLU,POB,Hwayeon,ifeye,Erlu Blue,POB,,38,2,20,40,100,,Main Visual,Spotlight Focus,,267,2500
+IRHCBFVR11,IRH,CBFV,R11,Ireh,Purple Kiss,Cabin Fever,Regular,,20,25,40,15,85,Sharp Moves,,,,267,400
+IRHCBFVR12,IRH,CBFV,R12,Ireh,Purple Kiss,Cabin Fever,Regular,,20,25,40,15,90,Sharp Moves,,,,267,600
+IRHCBFVR13,IRH,CBFV,R13,Ireh,Purple Kiss,Cabin Fever,Regular,,20,25,40,15,95,Sharp Moves,,,,267,1000
+IRHCBFVR21,IRH,CBFV,R21,Ireh,Purple Kiss,Cabin Fever,Regular,,20,25,40,15,85,,Main Dancer,,,267,400
+IRHCBFVR22,IRH,CBFV,R22,Ireh,Purple Kiss,Cabin Fever,Regular,,20,25,40,15,90,,Main Dancer,,,267,600
+IRHCBFVR23,IRH,CBFV,R23,Ireh,Purple Kiss,Cabin Fever,Regular,,20,25,40,15,95,,Main Dancer,,,267,1000
+IRHCBFVR31,IRH,CBFV,R31,Ireh,Purple Kiss,Cabin Fever,Regular,,20,25,40,15,85,,,Power Sync,,267,400
+IRHCBFVR32,IRH,CBFV,R32,Ireh,Purple Kiss,Cabin Fever,Regular,,20,25,40,15,90,,,Power Sync,,267,600
+IRHCBFVR33,IRH,CBFV,R33,Ireh,Purple Kiss,Cabin Fever,Regular,,20,25,40,15,95,,,Power Sync,,267,1000
+IRHCBFVSPC,IRH,CBFV,SPC,Ireh,Purple Kiss,Cabin Fever,Special,,20,25,40,15,90,Sharp Moves,Main Dancer,,,267,2500
+IRHCBFVLMT,IRH,CBFV,LMT,Ireh,Purple Kiss,Cabin Fever,Limited,,20,25,40,15,95,,,Power Sync,Full Bloom,267,2000
+IRHCBFVFCR,IRH,CBFV,FCR,Ireh,Purple Kiss,Cabin Fever,FCR,,20,25,40,15,95,,Main Dancer,,Full Bloom,267,2000
+IRHCBFVPOB,IRH,CBFV,POB,Ireh,Purple Kiss,Cabin Fever,POB,,20,25,40,15,100,,Main Dancer,Power Sync,,267,2500
+JHRAA25R11,JHR,AA25,R11,Hyerin,tripleS,Assemble25,Regular,,29,12,36,23,85,Sharp Moves,,,,225,400
+JHRAA25R12,JHR,AA25,R12,Hyerin,tripleS,Assemble25,Regular,,29,12,36,23,90,Sharp Moves,,,,225,600
+JHRAA25R13,JHR,AA25,R13,Hyerin,tripleS,Assemble25,Regular,,29,12,36,23,95,Sharp Moves,,,,225,1000
+JHRAA25R21,JHR,AA25,R21,Hyerin,tripleS,Assemble25,Regular,,29,12,36,23,85,,Main Dancer,,,225,400
+JHRAA25R22,JHR,AA25,R22,Hyerin,tripleS,Assemble25,Regular,,29,12,36,23,90,,Main Dancer,,,225,600
+JHRAA25R23,JHR,AA25,R23,Hyerin,tripleS,Assemble25,Regular,,29,12,36,23,95,,Main Dancer,,,225,1000
+JHRAA25R31,JHR,AA25,R31,Hyerin,tripleS,Assemble25,Regular,,29,12,36,23,85,,,Power Sync,,225,400
+JHRAA25R32,JHR,AA25,R32,Hyerin,tripleS,Assemble25,Regular,,29,12,36,23,90,,,Power Sync,,225,600
+JHRAA25R33,JHR,AA25,R33,Hyerin,tripleS,Assemble25,Regular,,29,12,36,23,95,,,Power Sync,,225,1000
+JHRAA25SPC,JHR,AA25,SPC,Hyerin,tripleS,Assemble25,Special,,29,12,36,23,90,Sharp Moves,Main Dancer,,,225,2500
+JHRAA25LMT,JHR,AA25,LMT,Hyerin,tripleS,Assemble25,Limited,summer,29,12,36,23,95,,,Power Sync,Full Bloom,225,2000
+JHRAA25FCR,JHR,AA25,FCR,Hyerin,tripleS,Assemble25,FCR,,29,12,36,23,95,,Main Dancer,,Full Bloom,225,2000
+JHRAA25POB,JHR,AA25,POB,Hyerin,tripleS,Assemble25,POB,,29,12,36,23,100,,Main Dancer,Power Sync,,225,2500
+JIYAA25R11,JIY,AA25,R11,Jiyeon,tripleS,Assemble25,Regular,,25,13,30,32,85,Composed Presence,,,,225,400
+JIYAA25R12,JIY,AA25,R12,Jiyeon,tripleS,Assemble25,Regular,,25,13,30,32,90,Composed Presence,,,,225,600
+JIYAA25R13,JIY,AA25,R13,Jiyeon,tripleS,Assemble25,Regular,,25,13,30,32,95,Composed Presence,,,,225,1000
+JIYAA25R21,JIY,AA25,R21,Jiyeon,tripleS,Assemble25,Regular,,25,13,30,32,85,,Max Effort,,,225,400
+JIYAA25R22,JIY,AA25,R22,Jiyeon,tripleS,Assemble25,Regular,,25,13,30,32,90,,Max Effort,,,225,600
+JIYAA25R23,JIY,AA25,R23,Jiyeon,tripleS,Assemble25,Regular,,25,13,30,32,95,,Max Effort,,,225,1000
+JIYAA25R31,JIY,AA25,R31,Jiyeon,tripleS,Assemble25,Regular,,25,13,30,32,85,,,Total Reinforcement,,225,400
+JIYAA25R32,JIY,AA25,R32,Jiyeon,tripleS,Assemble25,Regular,,25,13,30,32,90,,,Total Reinforcement,,225,600
+JIYAA25R33,JIY,AA25,R33,Jiyeon,tripleS,Assemble25,Regular,,25,13,30,32,95,,,Total Reinforcement,,225,1000
+JIYAA25SPC,JIY,AA25,SPC,Jiyeon,tripleS,Assemble25,Special,,25,13,30,32,90,Composed Presence,Max Effort,,,225,2500
+JIYAA25LMT,JIY,AA25,LMT,Jiyeon,tripleS,Assemble25,Limited,summer,25,13,30,32,95,,,Total Reinforcement,Full Bloom,225,2000
+JIYAA25FCR,JIY,AA25,FCR,Jiyeon,tripleS,Assemble25,FCR,,25,13,30,32,95,,Max Effort,,Full Bloom,225,2000
+JIYAA25POB,JIY,AA25,POB,Jiyeon,tripleS,Assemble25,POB,,25,13,30,32,100,,Max Effort,Total Reinforcement,,225,2500
+JOOAA25R11,JOO,AA25,R11,Joobin,tripleS,Assemble25,Regular,,29,13,24,34,85,Stylish Execution,,,,225,400
+JOOAA25R12,JOO,AA25,R12,Joobin,tripleS,Assemble25,Regular,,29,13,24,34,90,Stylish Execution,,,,225,600
+JOOAA25R13,JOO,AA25,R13,Joobin,tripleS,Assemble25,Regular,,29,13,24,34,95,Stylish Execution,,,,225,1000
+JOOAA25R21,JOO,AA25,R21,Joobin,tripleS,Assemble25,Regular,,29,13,24,34,85,,Main Visual,,,225,400
+JOOAA25R22,JOO,AA25,R22,Joobin,tripleS,Assemble25,Regular,,29,13,24,34,90,,Main Visual,,,225,600
+JOOAA25R23,JOO,AA25,R23,Joobin,tripleS,Assemble25,Regular,,29,13,24,34,95,,Main Visual,,,225,1000
+JOOAA25R31,JOO,AA25,R31,Joobin,tripleS,Assemble25,Regular,,29,13,24,34,85,,,Spotlight Focus,,225,400
+JOOAA25R32,JOO,AA25,R32,Joobin,tripleS,Assemble25,Regular,,29,13,24,34,90,,,Spotlight Focus,,225,600
+JOOAA25R33,JOO,AA25,R33,Joobin,tripleS,Assemble25,Regular,,29,13,24,34,95,,,Spotlight Focus,,225,1000
+JOOAA25SPC,JOO,AA25,SPC,Joobin,tripleS,Assemble25,Special,,29,13,24,34,90,Stylish Execution,Main Visual,,,225,2500
+JOOAA25LMT,JOO,AA25,LMT,Joobin,tripleS,Assemble25,Limited,summer,29,13,24,34,95,,,Spotlight Focus,Full Bloom,225,2000
+JOOAA25FCR,JOO,AA25,FCR,Joobin,tripleS,Assemble25,FCR,,29,13,24,34,95,,Main Visual,,Full Bloom,225,2000
+JOOAA25POB,JOO,AA25,POB,Joobin,tripleS,Assemble25,POB,,29,13,24,34,100,,Main Visual,Spotlight Focus,,225,2500
+JWYEMPTR11,JWY,EMPT,R11,Wonyoung,IVE,Ive Empathy,Regular,,30,15,20,35,85,Stylish Execution,,,,267,400
+JWYEMPTR12,JWY,EMPT,R12,Wonyoung,IVE,Ive Empathy,Regular,,30,15,20,35,90,Stylish Execution,,,,267,600
+JWYEMPTR13,JWY,EMPT,R13,Wonyoung,IVE,Ive Empathy,Regular,,30,15,20,35,95,Stylish Execution,,,,267,1000
+JWYEMPTR21,JWY,EMPT,R21,Wonyoung,IVE,Ive Empathy,Regular,,30,15,20,35,85,,Main Visual,,,267,400
+JWYEMPTR22,JWY,EMPT,R22,Wonyoung,IVE,Ive Empathy,Regular,,30,15,20,35,90,,Main Visual,,,267,600
+JWYEMPTR23,JWY,EMPT,R23,Wonyoung,IVE,Ive Empathy,Regular,,30,15,20,35,95,,Main Visual,,,267,1000
+JWYEMPTR31,JWY,EMPT,R31,Wonyoung,IVE,Ive Empathy,Regular,,30,15,20,35,85,,,Spotlight Focus,,267,400
+JWYEMPTR32,JWY,EMPT,R32,Wonyoung,IVE,Ive Empathy,Regular,,30,15,20,35,90,,,Spotlight Focus,,267,600
+JWYEMPTR33,JWY,EMPT,R33,Wonyoung,IVE,Ive Empathy,Regular,,30,15,20,35,95,,,Spotlight Focus,,267,1000
+JWYEMPTSPC,JWY,EMPT,SPC,Wonyoung,IVE,Ive Empathy,Special,,30,15,20,35,90,Stylish Execution,Main Visual,,,267,2500
+JWYEMPTLMT,JWY,EMPT,LMT,Wonyoung,IVE,Ive Empathy,Limited,,30,15,20,35,95,,,Spotlight Focus,Full Bloom,267,2000
+JWYEMPTFCR,JWY,EMPT,FCR,Wonyoung,IVE,Ive Empathy,FCR,,30,15,20,35,95,,Main Visual,,Full Bloom,267,2000
+JWYEMPTPOB,JWY,EMPT,POB,Wonyoung,IVE,Ive Empathy,POB,,30,15,20,35,100,,Main Visual,Spotlight Focus,,267,2500
+JYUUNGMR11,JYU,UNGM,R11,Jiyu,KiiiKiii,Uncut Gem,Regular,,51,33,42,64,80,,Charming Wink,,,300,400
+JYUUNGMR12,JYU,UNGM,R12,Jiyu,KiiiKiii,Uncut Gem,Regular,,61,38,52,69,90,,Charming Wink,,,300,600
+JYUUNGMR13,JYU,UNGM,R13,Jiyu,KiiiKiii,Uncut Gem,Regular,,66,43,62,79,100,,Charming Wink,,,300,1000
+JYUUNGMR21,JYU,UNGM,R21,Jiyu,KiiiKiii,Uncut Gem,Regular,,36,48,52,54,80,Dazzling Smile,,,,300,400
+JYUUNGMR22,JYU,UNGM,R22,Jiyu,KiiiKiii,Uncut Gem,Regular,,41,53,57,64,95,Dazzling Smile,,,,300,600
+JYUUNGMR23,JYU,UNGM,R23,Jiyu,KiiiKiii,Uncut Gem,Regular,,46,63,67,74,100,Dazzling Smile,,,,300,1000
+JYUUNGMR31,JYU,UNGM,R31,Jiyu,KiiiKiii,Uncut Gem,Regular,,31,48,52,59,80,,,Spotlight Focus,,300,400
+JYUUNGMR32,JYU,UNGM,R32,Jiyu,KiiiKiii,Uncut Gem,Regular,,36,58,62,64,90,,,Spotlight Focus,,300,600
+JYUUNGMR33,JYU,UNGM,R33,Jiyu,KiiiKiii,Uncut Gem,Regular,,41,63,72,74,100,,,Spotlight Focus,,300,1000
+JYUUNGMSPC,JYU,UNGM,SPC,Jiyu,KiiiKiii,Uncut Gem,Special,,56,58,67,79,100,Dazzling Smile,Charming Wink,,,300,2500
+JYUUNGMLMT,JYU,UNGM,LMT,Jiyu,KiiiKiii,Uncut Gem,Limited,,61,58,62,69,90,Backup Star,,,Audience Bond,300,2000
+JYUUNGMFCR,JYU,UNGM,FCR,Jiyu,KiiiKiii,Uncut Gem,FCR,,51,48,52,59,100,Visual Mastery,,Spotlight Focus,Hidden Charm,300,2000
+JYUUNGMPOB,JYU,UNGM,POB,Jiyu,KiiiKiii,Uncut Gem,POB,,66,58,67,74,95,,Charming Wink,Excitement Impulse,,300,2500
+KAEAA25R11,KAE,AA25,R11,Kaede,tripleS,Assemble25,Regular,,30,10,36,24,85,Sharp Moves,,,,225,400
+KAEAA25R12,KAE,AA25,R12,Kaede,tripleS,Assemble25,Regular,,30,10,36,24,90,Sharp Moves,,,,225,600
+KAEAA25R13,KAE,AA25,R13,Kaede,tripleS,Assemble25,Regular,,30,10,36,24,95,Sharp Moves,,,,225,1000
+KAEAA25R21,KAE,AA25,R21,Kaede,tripleS,Assemble25,Regular,,30,10,36,24,85,,Main Dancer,,,225,400
+KAEAA25R22,KAE,AA25,R22,Kaede,tripleS,Assemble25,Regular,,30,10,36,24,90,,Main Dancer,,,225,600
+KAEAA25R23,KAE,AA25,R23,Kaede,tripleS,Assemble25,Regular,,30,10,36,24,95,,Main Dancer,,,225,1000
+KAEAA25R31,KAE,AA25,R31,Kaede,tripleS,Assemble25,Regular,,30,10,36,24,85,,,Power Sync,,225,400
+KAEAA25R32,KAE,AA25,R32,Kaede,tripleS,Assemble25,Regular,,30,10,36,24,90,,,Power Sync,,225,600
+KAEAA25R33,KAE,AA25,R33,Kaede,tripleS,Assemble25,Regular,,30,10,36,24,95,,,Power Sync,,225,1000
+KAEAA25SPC,KAE,AA25,SPC,Kaede,tripleS,Assemble25,Special,,30,10,36,24,90,Sharp Moves,Main Dancer,,,225,2500
+KAEAA25LMT,KAE,AA25,LMT,Kaede,tripleS,Assemble25,Limited,summer,30,10,36,24,95,,,Power Sync,Full Bloom,225,2000
+KAEAA25FCR,KAE,AA25,FCR,Kaede,tripleS,Assemble25,FCR,,30,10,36,24,95,,Main Dancer,,Full Bloom,225,2000
+KAEAA25POB,KAE,AA25,POB,Kaede,tripleS,Assemble25,POB,,30,10,36,24,100,,Main Dancer,Power Sync,,225,2500
+KCYAA25R11,KCY,AA25,R11,Chaeyeon,tripleS,Assemble25,Regular,,31,14,22,33,85,Stylish Execution,,,,225,400
+KCYAA25R12,KCY,AA25,R12,Chaeyeon,tripleS,Assemble25,Regular,,31,14,22,33,90,Stylish Execution,,,,225,600
+KCYAA25R13,KCY,AA25,R13,Chaeyeon,tripleS,Assemble25,Regular,,31,14,22,33,95,Stylish Execution,,,,225,1000
+KCYAA25R21,KCY,AA25,R21,Chaeyeon,tripleS,Assemble25,Regular,,31,14,22,33,85,,Main Visual,,,225,400
+KCYAA25R22,KCY,AA25,R22,Chaeyeon,tripleS,Assemble25,Regular,,31,14,22,33,90,,Main Visual,,,225,600
+KCYAA25R23,KCY,AA25,R23,Chaeyeon,tripleS,Assemble25,Regular,,31,14,22,33,95,,Main Visual,,,225,1000
+KCYAA25R31,KCY,AA25,R31,Chaeyeon,tripleS,Assemble25,Regular,,31,14,22,33,85,,,Spotlight Focus,,225,400
+KCYAA25R32,KCY,AA25,R32,Chaeyeon,tripleS,Assemble25,Regular,,31,14,22,33,90,,,Spotlight Focus,,225,600
+KCYAA25R33,KCY,AA25,R33,Chaeyeon,tripleS,Assemble25,Regular,,31,14,22,33,95,,,Spotlight Focus,,225,1000
+KCYAA25SPC,KCY,AA25,SPC,Chaeyeon,tripleS,Assemble25,Special,,31,14,22,33,90,Stylish Execution,Main Visual,,,225,2500
+KCYAA25LMT,KCY,AA25,LMT,Chaeyeon,tripleS,Assemble25,Limited,summer,31,14,22,33,95,,,Spotlight Focus,Full Bloom,225,2000
+KCYAA25FCR,KCY,AA25,FCR,Chaeyeon,tripleS,Assemble25,FCR,,31,14,22,33,95,,Main Visual,,Full Bloom,225,2000
+KCYAA25POB,KCY,AA25,POB,Chaeyeon,tripleS,Assemble25,POB,,31,14,22,33,100,,Main Visual,Spotlight Focus,,225,2500
+KJWFBRKR11,KJW,FBRK,R11,Jiwoo,NMIXX,Fe3O4 Break,Regular,,37,61,61,31,80,Peak Confidence,,,,267,400
+KJWFBRKR12,KJW,FBRK,R12,Jiwoo,NMIXX,Fe3O4 Break,Regular,,42,71,71,36,90,Peak Confidence,,,,267,600
+KJWFBRKR13,KJW,FBRK,R13,Jiwoo,NMIXX,Fe3O4 Break,Regular,,47,81,81,41,100,Peak Confidence,,,,267,1000
+KJWFBRKR21,KJW,FBRK,R21,Jiwoo,NMIXX,Fe3O4 Break,Regular,,32,66,56,36,80,Flow Mastery,,,,267,400
+KJWFBRKR22,KJW,FBRK,R22,Jiwoo,NMIXX,Fe3O4 Break,Regular,,37,76,66,41,90,Flow Mastery,,,,267,600
+KJWFBRKR23,KJW,FBRK,R23,Jiwoo,NMIXX,Fe3O4 Break,Regular,,42,86,71,51,100,Flow Mastery,,,,267,1000
+KJWFBRKR31,KJW,FBRK,R31,Jiwoo,NMIXX,Fe3O4 Break,Regular,,47,51,56,31,85,,,Inspiration,,267,400
+KJWFBRKR32,KJW,FBRK,R32,Jiwoo,NMIXX,Fe3O4 Break,Regular,,57,56,66,36,95,,,Inspiration,,267,600
+KJWFBRKR33,KJW,FBRK,R33,Jiwoo,NMIXX,Fe3O4 Break,Regular,,67,61,71,46,105,,,Inspiration,,267,1000
+KJWFBRKSPC,KJW,FBRK,SPC,Jiwoo,NMIXX,Fe3O4 Break,Special,,52,81,76,46,105,Flow Mastery,,Inspiration,,267,2500
+KJWFBRKLMT,KJW,FBRK,LMT,Jiwoo,NMIXX,Fe3O4 Break,Limited,,57,86,66,41,90,Balanced Rhythm,,,Hidden Charm,267,2000
+KJWFBRKFCR,KJW,FBRK,FCR,Jiwoo,NMIXX,Fe3O4 Break,FCR,,47,76,61,36,90,Short Burst,Beat Pulse,,Hype Overflow,267,2000
+KJWFBRKPOB,KJW,FBRK,POB,Jiwoo,NMIXX,Fe3O4 Break,POB,,47,81,61,46,95,Quick Reaction,Main Rapper,Tempo Adapt,,267,2500
+KOTAA25R11,KOT,AA25,R11,Kotone,tripleS,Assemble25,Regular,,21,31,32,16,85,Technical Flow,,,,225,400
+KOTAA25R12,KOT,AA25,R12,Kotone,tripleS,Assemble25,Regular,,21,31,32,16,90,Technical Flow,,,,225,600
+KOTAA25R13,KOT,AA25,R13,Kotone,tripleS,Assemble25,Regular,,21,31,32,16,95,Technical Flow,,,,225,1000
+KOTAA25R21,KOT,AA25,R21,Kotone,tripleS,Assemble25,Regular,,21,31,32,16,85,,Main Rapper,,,225,400
+KOTAA25R22,KOT,AA25,R22,Kotone,tripleS,Assemble25,Regular,,21,31,32,16,90,,Main Rapper,,,225,600
+KOTAA25R23,KOT,AA25,R23,Kotone,tripleS,Assemble25,Regular,,21,31,32,16,95,,Main Rapper,,,225,1000
+KOTAA25R31,KOT,AA25,R31,Kotone,tripleS,Assemble25,Regular,,21,31,32,16,85,,,Hyper Rhythm,,225,400
+KOTAA25R32,KOT,AA25,R32,Kotone,tripleS,Assemble25,Regular,,21,31,32,16,90,,,Hyper Rhythm,,225,600
+KOTAA25R33,KOT,AA25,R33,Kotone,tripleS,Assemble25,Regular,,21,31,32,16,95,,,Hyper Rhythm,,225,1000
+KOTAA25SPC,KOT,AA25,SPC,Kotone,tripleS,Assemble25,Special,,21,31,32,16,90,Technical Flow,Main Rapper,,,225,2500
+KOTAA25LMT,KOT,AA25,LMT,Kotone,tripleS,Assemble25,Limited,summer,21,31,32,16,95,,,Hyper Rhythm,Full Bloom,225,2000
+KOTAA25FCR,KOT,AA25,FCR,Kotone,tripleS,Assemble25,FCR,,21,31,32,16,95,,Main Rapper,,Full Bloom,225,2000
+KOTAA25POB,KOT,AA25,POB,Kotone,tripleS,Assemble25,POB,,21,31,32,16,100,,Main Rapper,Hyper Rhythm,,225,2500
+KRNARMGR11,KRN,ARMG,R11,Karina,Aespa,Armageddon,Regular,,30,20,25,25,85,Composed Presence,,,,350,400
+KRNARMGR12,KRN,ARMG,R12,Karina,Aespa,Armageddon,Regular,,30,20,25,25,90,Composed Presence,,,,350,600
+KRNARMGR13,KRN,ARMG,R13,Karina,Aespa,Armageddon,Regular,,30,20,25,25,95,Composed Presence,,,,350,1000
+KRNARMGR21,KRN,ARMG,R21,Karina,Aespa,Armageddon,Regular,,30,20,25,25,85,,Max Effort,,,350,400
+KRNARMGR22,KRN,ARMG,R22,Karina,Aespa,Armageddon,Regular,,30,20,25,25,90,,Max Effort,,,350,600
+KRNARMGR23,KRN,ARMG,R23,Karina,Aespa,Armageddon,Regular,,30,20,25,25,95,,Max Effort,,,350,1000
+KRNARMGR31,KRN,ARMG,R31,Karina,Aespa,Armageddon,Regular,,30,20,25,25,85,,,Total Reinforcement,,350,400
+KRNARMGR32,KRN,ARMG,R32,Karina,Aespa,Armageddon,Regular,,30,20,25,25,90,,,Total Reinforcement,,350,600
+KRNARMGR33,KRN,ARMG,R33,Karina,Aespa,Armageddon,Regular,,30,20,25,25,95,,,Total Reinforcement,,350,1000
+KRNARMGSPC,KRN,ARMG,SPC,Karina,Aespa,Armageddon,Special,,30,20,25,25,90,Composed Presence,Max Effort,,,350,2500
+KRNARMGLMT,KRN,ARMG,LMT,Karina,Aespa,Armageddon,Limited,,30,20,25,25,95,,,Total Reinforcement,Full Bloom,350,2000
+KRNARMGFCR,KRN,ARMG,FCR,Karina,Aespa,Armageddon,FCR,,30,20,25,25,95,,Max Effort,,Full Bloom,350,2000
+KRNARMGPOB,KRN,ARMG,POB,Karina,Aespa,Armageddon,POB,,30,20,25,25,100,,Max Effort,Total Reinforcement,,350,2500
+KSAERLUR11,KSA,ERLU,R11,Kasia,ifeye,Erlu Blue,Regular,,16,40,20,24,85,Technical Flow,,,,267,400
+KSAERLUR12,KSA,ERLU,R12,Kasia,ifeye,Erlu Blue,Regular,,16,40,20,24,90,Technical Flow,,,,267,600
+KSAERLUR13,KSA,ERLU,R13,Kasia,ifeye,Erlu Blue,Regular,,16,40,20,24,95,Technical Flow,,,,267,1000
+KSAERLUR21,KSA,ERLU,R21,Kasia,ifeye,Erlu Blue,Regular,,16,40,20,24,85,,Main Rapper,,,267,400
+KSAERLUR22,KSA,ERLU,R22,Kasia,ifeye,Erlu Blue,Regular,,16,40,20,24,90,,Main Rapper,,,267,600
+KSAERLUR23,KSA,ERLU,R23,Kasia,ifeye,Erlu Blue,Regular,,16,40,20,24,95,,Main Rapper,,,267,1000
+KSAERLUR31,KSA,ERLU,R31,Kasia,ifeye,Erlu Blue,Regular,,16,40,20,24,85,,,Hyper Rhythm,,267,400
+KSAERLUR32,KSA,ERLU,R32,Kasia,ifeye,Erlu Blue,Regular,,16,40,20,24,90,,,Hyper Rhythm,,267,600
+KSAERLUR33,KSA,ERLU,R33,Kasia,ifeye,Erlu Blue,Regular,,16,40,20,24,95,,,Hyper Rhythm,,267,1000
+KSAERLUSPC,KSA,ERLU,SPC,Kasia,ifeye,Erlu Blue,Special,,16,40,20,24,90,Technical Flow,Main Rapper,,,267,2500
+KSAERLULMT,KSA,ERLU,LMT,Kasia,ifeye,Erlu Blue,Limited,,16,40,20,24,95,,,Hyper Rhythm,Full Bloom,267,2000
+KSAERLUFCR,KSA,ERLU,FCR,Kasia,ifeye,Erlu Blue,FCR,,16,40,20,24,95,,Main Rapper,,Full Bloom,267,2000
+KSAERLUPOB,KSA,ERLU,POB,Kasia,ifeye,Erlu Blue,POB,,16,40,20,24,100,,Main Rapper,Hyper Rhythm,,267,2500
+KSMAA25R11,KSM,AA25,R11,Soomin,tripleS,Assemble25,Regular,,26,14,26,34,85,Stylish Execution,,,,225,400
+KSMAA25R12,KSM,AA25,R12,Soomin,tripleS,Assemble25,Regular,,26,14,26,34,90,Stylish Execution,,,,225,600
+KSMAA25R13,KSM,AA25,R13,Soomin,tripleS,Assemble25,Regular,,26,14,26,34,95,Stylish Execution,,,,225,1000
+KSMAA25R21,KSM,AA25,R21,Soomin,tripleS,Assemble25,Regular,,26,14,26,34,85,,Main Visual,,,225,400
+KSMAA25R22,KSM,AA25,R22,Soomin,tripleS,Assemble25,Regular,,26,14,26,34,90,,Main Visual,,,225,600
+KSMAA25R23,KSM,AA25,R23,Soomin,tripleS,Assemble25,Regular,,26,14,26,34,95,,Main Visual,,,225,1000
+KSMAA25R31,KSM,AA25,R31,Soomin,tripleS,Assemble25,Regular,,26,14,26,34,85,,,Spotlight Focus,,225,400
+KSMAA25R32,KSM,AA25,R32,Soomin,tripleS,Assemble25,Regular,,26,14,26,34,90,,,Spotlight Focus,,225,600
+KSMAA25R33,KSM,AA25,R33,Soomin,tripleS,Assemble25,Regular,,26,14,26,34,95,,,Spotlight Focus,,225,1000
+KSMAA25SPC,KSM,AA25,SPC,Soomin,tripleS,Assemble25,Special,,26,14,26,34,90,Stylish Execution,Main Visual,,,225,2500
+KSMAA25LMT,KSM,AA25,LMT,Soomin,tripleS,Assemble25,Limited,summer,26,14,26,34,95,,,Spotlight Focus,Full Bloom,225,2000
+KSMAA25FCR,KSM,AA25,FCR,Soomin,tripleS,Assemble25,FCR,,26,14,26,34,95,,Main Visual,,Full Bloom,225,2000
+KSMAA25POB,KSM,AA25,POB,Soomin,tripleS,Assemble25,POB,,26,14,26,34,100,,Main Visual,Spotlight Focus,,225,2500
+KYAUNGMR11,KYA,UNGM,R11,Kya,KiiiKiii,Uncut Gem,Regular,,64,37,44,45,80,,Max Effort,,,300,400
+KYAUNGMR12,KYA,UNGM,R12,Kya,KiiiKiii,Uncut Gem,Regular,,69,42,54,55,90,,Max Effort,,,300,600
+KYAUNGMR13,KYA,UNGM,R13,Kya,KiiiKiii,Uncut Gem,Regular,,74,47,64,65,100,,Max Effort,,,300,1000
+KYAUNGMR21,KYA,UNGM,R21,Kya,KiiiKiii,Uncut Gem,Regular,,39,57,49,40,85,,,Excitement Impulse,,300,400
+KYAUNGMR22,KYA,UNGM,R22,Kya,KiiiKiii,Uncut Gem,Regular,,44,62,59,50,95,,,Excitement Impulse,,300,600
+KYAUNGMR23,KYA,UNGM,R23,Kya,KiiiKiii,Uncut Gem,Regular,,49,72,69,60,100,,,Excitement Impulse,,300,1000
+KYAUNGMR31,KYA,UNGM,R31,Kya,KiiiKiii,Uncut Gem,Regular,,49,47,49,45,80,Steady Tempo,,,,300,400
+KYAUNGMR32,KYA,UNGM,R32,Kya,KiiiKiii,Uncut Gem,Regular,,59,52,59,50,90,Steady Tempo,,,,300,600
+KYAUNGMR33,KYA,UNGM,R33,Kya,KiiiKiii,Uncut Gem,Regular,,69,57,69,55,100,Steady Tempo,,,,300,1000
+KYAUNGMSPC,KYA,UNGM,SPC,Kya,KiiiKiii,Uncut Gem,Special,,64,62,69,65,100,Steady Tempo,,Excitement Impulse,,300,2500
+KYAUNGMLMT,KYA,UNGM,LMT,Kya,KiiiKiii,Uncut Gem,Limited,,74,57,59,55,95,Balanced Performance,,,One More Time,300,2000
+KYAUNGMFCR,KYA,UNGM,FCR,Kya,KiiiKiii,Uncut Gem,FCR,,69,52,54,45,90,Peak Fit,Tactic Focus,,Audience Bond,300,2000
+KYAUNGMPOB,KYA,UNGM,POB,Kya,KiiiKiii,Uncut Gem,POB,,79,57,64,60,100,,Harmony Blast,Fanchant Boost,,300,2500
+KYJAA25R11,KYJ,AA25,R11,Yeonji,tripleS,Assemble25,Regular,,19,17,32,32,85,Composed Presence,,,,225,400
+KYJAA25R12,KYJ,AA25,R12,Yeonji,tripleS,Assemble25,Regular,,19,17,32,32,90,Composed Presence,,,,225,600
+KYJAA25R13,KYJ,AA25,R13,Yeonji,tripleS,Assemble25,Regular,,19,17,32,32,95,Composed Presence,,,,225,1000
+KYJAA25R21,KYJ,AA25,R21,Yeonji,tripleS,Assemble25,Regular,,19,17,32,32,85,,Max Effort,,,225,400
+KYJAA25R22,KYJ,AA25,R22,Yeonji,tripleS,Assemble25,Regular,,19,17,32,32,90,,Max Effort,,,225,600
+KYJAA25R23,KYJ,AA25,R23,Yeonji,tripleS,Assemble25,Regular,,19,17,32,32,95,,Max Effort,,,225,1000
+KYJAA25R31,KYJ,AA25,R31,Yeonji,tripleS,Assemble25,Regular,,19,17,32,32,85,,,Total Reinforcement,,225,400
+KYJAA25R32,KYJ,AA25,R32,Yeonji,tripleS,Assemble25,Regular,,19,17,32,32,90,,,Total Reinforcement,,225,600
+KYJAA25R33,KYJ,AA25,R33,Yeonji,tripleS,Assemble25,Regular,,19,17,32,32,95,,,Total Reinforcement,,225,1000
+KYJAA25SPC,KYJ,AA25,SPC,Yeonji,tripleS,Assemble25,Special,,19,17,32,32,90,Composed Presence,Max Effort,,,225,2500
+KYJAA25LMT,KYJ,AA25,LMT,Yeonji,tripleS,Assemble25,Limited,summer,19,17,32,32,95,,,Total Reinforcement,Full Bloom,225,2000
+KYJAA25FCR,KYJ,AA25,FCR,Yeonji,tripleS,Assemble25,FCR,,19,17,32,32,95,,Max Effort,,Full Bloom,225,2000
+KYJAA25POB,KYJ,AA25,POB,Yeonji,tripleS,Assemble25,POB,,19,17,32,32,100,,Max Effort,Total Reinforcement,,225,2500
+KYUFBRKR11,KYU,FBRK,R11,Kyujin,NMIXX,Fe3O4 Break,Regular,,44,52,57,37,80,,,Rhythm Buffer,,267,400
+KYUFBRKR12,KYU,FBRK,R12,Kyujin,NMIXX,Fe3O4 Break,Regular,,49,62,67,42,90,,,Rhythm Buffer,,267,600
+KYUFBRKR13,KYU,FBRK,R13,Kyujin,NMIXX,Fe3O4 Break,Regular,,54,67,77,52,100,,,Rhythm Buffer,,267,1000
+KYUFBRKR21,KYU,FBRK,R21,Kyujin,NMIXX,Fe3O4 Break,Regular,,49,57,52,32,80,Steady Tempo,,,,267,400
+KYUFBRKR22,KYU,FBRK,R22,Kyujin,NMIXX,Fe3O4 Break,Regular,,54,67,62,37,90,Steady Tempo,,,,267,600
+KYUFBRKR23,KYU,FBRK,R23,Kyujin,NMIXX,Fe3O4 Break,Regular,,64,77,67,42,100,Steady Tempo,,,,267,1000
+KYUFBRKR31,KYU,FBRK,R31,Kyujin,NMIXX,Fe3O4 Break,Regular,,54,42,62,32,80,,Steady Lead,,,267,400
+KYUFBRKR32,KYU,FBRK,R32,Kyujin,NMIXX,Fe3O4 Break,Regular,,64,47,67,42,90,,Steady Lead,,,267,600
+KYUFBRKR33,KYU,FBRK,R33,Kyujin,NMIXX,Fe3O4 Break,Regular,,74,52,72,52,100,,Steady Lead,,,267,1000
+KYUFBRKSPC,KYU,FBRK,SPC,Kyujin,NMIXX,Fe3O4 Break,Special,,69,67,72,52,100,Steady Tempo,,Rhythm Buffer,,267,2500
+KYUFBRKLMT,KYU,FBRK,LMT,Kyujin,NMIXX,Fe3O4 Break,Limited,,69,67,67,42,95,Endurance Mode,,,Adaptive Blast,267,2000
+KYUFBRKFCR,KYU,FBRK,FCR,Kyujin,NMIXX,Fe3O4 Break,FCR,,59,62,62,37,90,Endurance Drive,Main Dancer,,Silent Recovery,267,2000
+KYUFBRKPOB,KYU,FBRK,POB,Kyujin,NMIXX,Fe3O4 Break,POB,,54,67,67,42,100,Confident Rhythm,Deep Dive,Rhythm Buffer,,267,2500
+KYYAA25R11,KYY,AA25,R11,Yooyeon,tripleS,Assemble25,Regular,,28,18,24,30,85,Composed Presence,,,,225,400
+KYYAA25R12,KYY,AA25,R12,Yooyeon,tripleS,Assemble25,Regular,,28,18,24,30,90,Composed Presence,,,,225,600
+KYYAA25R13,KYY,AA25,R13,Yooyeon,tripleS,Assemble25,Regular,,28,18,24,30,95,Composed Presence,,,,225,1000
+KYYAA25R21,KYY,AA25,R21,Yooyeon,tripleS,Assemble25,Regular,,28,18,24,30,85,,Max Effort,,,225,400
+KYYAA25R22,KYY,AA25,R22,Yooyeon,tripleS,Assemble25,Regular,,28,18,24,30,90,,Max Effort,,,225,600
+KYYAA25R23,KYY,AA25,R23,Yooyeon,tripleS,Assemble25,Regular,,28,18,24,30,95,,Max Effort,,,225,1000
+KYYAA25R31,KYY,AA25,R31,Yooyeon,tripleS,Assemble25,Regular,,28,18,24,30,85,,,Total Reinforcement,,225,400
+KYYAA25R32,KYY,AA25,R32,Yooyeon,tripleS,Assemble25,Regular,,28,18,24,30,90,,,Total Reinforcement,,225,600
+KYYAA25R33,KYY,AA25,R33,Yooyeon,tripleS,Assemble25,Regular,,28,18,24,30,95,,,Total Reinforcement,,225,1000
+KYYAA25SPC,KYY,AA25,SPC,Yooyeon,tripleS,Assemble25,Special,,28,18,24,30,90,Composed Presence,Max Effort,,,225,2500
+KYYAA25LMT,KYY,AA25,LMT,Yooyeon,tripleS,Assemble25,Limited,summer,28,18,24,30,95,,,Total Reinforcement,Full Bloom,225,2000
+KYYAA25FCR,KYY,AA25,FCR,Yooyeon,tripleS,Assemble25,FCR,,28,18,24,30,95,,Max Effort,,Full Bloom,225,2000
+KYYAA25POB,KYY,AA25,POB,Yooyeon,tripleS,Assemble25,POB,,28,18,24,30,100,,Max Effort,Total Reinforcement,,225,2500
+LEEEMPTR11,LEE,EMPT,R11,Leeseo,IVE,Ive Empathy,Regular,,25,25,25,25,85,Composed Presence,,,,267,400
+LEEEMPTR12,LEE,EMPT,R12,Leeseo,IVE,Ive Empathy,Regular,,25,25,25,25,90,Composed Presence,,,,267,600
+LEEEMPTR13,LEE,EMPT,R13,Leeseo,IVE,Ive Empathy,Regular,,25,25,25,25,95,Composed Presence,,,,267,1000
+LEEEMPTR21,LEE,EMPT,R21,Leeseo,IVE,Ive Empathy,Regular,,25,25,25,25,85,,Max Effort,,,267,400
+LEEEMPTR22,LEE,EMPT,R22,Leeseo,IVE,Ive Empathy,Regular,,25,25,25,25,90,,Max Effort,,,267,600
+LEEEMPTR23,LEE,EMPT,R23,Leeseo,IVE,Ive Empathy,Regular,,25,25,25,25,95,,Max Effort,,,267,1000
+LEEEMPTR31,LEE,EMPT,R31,Leeseo,IVE,Ive Empathy,Regular,,25,25,25,25,85,,,Total Reinforcement,,267,400
+LEEEMPTR32,LEE,EMPT,R32,Leeseo,IVE,Ive Empathy,Regular,,25,25,25,25,90,,,Total Reinforcement,,267,600
+LEEEMPTR33,LEE,EMPT,R33,Leeseo,IVE,Ive Empathy,Regular,,25,25,25,25,95,,,Total Reinforcement,,267,1000
+LEEEMPTSPC,LEE,EMPT,SPC,Leeseo,IVE,Ive Empathy,Special,,25,25,25,25,90,Composed Presence,Max Effort,,,267,2500
+LEEEMPTLMT,LEE,EMPT,LMT,Leeseo,IVE,Ive Empathy,Limited,,25,25,25,25,95,,,Total Reinforcement,Full Bloom,267,2000
+LEEEMPTFCR,LEE,EMPT,FCR,Leeseo,IVE,Ive Empathy,FCR,,25,25,25,25,95,,Max Effort,,Full Bloom,267,2000
+LEEEMPTPOB,LEE,EMPT,POB,Leeseo,IVE,Ive Empathy,POB,,25,25,25,25,100,,Max Effort,Total Reinforcement,,267,2500
+LIZEMPTR11,LIZ,EMPT,R11,Liz,IVE,Ive Empathy,Regular,,35,10,25,30,85,Vocal Boost,,,,267,400
+LIZEMPTR12,LIZ,EMPT,R12,Liz,IVE,Ive Empathy,Regular,,35,10,25,30,90,Vocal Boost,,,,267,600
+LIZEMPTR13,LIZ,EMPT,R13,Liz,IVE,Ive Empathy,Regular,,35,10,25,30,95,Vocal Boost,,,,267,1000
+LIZEMPTR21,LIZ,EMPT,R21,Liz,IVE,Ive Empathy,Regular,,35,10,25,30,85,,Main Vocal,,,267,400
+LIZEMPTR22,LIZ,EMPT,R22,Liz,IVE,Ive Empathy,Regular,,35,10,25,30,90,,Main Vocal,,,267,600
+LIZEMPTR23,LIZ,EMPT,R23,Liz,IVE,Ive Empathy,Regular,,35,10,25,30,95,,Main Vocal,,,267,1000
+LIZEMPTR31,LIZ,EMPT,R31,Liz,IVE,Ive Empathy,Regular,,35,10,25,30,85,,,Echo Effect,,267,400
+LIZEMPTR32,LIZ,EMPT,R32,Liz,IVE,Ive Empathy,Regular,,35,10,25,30,90,,,Echo Effect,,267,600
+LIZEMPTR33,LIZ,EMPT,R33,Liz,IVE,Ive Empathy,Regular,,35,10,25,30,95,,,Echo Effect,,267,1000
+LIZEMPTSPC,LIZ,EMPT,SPC,Liz,IVE,Ive Empathy,Special,,35,10,25,30,90,Vocal Boost,Main Vocal,,,267,2500
+LIZEMPTLMT,LIZ,EMPT,LMT,Liz,IVE,Ive Empathy,Limited,,35,10,25,30,95,,,Echo Effect,Full Bloom,267,2000
+LIZEMPTFCR,LIZ,EMPT,FCR,Liz,IVE,Ive Empathy,FCR,,35,10,25,30,95,,Main Vocal,,Full Bloom,267,2000
+LIZEMPTPOB,LIZ,EMPT,POB,Liz,IVE,Ive Empathy,POB,,35,10,25,30,100,,Main Vocal,Echo Effect,,267,2500
+LJWAA25R11,LJW,AA25,R11,Jiwoo,tripleS,Assemble25,Regular,,32,15,25,28,85,Composed Presence,,,,225,400
+LJWAA25R12,LJW,AA25,R12,Jiwoo,tripleS,Assemble25,Regular,,32,15,25,28,90,Composed Presence,,,,225,600
+LJWAA25R13,LJW,AA25,R13,Jiwoo,tripleS,Assemble25,Regular,,32,15,25,28,95,Composed Presence,,,,225,1000
+LJWAA25R21,LJW,AA25,R21,Jiwoo,tripleS,Assemble25,Regular,,32,15,25,28,85,,Max Effort,,,225,400
+LJWAA25R22,LJW,AA25,R22,Jiwoo,tripleS,Assemble25,Regular,,32,15,25,28,90,,Max Effort,,,225,600
+LJWAA25R23,LJW,AA25,R23,Jiwoo,tripleS,Assemble25,Regular,,32,15,25,28,95,,Max Effort,,,225,1000
+LJWAA25R31,LJW,AA25,R31,Jiwoo,tripleS,Assemble25,Regular,,32,15,25,28,85,,,Total Reinforcement,,225,400
+LJWAA25R32,LJW,AA25,R32,Jiwoo,tripleS,Assemble25,Regular,,32,15,25,28,90,,,Total Reinforcement,,225,600
+LJWAA25R33,LJW,AA25,R33,Jiwoo,tripleS,Assemble25,Regular,,32,15,25,28,95,,,Total Reinforcement,,225,1000
+LJWAA25SPC,LJW,AA25,SPC,Jiwoo,tripleS,Assemble25,Special,,32,15,25,28,90,Composed Presence,Max Effort,,,225,2500
+LJWAA25LMT,LJW,AA25,LMT,Jiwoo,tripleS,Assemble25,Limited,summer,32,15,25,28,95,,,Total Reinforcement,Full Bloom,225,2000
+LJWAA25FCR,LJW,AA25,FCR,Jiwoo,tripleS,Assemble25,FCR,,32,15,25,28,95,,Max Effort,,Full Bloom,225,2000
+LJWAA25POB,LJW,AA25,POB,Jiwoo,tripleS,Assemble25,POB,,32,15,25,28,100,,Max Effort,Total Reinforcement,,225,2500
+LLDUNNAR11,LLD,UNNA,R11,Luda,WJSN,Unnatural,Regular,,23,18,23,36,85,Stylish Execution,,,,200,400
+LLDUNNAR12,LLD,UNNA,R12,Luda,WJSN,Unnatural,Regular,,23,18,23,36,90,Stylish Execution,,,,200,600
+LLDUNNAR13,LLD,UNNA,R13,Luda,WJSN,Unnatural,Regular,,23,18,23,36,95,Stylish Execution,,,,200,1000
+LLDUNNAR21,LLD,UNNA,R21,Luda,WJSN,Unnatural,Regular,,23,18,23,36,85,,Main Visual,,,200,400
+LLDUNNAR22,LLD,UNNA,R22,Luda,WJSN,Unnatural,Regular,,23,18,23,36,90,,Main Visual,,,200,600
+LLDUNNAR23,LLD,UNNA,R23,Luda,WJSN,Unnatural,Regular,,23,18,23,36,95,,Main Visual,,,200,1000
+LLDUNNAR31,LLD,UNNA,R31,Luda,WJSN,Unnatural,Regular,,23,18,23,36,85,,,Spotlight Focus,,200,400
+LLDUNNAR32,LLD,UNNA,R32,Luda,WJSN,Unnatural,Regular,,23,18,23,36,90,,,Spotlight Focus,,200,600
+LLDUNNAR33,LLD,UNNA,R33,Luda,WJSN,Unnatural,Regular,,23,18,23,36,95,,,Spotlight Focus,,200,1000
+LLDUNNASPC,LLD,UNNA,SPC,Luda,WJSN,Unnatural,Special,,23,18,23,36,90,Stylish Execution,Main Visual,,,200,2500
+LLDUNNALMT,LLD,UNNA,LMT,Luda,WJSN,Unnatural,Limited,,23,18,23,36,95,,,Spotlight Focus,Full Bloom,200,2000
+LLDUNNAFCR,LLD,UNNA,FCR,Luda,WJSN,Unnatural,FCR,,23,18,23,36,95,,Main Visual,,Full Bloom,200,2000
+LLDUNNAPOB,LLD,UNNA,POB,Luda,WJSN,Unnatural,POB,,23,18,23,36,100,,Main Visual,Spotlight Focus,,200,2500
+LLYFBRKR11,LLY,FBRK,R11,Lily,NMIXX,Fe3O4 Break,Regular,,70,25,47,53,75,Clutch Performer,,,,267,400
+LLYFBRKR12,LLY,FBRK,R12,Lily,NMIXX,Fe3O4 Break,Regular,,75,30,57,63,85,Clutch Performer,,,,267,600
+LLYFBRKR13,LLY,FBRK,R13,Lily,NMIXX,Fe3O4 Break,Regular,,80,35,67,73,95,Clutch Performer,,,,267,1000
+LLYFBRKR21,LLY,FBRK,R21,Lily,NMIXX,Fe3O4 Break,Regular,,75,25,42,43,85,,Harmony Blast,,,267,400
+LLYFBRKR22,LLY,FBRK,R22,Lily,NMIXX,Fe3O4 Break,Regular,,85,30,52,48,95,,Harmony Blast,,,267,600
+LLYFBRKR23,LLY,FBRK,R23,Lily,NMIXX,Fe3O4 Break,Regular,,95,35,57,58,105,,Harmony Blast,,,267,1000
+LLYFBRKR31,LLY,FBRK,R31,Lily,NMIXX,Fe3O4 Break,Regular,,75,20,47,48,80,Catch-up Mode,,,,267,400
+LLYFBRKR32,LLY,FBRK,R32,Lily,NMIXX,Fe3O4 Break,Regular,,85,25,57,53,90,Catch-up Mode,,,,267,600
+LLYFBRKR33,LLY,FBRK,R33,Lily,NMIXX,Fe3O4 Break,Regular,,95,30,67,58,100,Catch-up Mode,,,,267,1000
+LLYFBRKSPC,LLY,FBRK,SPC,Lily,NMIXX,Fe3O4 Break,Special,,95,35,67,63,100,Catch-up Mode,Harmony Blast,,,267,2500
+LLYFBRKLMT,LLY,FBRK,LMT,Lily,NMIXX,Fe3O4 Break,Limited,,100,30,62,58,90,Last Push,,,Radiant Finale,267,2000
+LLYFBRKFCR,LLY,FBRK,FCR,Lily,NMIXX,Fe3O4 Break,FCR,,100,25,72,68,95,Distracted,High Note,,Last Breath,267,2000
+LLYFBRKPOB,LLY,FBRK,POB,Lily,NMIXX,Fe3O4 Break,POB,,90,25,62,58,95,Vocal Boost,Main Vocal,Inspiration,,267,2500
+LSLUNGMR11,LSL,UNGM,R11,Leesol,KiiiKiii,Uncut Gem,Regular,,44,43,58,40,85,Backup Star,,,,300,400
+LSLUNGMR12,LSL,UNGM,R12,Leesol,KiiiKiii,Uncut Gem,Regular,,54,48,63,55,90,Backup Star,,,,300,600
+LSLUNGMR13,LSL,UNGM,R13,Leesol,KiiiKiii,Uncut Gem,Regular,,64,53,73,65,95,Backup Star,,,,300,1000
+LSLUNGMR21,LSL,UNGM,R21,Leesol,KiiiKiii,Uncut Gem,Regular,,29,63,53,45,80,,Main Rapper,,,300,400
+LSLUNGMR22,LSL,UNGM,R22,Leesol,KiiiKiii,Uncut Gem,Regular,,34,68,63,55,90,,Main Rapper,,,300,600
+LSLUNGMR23,LSL,UNGM,R23,Leesol,KiiiKiii,Uncut Gem,Regular,,39,78,73,65,95,,Main Rapper,,,300,1000
+LSLUNGMR31,LSL,UNGM,R31,Leesol,KiiiKiii,Uncut Gem,Regular,,39,53,53,45,80,,Tactic Focus,,,300,400
+LSLUNGMR32,LSL,UNGM,R32,Leesol,KiiiKiii,Uncut Gem,Regular,,44,63,63,50,90,,Tactic Focus,,,300,600
+LSLUNGMR33,LSL,UNGM,R33,Leesol,KiiiKiii,Uncut Gem,Regular,,49,73,73,55,100,,Tactic Focus,,,300,1000
+LSLUNGMSPC,LSL,UNGM,SPC,Leesol,KiiiKiii,Uncut Gem,Special,,54,73,73,60,100,Backup Star,Main Rapper,,,300,2500
+LSLUNGMLMT,LSL,UNGM,LMT,Leesol,KiiiKiii,Uncut Gem,Limited,,54,73,68,55,90,Encore Spirit,,,Last Breath,300,2000
+LSLUNGMFCR,LSL,UNGM,FCR,Leesol,KiiiKiii,Uncut Gem,FCR,,44,63,58,50,95,,Power Step,Tactic Rest,Inverse Vitality,300,2000
+LSLUNGMPOB,LSL,UNGM,POB,Leesol,KiiiKiii,Uncut Gem,POB,,54,68,73,50,105,Fatigue,Harmony Blast,Total Reinforcement,Hidden Charm,300,2500
+LYNAA25R11,LYN,AA25,R11,Lynn,tripleS,Assemble25,Regular,,19,26,34,21,85,Sharp Moves,,,,225,400
+LYNAA25R12,LYN,AA25,R12,Lynn,tripleS,Assemble25,Regular,,19,26,34,21,90,Sharp Moves,,,,225,600
+LYNAA25R13,LYN,AA25,R13,Lynn,tripleS,Assemble25,Regular,,19,26,34,21,95,Sharp Moves,,,,225,1000
+LYNAA25R21,LYN,AA25,R21,Lynn,tripleS,Assemble25,Regular,,19,26,34,21,85,,Main Dancer,,,225,400
+LYNAA25R22,LYN,AA25,R22,Lynn,tripleS,Assemble25,Regular,,19,26,34,21,90,,Main Dancer,,,225,600
+LYNAA25R23,LYN,AA25,R23,Lynn,tripleS,Assemble25,Regular,,19,26,34,21,95,,Main Dancer,,,225,1000
+LYNAA25R31,LYN,AA25,R31,Lynn,tripleS,Assemble25,Regular,,19,26,34,21,85,,,Power Sync,,225,400
+LYNAA25R32,LYN,AA25,R32,Lynn,tripleS,Assemble25,Regular,,19,26,34,21,90,,,Power Sync,,225,600
+LYNAA25R33,LYN,AA25,R33,Lynn,tripleS,Assemble25,Regular,,19,26,34,21,95,,,Power Sync,,225,1000
+LYNAA25SPC,LYN,AA25,SPC,Lynn,tripleS,Assemble25,Special,,19,26,34,21,90,Sharp Moves,Main Dancer,,,225,2500
+LYNAA25LMT,LYN,AA25,LMT,Lynn,tripleS,Assemble25,Limited,summer,19,26,34,21,95,,,Power Sync,Full Bloom,225,2000
+LYNAA25FCR,LYN,AA25,FCR,Lynn,tripleS,Assemble25,FCR,,19,26,34,21,95,,Main Dancer,,Full Bloom,225,2000
+LYNAA25POB,LYN,AA25,POB,Lynn,tripleS,Assemble25,POB,,19,26,34,21,100,,Main Dancer,Power Sync,,225,2500
+LYRUNNAR11,LYR,UNNA,R11,Yeoreum,WJSN,Unnatural,Regular,,19,24,35,22,85,Sharp Moves,,,,200,400
+LYRUNNAR12,LYR,UNNA,R12,Yeoreum,WJSN,Unnatural,Regular,,19,24,35,22,90,Sharp Moves,,,,200,600
+LYRUNNAR13,LYR,UNNA,R13,Yeoreum,WJSN,Unnatural,Regular,,19,24,35,22,95,Sharp Moves,,,,200,1000
+LYRUNNAR21,LYR,UNNA,R21,Yeoreum,WJSN,Unnatural,Regular,,19,24,35,22,85,,Main Dancer,,,200,400
+LYRUNNAR22,LYR,UNNA,R22,Yeoreum,WJSN,Unnatural,Regular,,19,24,35,22,90,,Main Dancer,,,200,600
+LYRUNNAR23,LYR,UNNA,R23,Yeoreum,WJSN,Unnatural,Regular,,19,24,35,22,95,,Main Dancer,,,200,1000
+LYRUNNAR31,LYR,UNNA,R31,Yeoreum,WJSN,Unnatural,Regular,,19,24,35,22,85,,,Power Sync,,200,400
+LYRUNNAR32,LYR,UNNA,R32,Yeoreum,WJSN,Unnatural,Regular,,19,24,35,22,90,,,Power Sync,,200,600
+LYRUNNAR33,LYR,UNNA,R33,Yeoreum,WJSN,Unnatural,Regular,,19,24,35,22,95,,,Power Sync,,200,1000
+LYRUNNASPC,LYR,UNNA,SPC,Yeoreum,WJSN,Unnatural,Special,,19,24,35,22,90,Sharp Moves,Main Dancer,,,200,2500
+LYRUNNALMT,LYR,UNNA,LMT,Yeoreum,WJSN,Unnatural,Limited,,19,24,35,22,95,,,Power Sync,Full Bloom,200,2000
+LYRUNNAFCR,LYR,UNNA,FCR,Yeoreum,WJSN,Unnatural,FCR,,19,24,35,22,95,,Main Dancer,,Full Bloom,200,2000
+LYRUNNAPOB,LYR,UNNA,POB,Yeoreum,WJSN,Unnatural,POB,,19,24,35,22,100,,Main Dancer,Power Sync,,200,2500
+MAYAA25R11,MAY,AA25,R11,Mayu,tripleS,Assemble25,Regular,,30,13,25,32,85,Stylish Execution,,,,225,400
+MAYAA25R12,MAY,AA25,R12,Mayu,tripleS,Assemble25,Regular,,30,13,25,32,90,Stylish Execution,,,,225,600
+MAYAA25R13,MAY,AA25,R13,Mayu,tripleS,Assemble25,Regular,,30,13,25,32,95,Stylish Execution,,,,225,1000
+MAYAA25R21,MAY,AA25,R21,Mayu,tripleS,Assemble25,Regular,,30,13,25,32,85,,Main Visual,,,225,400
+MAYAA25R22,MAY,AA25,R22,Mayu,tripleS,Assemble25,Regular,,30,13,25,32,90,,Main Visual,,,225,600
+MAYAA25R23,MAY,AA25,R23,Mayu,tripleS,Assemble25,Regular,,30,13,25,32,95,,Main Visual,,,225,1000
+MAYAA25R31,MAY,AA25,R31,Mayu,tripleS,Assemble25,Regular,,30,13,25,32,85,,,Spotlight Focus,,225,400
+MAYAA25R32,MAY,AA25,R32,Mayu,tripleS,Assemble25,Regular,,30,13,25,32,90,,,Spotlight Focus,,225,600
+MAYAA25R33,MAY,AA25,R33,Mayu,tripleS,Assemble25,Regular,,30,13,25,32,95,,,Spotlight Focus,,225,1000
+MAYAA25SPC,MAY,AA25,SPC,Mayu,tripleS,Assemble25,Special,,30,13,25,32,90,Stylish Execution,Main Visual,,,225,2500
+MAYAA25LMT,MAY,AA25,LMT,Mayu,tripleS,Assemble25,Limited,summer,30,13,25,32,95,,,Spotlight Focus,Full Bloom,225,2000
+MAYAA25FCR,MAY,AA25,FCR,Mayu,tripleS,Assemble25,FCR,,30,13,25,32,95,,Main Visual,,Full Bloom,225,2000
+MAYAA25POB,MAY,AA25,POB,Mayu,tripleS,Assemble25,POB,,30,13,25,32,100,,Main Visual,Spotlight Focus,,225,2500
+MEUERLUR11,MEU,ERLU,R11,Meu,ifeye,Erlu Blue,Regular,,33,5,32,30,85,Composed Presence,,,,267,400
+MEUERLUR12,MEU,ERLU,R12,Meu,ifeye,Erlu Blue,Regular,,33,5,32,30,90,Composed Presence,,,,267,600
+MEUERLUR13,MEU,ERLU,R13,Meu,ifeye,Erlu Blue,Regular,,33,5,32,30,95,Composed Presence,,,,267,1000
+MEUERLUR21,MEU,ERLU,R21,Meu,ifeye,Erlu Blue,Regular,,33,5,32,30,85,,Max Effort,,,267,400
+MEUERLUR22,MEU,ERLU,R22,Meu,ifeye,Erlu Blue,Regular,,33,5,32,30,90,,Max Effort,,,267,600
+MEUERLUR23,MEU,ERLU,R23,Meu,ifeye,Erlu Blue,Regular,,33,5,32,30,95,,Max Effort,,,267,1000
+MEUERLUR31,MEU,ERLU,R31,Meu,ifeye,Erlu Blue,Regular,,33,5,32,30,85,,,Total Reinforcement,,267,400
+MEUERLUR32,MEU,ERLU,R32,Meu,ifeye,Erlu Blue,Regular,,33,5,32,30,90,,,Total Reinforcement,,267,600
+MEUERLUR33,MEU,ERLU,R33,Meu,ifeye,Erlu Blue,Regular,,33,5,32,30,95,,,Total Reinforcement,,267,1000
+MEUERLUSPC,MEU,ERLU,SPC,Meu,ifeye,Erlu Blue,Special,,33,5,32,30,90,Composed Presence,Max Effort,,,267,2500
+MEUERLULMT,MEU,ERLU,LMT,Meu,ifeye,Erlu Blue,Limited,,33,5,32,30,95,,,Total Reinforcement,Full Bloom,267,2000
+MEUERLUFCR,MEU,ERLU,FCR,Meu,ifeye,Erlu Blue,FCR,,33,5,32,30,95,,Max Effort,,Full Bloom,267,2000
+MEUERLUPOB,MEU,ERLU,POB,Meu,ifeye,Erlu Blue,POB,,33,5,32,30,100,,Max Effort,Total Reinforcement,,267,2500
+NAKAA25R11,NAK,AA25,R11,Nakyoung,tripleS,Assemble25,Regular,,29,26,26,19,85,Composed Presence,,,,225,400
+NAKAA25R12,NAK,AA25,R12,Nakyoung,tripleS,Assemble25,Regular,,29,26,26,19,90,Composed Presence,,,,225,600
+NAKAA25R13,NAK,AA25,R13,Nakyoung,tripleS,Assemble25,Regular,,29,26,26,19,95,Composed Presence,,,,225,1000
+NAKAA25R21,NAK,AA25,R21,Nakyoung,tripleS,Assemble25,Regular,,29,26,26,19,85,,Max Effort,,,225,400
+NAKAA25R22,NAK,AA25,R22,Nakyoung,tripleS,Assemble25,Regular,,29,26,26,19,90,,Max Effort,,,225,600
+NAKAA25R23,NAK,AA25,R23,Nakyoung,tripleS,Assemble25,Regular,,29,26,26,19,95,,Max Effort,,,225,1000
+NAKAA25R31,NAK,AA25,R31,Nakyoung,tripleS,Assemble25,Regular,,29,26,26,19,85,,,Total Reinforcement,,225,400
+NAKAA25R32,NAK,AA25,R32,Nakyoung,tripleS,Assemble25,Regular,,29,26,26,19,90,,,Total Reinforcement,,225,600
+NAKAA25R33,NAK,AA25,R33,Nakyoung,tripleS,Assemble25,Regular,,29,26,26,19,95,,,Total Reinforcement,,225,1000
+NAKAA25SPC,NAK,AA25,SPC,Nakyoung,tripleS,Assemble25,Special,,29,26,26,19,90,Composed Presence,Max Effort,,,225,2500
+NAKAA25LMT,NAK,AA25,LMT,Nakyoung,tripleS,Assemble25,Limited,summer,29,26,26,19,95,,,Total Reinforcement,Full Bloom,225,2000
+NAKAA25FCR,NAK,AA25,FCR,Nakyoung,tripleS,Assemble25,FCR,,29,26,26,19,95,,Max Effort,,Full Bloom,225,2000
+NAKAA25POB,NAK,AA25,POB,Nakyoung,tripleS,Assemble25,POB,,29,26,26,19,100,,Max Effort,Total Reinforcement,,225,2500
+NGECBFVR11,NGE,CBFV,R11,Goeun,Purple Kiss,Cabin Fever,Regular,,35,15,25,25,85,Vocal Boost,,,,267,400
+NGECBFVR12,NGE,CBFV,R12,Goeun,Purple Kiss,Cabin Fever,Regular,,35,15,25,25,90,Vocal Boost,,,,267,600
+NGECBFVR13,NGE,CBFV,R13,Goeun,Purple Kiss,Cabin Fever,Regular,,35,15,25,25,95,Vocal Boost,,,,267,1000
+NGECBFVR21,NGE,CBFV,R21,Goeun,Purple Kiss,Cabin Fever,Regular,,35,15,25,25,85,,Main Vocal,,,267,400
+NGECBFVR22,NGE,CBFV,R22,Goeun,Purple Kiss,Cabin Fever,Regular,,35,15,25,25,90,,Main Vocal,,,267,600
+NGECBFVR23,NGE,CBFV,R23,Goeun,Purple Kiss,Cabin Fever,Regular,,35,15,25,25,95,,Main Vocal,,,267,1000
+NGECBFVR31,NGE,CBFV,R31,Goeun,Purple Kiss,Cabin Fever,Regular,,35,15,25,25,85,,,Echo Effect,,267,400
+NGECBFVR32,NGE,CBFV,R32,Goeun,Purple Kiss,Cabin Fever,Regular,,35,15,25,25,90,,,Echo Effect,,267,600
+NGECBFVR33,NGE,CBFV,R33,Goeun,Purple Kiss,Cabin Fever,Regular,,35,15,25,25,95,,,Echo Effect,,267,1000
+NGECBFVSPC,NGE,CBFV,SPC,Goeun,Purple Kiss,Cabin Fever,Special,,35,15,25,25,90,Vocal Boost,Main Vocal,,,267,2500
+NGECBFVLMT,NGE,CBFV,LMT,Goeun,Purple Kiss,Cabin Fever,Limited,,35,15,25,25,95,,,Echo Effect,Full Bloom,267,2000
+NGECBFVFCR,NGE,CBFV,FCR,Goeun,Purple Kiss,Cabin Fever,FCR,,35,15,25,25,95,,Main Vocal,,Full Bloom,267,2000
+NGECBFVPOB,NGE,CBFV,POB,Goeun,Purple Kiss,Cabin Fever,POB,,35,15,25,25,100,,Main Vocal,Echo Effect,,267,2500
+NIEAA25R11,NIE,AA25,R11,Nien,tripleS,Assemble25,Regular,,32,19,28,21,85,Composed Presence,,,,225,400
+NIEAA25R12,NIE,AA25,R12,Nien,tripleS,Assemble25,Regular,,32,19,28,21,90,Composed Presence,,,,225,600
+NIEAA25R13,NIE,AA25,R13,Nien,tripleS,Assemble25,Regular,,32,19,28,21,95,Composed Presence,,,,225,1000
+NIEAA25R21,NIE,AA25,R21,Nien,tripleS,Assemble25,Regular,,32,19,28,21,85,,Max Effort,,,225,400
+NIEAA25R22,NIE,AA25,R22,Nien,tripleS,Assemble25,Regular,,32,19,28,21,90,,Max Effort,,,225,600
+NIEAA25R23,NIE,AA25,R23,Nien,tripleS,Assemble25,Regular,,32,19,28,21,95,,Max Effort,,,225,1000
+NIEAA25R31,NIE,AA25,R31,Nien,tripleS,Assemble25,Regular,,32,19,28,21,85,,,Total Reinforcement,,225,400
+NIEAA25R32,NIE,AA25,R32,Nien,tripleS,Assemble25,Regular,,32,19,28,21,90,,,Total Reinforcement,,225,600
+NIEAA25R33,NIE,AA25,R33,Nien,tripleS,Assemble25,Regular,,32,19,28,21,95,,,Total Reinforcement,,225,1000
+NIEAA25SPC,NIE,AA25,SPC,Nien,tripleS,Assemble25,Special,,32,19,28,21,90,Composed Presence,Max Effort,,,225,2500
+NIEAA25LMT,NIE,AA25,LMT,Nien,tripleS,Assemble25,Limited,summer,32,19,28,21,95,,,Total Reinforcement,Full Bloom,225,2000
+NIEAA25FCR,NIE,AA25,FCR,Nien,tripleS,Assemble25,FCR,,32,19,28,21,95,,Max Effort,,Full Bloom,225,2000
+NIEAA25POB,NIE,AA25,POB,Nien,tripleS,Assemble25,POB,,32,19,28,21,100,,Max Effort,Total Reinforcement,,225,2500
+NNGARMGR11,NNG,ARMG,R11,Ningning,Aespa,Armageddon,Regular,,35,20,25,20,85,Vocal Boost,,,,350,400
+NNGARMGR12,NNG,ARMG,R12,Ningning,Aespa,Armageddon,Regular,,35,20,25,20,90,Vocal Boost,,,,350,600
+NNGARMGR13,NNG,ARMG,R13,Ningning,Aespa,Armageddon,Regular,,35,20,25,20,95,Vocal Boost,,,,350,1000
+NNGARMGR21,NNG,ARMG,R21,Ningning,Aespa,Armageddon,Regular,,35,20,25,20,85,,Main Vocal,,,350,400
+NNGARMGR22,NNG,ARMG,R22,Ningning,Aespa,Armageddon,Regular,,35,20,25,20,90,,Main Vocal,,,350,600
+NNGARMGR23,NNG,ARMG,R23,Ningning,Aespa,Armageddon,Regular,,35,20,25,20,95,,Main Vocal,,,350,1000
+NNGARMGR31,NNG,ARMG,R31,Ningning,Aespa,Armageddon,Regular,,35,20,25,20,85,,,Echo Effect,,350,400
+NNGARMGR32,NNG,ARMG,R32,Ningning,Aespa,Armageddon,Regular,,35,20,25,20,90,,,Echo Effect,,350,600
+NNGARMGR33,NNG,ARMG,R33,Ningning,Aespa,Armageddon,Regular,,35,20,25,20,95,,,Echo Effect,,350,1000
+NNGARMGSPC,NNG,ARMG,SPC,Ningning,Aespa,Armageddon,Special,,35,20,25,20,90,Vocal Boost,Main Vocal,,,350,2500
+NNGARMGLMT,NNG,ARMG,LMT,Ningning,Aespa,Armageddon,Limited,,35,20,25,20,95,,,Echo Effect,Full Bloom,350,2000
+NNGARMGFCR,NNG,ARMG,FCR,Ningning,Aespa,Armageddon,FCR,,35,20,25,20,95,,Main Vocal,,Full Bloom,350,2000
+NNGARMGPOB,NNG,ARMG,POB,Ningning,Aespa,Armageddon,POB,,35,20,25,20,100,,Main Vocal,Echo Effect,,350,2500
+OHWFBRKR11,OHW,FBRK,R11,Haewon,NMIXX,Fe3O4 Break,Regular,,66,17,61,51,75,,Signature Move,,,267,400
+OHWFBRKR12,OHW,FBRK,R12,Haewon,NMIXX,Fe3O4 Break,Regular,,76,22,66,61,85,,Signature Move,,,267,600
+OHWFBRKR13,OHW,FBRK,R13,Haewon,NMIXX,Fe3O4 Break,Regular,,86,27,71,71,95,,Signature Move,,,267,1000
+OHWFBRKR21,OHW,FBRK,R21,Haewon,NMIXX,Fe3O4 Break,Regular,,66,17,56,41,90,,,Fanchant Boost,,267,400
+OHWFBRKR22,OHW,FBRK,R22,Haewon,NMIXX,Fe3O4 Break,Regular,,76,22,61,51,100,,,Fanchant Boost,,267,600
+OHWFBRKR23,OHW,FBRK,R23,Haewon,NMIXX,Fe3O4 Break,Regular,,86,27,66,61,110,,,Fanchant Boost,,267,1000
+OHWFBRKR31,OHW,FBRK,R31,Haewon,NMIXX,Fe3O4 Break,Regular,,71,22,51,41,85,,,Echo Boost,,267,400
+OHWFBRKR32,OHW,FBRK,R32,Haewon,NMIXX,Fe3O4 Break,Regular,,81,27,61,46,95,,,Echo Boost,,267,600
+OHWFBRKR33,OHW,FBRK,R33,Haewon,NMIXX,Fe3O4 Break,Regular,,91,32,66,56,105,,,Echo Boost,,267,1000
+OHWFBRKSPC,OHW,FBRK,SPC,Haewon,NMIXX,Fe3O4 Break,Special,,91,32,71,61,105,,Signature Move,Echo Boost,,267,2500
+OHWFBRKLMT,OHW,FBRK,LMT,Haewon,NMIXX,Fe3O4 Break,Limited,,96,32,61,61,90,Growing Cheers,,,Final Statement,267,2000
+OHWFBRKFCR,OHW,FBRK,FCR,Haewon,NMIXX,Fe3O4 Break,FCR,,86,22,56,56,90,Stable Core,Center Vibes,,Solo Glory,267,2000
+OHWFBRKPOB,OHW,FBRK,POB,Haewon,NMIXX,Fe3O4 Break,POB,,91,22,66,56,95,Early Push,Steady Lead,Morale Charge,,267,2500
+PSBUNNAR11,PSB,UNNA,R11,Soobin,WJSN,Unnatural,Regular,,36,9,26,29,85,Vocal Boost,,,,200,400
+PSBUNNAR12,PSB,UNNA,R12,Soobin,WJSN,Unnatural,Regular,,36,9,26,29,90,Vocal Boost,,,,200,600
+PSBUNNAR13,PSB,UNNA,R13,Soobin,WJSN,Unnatural,Regular,,36,9,26,29,95,Vocal Boost,,,,200,1000
+PSBUNNAR21,PSB,UNNA,R21,Soobin,WJSN,Unnatural,Regular,,36,9,26,29,85,,Main Vocal,,,200,400
+PSBUNNAR22,PSB,UNNA,R22,Soobin,WJSN,Unnatural,Regular,,36,9,26,29,90,,Main Vocal,,,200,600
+PSBUNNAR23,PSB,UNNA,R23,Soobin,WJSN,Unnatural,Regular,,36,9,26,29,95,,Main Vocal,,,200,1000
+PSBUNNAR31,PSB,UNNA,R31,Soobin,WJSN,Unnatural,Regular,,36,9,26,29,85,,,Echo Effect,,200,400
+PSBUNNAR32,PSB,UNNA,R32,Soobin,WJSN,Unnatural,Regular,,36,9,26,29,90,,,Echo Effect,,200,600
+PSBUNNAR33,PSB,UNNA,R33,Soobin,WJSN,Unnatural,Regular,,36,9,26,29,95,,,Echo Effect,,200,1000
+PSBUNNASPC,PSB,UNNA,SPC,Soobin,WJSN,Unnatural,Special,,36,9,26,29,90,Vocal Boost,Main Vocal,,,200,2500
+PSBUNNALMT,PSB,UNNA,LMT,Soobin,WJSN,Unnatural,Limited,,36,9,26,29,95,,,Echo Effect,Full Bloom,200,2000
+PSBUNNAFCR,PSB,UNNA,FCR,Soobin,WJSN,Unnatural,FCR,,36,9,26,29,95,,Main Vocal,,Full Bloom,200,2000
+PSBUNNAPOB,PSB,UNNA,POB,Soobin,WJSN,Unnatural,POB,,36,9,26,29,100,,Main Vocal,Echo Effect,,200,2500
+PSHAA25R11,PSH,AA25,R11,Sohyun,tripleS,Assemble25,Regular,,27,21,28,24,85,Composed Presence,,,,225,400
+PSHAA25R12,PSH,AA25,R12,Sohyun,tripleS,Assemble25,Regular,,27,21,28,24,90,Composed Presence,,,,225,600
+PSHAA25R13,PSH,AA25,R13,Sohyun,tripleS,Assemble25,Regular,,27,21,28,24,95,Composed Presence,,,,225,1000
+PSHAA25R21,PSH,AA25,R21,Sohyun,tripleS,Assemble25,Regular,,27,21,28,24,85,,Max Effort,,,225,400
+PSHAA25R22,PSH,AA25,R22,Sohyun,tripleS,Assemble25,Regular,,27,21,28,24,90,,Max Effort,,,225,600
+PSHAA25R23,PSH,AA25,R23,Sohyun,tripleS,Assemble25,Regular,,27,21,28,24,95,,Max Effort,,,225,1000
+PSHAA25R31,PSH,AA25,R31,Sohyun,tripleS,Assemble25,Regular,,27,21,28,24,85,,,Total Reinforcement,,225,400
+PSHAA25R32,PSH,AA25,R32,Sohyun,tripleS,Assemble25,Regular,,27,21,28,24,90,,,Total Reinforcement,,225,600
+PSHAA25R33,PSH,AA25,R33,Sohyun,tripleS,Assemble25,Regular,,27,21,28,24,95,,,Total Reinforcement,,225,1000
+PSHAA25SPC,PSH,AA25,SPC,Sohyun,tripleS,Assemble25,Special,,27,21,28,24,90,Composed Presence,Max Effort,,,225,2500
+PSHAA25LMT,PSH,AA25,LMT,Sohyun,tripleS,Assemble25,Limited,summer,27,21,28,24,95,,,Total Reinforcement,Full Bloom,225,2000
+PSHAA25FCR,PSH,AA25,FCR,Sohyun,tripleS,Assemble25,FCR,,27,21,28,24,95,,Max Effort,,Full Bloom,225,2000
+PSHAA25POB,PSH,AA25,POB,Sohyun,tripleS,Assemble25,POB,,27,21,28,24,100,,Max Effort,Total Reinforcement,,225,2500
+PSOAA25R11,PSO,AA25,R11,Shion,tripleS,Assemble25,Regular,,34,12,29,25,85,Vocal Boost,,,,225,400
+PSOAA25R12,PSO,AA25,R12,Shion,tripleS,Assemble25,Regular,,34,12,29,25,90,Vocal Boost,,,,225,600
+PSOAA25R13,PSO,AA25,R13,Shion,tripleS,Assemble25,Regular,,34,12,29,25,95,Vocal Boost,,,,225,1000
+PSOAA25R21,PSO,AA25,R21,Shion,tripleS,Assemble25,Regular,,34,12,29,25,85,,Main Vocal,,,225,400
+PSOAA25R22,PSO,AA25,R22,Shion,tripleS,Assemble25,Regular,,34,12,29,25,90,,Main Vocal,,,225,600
+PSOAA25R23,PSO,AA25,R23,Shion,tripleS,Assemble25,Regular,,34,12,29,25,95,,Main Vocal,,,225,1000
+PSOAA25R31,PSO,AA25,R31,Shion,tripleS,Assemble25,Regular,,34,12,29,25,85,,,Echo Effect,,225,400
+PSOAA25R32,PSO,AA25,R32,Shion,tripleS,Assemble25,Regular,,34,12,29,25,90,,,Echo Effect,,225,600
+PSOAA25R33,PSO,AA25,R33,Shion,tripleS,Assemble25,Regular,,34,12,29,25,95,,,Echo Effect,,225,1000
+PSOAA25SPC,PSO,AA25,SPC,Shion,tripleS,Assemble25,Special,,34,12,29,25,90,Vocal Boost,Main Vocal,,,225,2500
+PSOAA25LMT,PSO,AA25,LMT,Shion,tripleS,Assemble25,Limited,summer,34,12,29,25,95,,,Echo Effect,Full Bloom,225,2000
+PSOAA25FCR,PSO,AA25,FCR,Shion,tripleS,Assemble25,FCR,,34,12,29,25,95,,Main Vocal,,Full Bloom,225,2000
+PSOAA25POB,PSO,AA25,POB,Shion,tripleS,Assemble25,POB,,34,12,29,25,100,,Main Vocal,Echo Effect,,225,2500
+REIEMPTR11,REI,EMPT,R11,Rei,IVE,Ive Empathy,Regular,,20,30,30,20,85,Composed Presence,,,,267,400
+REIEMPTR12,REI,EMPT,R12,Rei,IVE,Ive Empathy,Regular,,20,30,30,20,90,Composed Presence,,,,267,600
+REIEMPTR13,REI,EMPT,R13,Rei,IVE,Ive Empathy,Regular,,20,30,30,20,95,Composed Presence,,,,267,1000
+REIEMPTR21,REI,EMPT,R21,Rei,IVE,Ive Empathy,Regular,,20,30,30,20,85,,Max Effort,,,267,400
+REIEMPTR22,REI,EMPT,R22,Rei,IVE,Ive Empathy,Regular,,20,30,30,20,90,,Max Effort,,,267,600
+REIEMPTR23,REI,EMPT,R23,Rei,IVE,Ive Empathy,Regular,,20,30,30,20,95,,Max Effort,,,267,1000
+REIEMPTR31,REI,EMPT,R31,Rei,IVE,Ive Empathy,Regular,,20,30,30,20,85,,,Total Reinforcement,,267,400
+REIEMPTR32,REI,EMPT,R32,Rei,IVE,Ive Empathy,Regular,,20,30,30,20,90,,,Total Reinforcement,,267,600
+REIEMPTR33,REI,EMPT,R33,Rei,IVE,Ive Empathy,Regular,,20,30,30,20,95,,,Total Reinforcement,,267,1000
+REIEMPTSPC,REI,EMPT,SPC,Rei,IVE,Ive Empathy,Special,,20,30,30,20,90,Composed Presence,Max Effort,,,267,2500
+REIEMPTLMT,REI,EMPT,LMT,Rei,IVE,Ive Empathy,Limited,,20,30,30,20,95,,,Total Reinforcement,Full Bloom,267,2000
+REIEMPTFCR,REI,EMPT,FCR,Rei,IVE,Ive Empathy,FCR,,20,30,30,20,95,,Max Effort,,Full Bloom,267,2000
+REIEMPTPOB,REI,EMPT,POB,Rei,IVE,Ive Empathy,POB,,20,30,30,20,100,,Max Effort,Total Reinforcement,,267,2500
+RHEERLUR11,RHE,ERLU,R11,Rahee,ifeye,Erlu Blue,Regular,,30,14,30,26,85,Composed Presence,,,,267,400
+RHEERLUR12,RHE,ERLU,R12,Rahee,ifeye,Erlu Blue,Regular,,30,14,30,26,90,Composed Presence,,,,267,600
+RHEERLUR13,RHE,ERLU,R13,Rahee,ifeye,Erlu Blue,Regular,,30,14,30,26,95,Composed Presence,,,,267,1000
+RHEERLUR21,RHE,ERLU,R21,Rahee,ifeye,Erlu Blue,Regular,,30,14,30,26,85,,Max Effort,,,267,400
+RHEERLUR22,RHE,ERLU,R22,Rahee,ifeye,Erlu Blue,Regular,,30,14,30,26,90,,Max Effort,,,267,600
+RHEERLUR23,RHE,ERLU,R23,Rahee,ifeye,Erlu Blue,Regular,,30,14,30,26,95,,Max Effort,,,267,1000
+RHEERLUR31,RHE,ERLU,R31,Rahee,ifeye,Erlu Blue,Regular,,30,14,30,26,85,,,Total Reinforcement,,267,400
+RHEERLUR32,RHE,ERLU,R32,Rahee,ifeye,Erlu Blue,Regular,,30,14,30,26,90,,,Total Reinforcement,,267,600
+RHEERLUR33,RHE,ERLU,R33,Rahee,ifeye,Erlu Blue,Regular,,30,14,30,26,95,,,Total Reinforcement,,267,1000
+RHEERLUSPC,RHE,ERLU,SPC,Rahee,ifeye,Erlu Blue,Special,,30,14,30,26,90,Composed Presence,Max Effort,,,267,2500
+RHEERLULMT,RHE,ERLU,LMT,Rahee,ifeye,Erlu Blue,Limited,,30,14,30,26,95,,,Total Reinforcement,Full Bloom,267,2000
+RHEERLUFCR,RHE,ERLU,FCR,Rahee,ifeye,Erlu Blue,FCR,,30,14,30,26,95,,Max Effort,,Full Bloom,267,2000
+RHEERLUPOB,RHE,ERLU,POB,Rahee,ifeye,Erlu Blue,POB,,30,14,30,26,100,,Max Effort,Total Reinforcement,,267,2500
+SDHAA25R11,SDH,AA25,R11,Dahyun,tripleS,Assemble25,Regular,,39,10,27,24,85,Vocal Boost,,,,225,400
+SDHAA25R12,SDH,AA25,R12,Dahyun,tripleS,Assemble25,Regular,,39,10,27,24,90,Vocal Boost,,,,225,600
+SDHAA25R13,SDH,AA25,R13,Dahyun,tripleS,Assemble25,Regular,,39,10,27,24,95,Vocal Boost,,,,225,1000
+SDHAA25R21,SDH,AA25,R21,Dahyun,tripleS,Assemble25,Regular,,39,10,27,24,85,,Main Vocal,,,225,400
+SDHAA25R22,SDH,AA25,R22,Dahyun,tripleS,Assemble25,Regular,,39,10,27,24,90,,Main Vocal,,,225,600
+SDHAA25R23,SDH,AA25,R23,Dahyun,tripleS,Assemble25,Regular,,39,10,27,24,95,,Main Vocal,,,225,1000
+SDHAA25R31,SDH,AA25,R31,Dahyun,tripleS,Assemble25,Regular,,39,10,27,24,85,,,Echo Effect,,225,400
+SDHAA25R32,SDH,AA25,R32,Dahyun,tripleS,Assemble25,Regular,,39,10,27,24,90,,,Echo Effect,,225,600
+SDHAA25R33,SDH,AA25,R33,Dahyun,tripleS,Assemble25,Regular,,39,10,27,24,95,,,Echo Effect,,225,1000
+SDHAA25SPC,SDH,AA25,SPC,Dahyun,tripleS,Assemble25,Special,,39,10,27,24,90,Vocal Boost,Main Vocal,,,225,2500
+SDHAA25LMT,SDH,AA25,LMT,Dahyun,tripleS,Assemble25,Limited,summer,39,10,27,24,95,,,Echo Effect,Full Bloom,225,2000
+SDHAA25FCR,SDH,AA25,FCR,Dahyun,tripleS,Assemble25,FCR,,39,10,27,24,95,,Main Vocal,,Full Bloom,225,2000
+SDHAA25POB,SDH,AA25,POB,Dahyun,tripleS,Assemble25,POB,,39,10,27,24,100,,Main Vocal,Echo Effect,,225,2500
+SLAUNNAR11,SLA,UNNA,R11,Seola,WJSN,Unnatural,Regular,,36,9,21,34,85,Vocal Boost,,,,200,400
+SLAUNNAR12,SLA,UNNA,R12,Seola,WJSN,Unnatural,Regular,,36,9,21,34,90,Vocal Boost,,,,200,600
+SLAUNNAR13,SLA,UNNA,R13,Seola,WJSN,Unnatural,Regular,,36,9,21,34,95,Vocal Boost,,,,200,1000
+SLAUNNAR21,SLA,UNNA,R21,Seola,WJSN,Unnatural,Regular,,36,9,21,34,85,,Main Vocal,,,200,400
+SLAUNNAR22,SLA,UNNA,R22,Seola,WJSN,Unnatural,Regular,,36,9,21,34,90,,Main Vocal,,,200,600
+SLAUNNAR23,SLA,UNNA,R23,Seola,WJSN,Unnatural,Regular,,36,9,21,34,95,,Main Vocal,,,200,1000
+SLAUNNAR31,SLA,UNNA,R31,Seola,WJSN,Unnatural,Regular,,36,9,21,34,85,,,Echo Effect,,200,400
+SLAUNNAR32,SLA,UNNA,R32,Seola,WJSN,Unnatural,Regular,,36,9,21,34,90,,,Echo Effect,,200,600
+SLAUNNAR33,SLA,UNNA,R33,Seola,WJSN,Unnatural,Regular,,36,9,21,34,95,,,Echo Effect,,200,1000
+SLAUNNASPC,SLA,UNNA,SPC,Seola,WJSN,Unnatural,Special,,36,9,21,34,90,Vocal Boost,Main Vocal,,,200,2500
+SLAUNNALMT,SLA,UNNA,LMT,Seola,WJSN,Unnatural,Limited,,36,9,21,34,95,,,Echo Effect,Full Bloom,200,2000
+SLAUNNAFCR,SLA,UNNA,FCR,Seola,WJSN,Unnatural,FCR,,36,9,21,34,95,,Main Vocal,,Full Bloom,200,2000
+SLAUNNAPOB,SLA,UNNA,POB,Seola,WJSN,Unnatural,POB,,36,9,21,34,100,,Main Vocal,Echo Effect,,200,2500
+SLLAA25R11,SLL,AA25,R11,Sullin,tripleS,Assemble25,Regular,,25,15,24,36,85,Stylish Execution,,,,225,400
+SLLAA25R12,SLL,AA25,R12,Sullin,tripleS,Assemble25,Regular,,25,15,24,36,90,Stylish Execution,,,,225,600
+SLLAA25R13,SLL,AA25,R13,Sullin,tripleS,Assemble25,Regular,,25,15,24,36,95,Stylish Execution,,,,225,1000
+SLLAA25R21,SLL,AA25,R21,Sullin,tripleS,Assemble25,Regular,,25,15,24,36,85,,Main Visual,,,225,400
+SLLAA25R22,SLL,AA25,R22,Sullin,tripleS,Assemble25,Regular,,25,15,24,36,90,,Main Visual,,,225,600
+SLLAA25R23,SLL,AA25,R23,Sullin,tripleS,Assemble25,Regular,,25,15,24,36,95,,Main Visual,,,225,1000
+SLLAA25R31,SLL,AA25,R31,Sullin,tripleS,Assemble25,Regular,,25,15,24,36,85,,,Spotlight Focus,,225,400
+SLLAA25R32,SLL,AA25,R32,Sullin,tripleS,Assemble25,Regular,,25,15,24,36,90,,,Spotlight Focus,,225,600
+SLLAA25R33,SLL,AA25,R33,Sullin,tripleS,Assemble25,Regular,,25,15,24,36,95,,,Spotlight Focus,,225,1000
+SLLAA25SPC,SLL,AA25,SPC,Sullin,tripleS,Assemble25,Special,,25,15,24,36,90,Stylish Execution,Main Visual,,,225,2500
+SLLAA25LMT,SLL,AA25,LMT,Sullin,tripleS,Assemble25,Limited,summer,25,15,24,36,95,,,Spotlight Focus,Full Bloom,225,2000
+SLLAA25FCR,SLL,AA25,FCR,Sullin,tripleS,Assemble25,FCR,,25,15,24,36,95,,Main Visual,,Full Bloom,225,2000
+SLLAA25POB,SLL,AA25,POB,Sullin,tripleS,Assemble25,POB,,25,15,24,36,100,,Main Visual,Spotlight Focus,,225,2500
+SLYFBRKR11,SLY,FBRK,R11,Sullyoon,NMIXX,Fe3O4 Break,Regular,,56,27,45,52,90,,Sharp Switch,,,267,400
+SLYFBRKR12,SLY,FBRK,R12,Sullyoon,NMIXX,Fe3O4 Break,Regular,,66,32,55,57,100,,Sharp Switch,,,267,600
+SLYFBRKR13,SLY,FBRK,R13,Sullyoon,NMIXX,Fe3O4 Break,Regular,,71,37,60,72,110,,Sharp Switch,,,267,1000
+SLYFBRKR21,SLY,FBRK,R21,Sullyoon,NMIXX,Fe3O4 Break,Regular,,56,22,50,57,85,,Art Flow,,,267,400
+SLYFBRKR22,SLY,FBRK,R22,Sullyoon,NMIXX,Fe3O4 Break,Regular,,66,27,55,67,95,,Art Flow,,,267,600
+SLYFBRKR23,SLY,FBRK,R23,Sullyoon,NMIXX,Fe3O4 Break,Regular,,76,32,60,77,105,,Art Flow,,,267,1000
+SLYFBRKR31,SLY,FBRK,R31,Sullyoon,NMIXX,Fe3O4 Break,Regular,,61,27,50,52,80,,Aggressive Stance,,,267,400
+SLYFBRKR32,SLY,FBRK,R32,Sullyoon,NMIXX,Fe3O4 Break,Regular,,71,32,55,62,90,,Aggressive Stance,,,267,600
+SLYFBRKR33,SLY,FBRK,R33,Sullyoon,NMIXX,Fe3O4 Break,Regular,,81,37,65,67,100,,Aggressive Stance,,,267,1000
+SLYFBRKSPC,SLY,FBRK,SPC,Sullyoon,NMIXX,Fe3O4 Break,Special,,86,32,65,72,105,Well Paced,Art Flow,,,267,2500
+SLYFBRKLMT,SLY,FBRK,LMT,Sullyoon,NMIXX,Fe3O4 Break,Limited,,81,37,55,77,90,,Backup Impact,,Full Bloom,267,2000
+SLYFBRKFCR,SLY,FBRK,FCR,Sullyoon,NMIXX,Fe3O4 Break,FCR,,66,32,50,72,90,Harmony Instinct,Stage Flare,,Adaptive Blast,267,2000
+SLYFBRKPOB,SLY,FBRK,POB,Sullyoon,NMIXX,Fe3O4 Break,POB,,76,27,55,72,100,Stage Comfort,Energy Bloom,Long Set Strategy,,267,2500
+SOAAA25R11,SOA,AA25,R11,Seoah,tripleS,Assemble25,Regular,,29,16,24,31,85,Composed Presence,,,,225,400
+SOAAA25R12,SOA,AA25,R12,Seoah,tripleS,Assemble25,Regular,,29,16,24,31,90,Composed Presence,,,,225,600
+SOAAA25R13,SOA,AA25,R13,Seoah,tripleS,Assemble25,Regular,,29,16,24,31,95,Composed Presence,,,,225,1000
+SOAAA25R21,SOA,AA25,R21,Seoah,tripleS,Assemble25,Regular,,29,16,24,31,85,,Max Effort,,,225,400
+SOAAA25R22,SOA,AA25,R22,Seoah,tripleS,Assemble25,Regular,,29,16,24,31,90,,Max Effort,,,225,600
+SOAAA25R23,SOA,AA25,R23,Seoah,tripleS,Assemble25,Regular,,29,16,24,31,95,,Max Effort,,,225,1000
+SOAAA25R31,SOA,AA25,R31,Seoah,tripleS,Assemble25,Regular,,29,16,24,31,85,,,Total Reinforcement,,225,400
+SOAAA25R32,SOA,AA25,R32,Seoah,tripleS,Assemble25,Regular,,29,16,24,31,90,,,Total Reinforcement,,225,600
+SOAAA25R33,SOA,AA25,R33,Seoah,tripleS,Assemble25,Regular,,29,16,24,31,95,,,Total Reinforcement,,225,1000
+SOAAA25SPC,SOA,AA25,SPC,Seoah,tripleS,Assemble25,Special,,29,16,24,31,90,Composed Presence,Max Effort,,,225,2500
+SOAAA25LMT,SOA,AA25,LMT,Seoah,tripleS,Assemble25,Limited,summer,29,16,24,31,95,,,Total Reinforcement,Full Bloom,225,2000
+SOAAA25FCR,SOA,AA25,FCR,Seoah,tripleS,Assemble25,FCR,,29,16,24,31,95,,Max Effort,,Full Bloom,225,2000
+SOAAA25POB,SOA,AA25,POB,Seoah,tripleS,Assemble25,POB,,29,16,24,31,100,,Max Effort,Total Reinforcement,,225,2500
+SSHERLUR11,SSH,ERLU,R11,Sasha,ifeye,Erlu Blue,Regular,,40,10,25,25,85,Vocal Boost,,,,267,400
+SSHERLUR12,SSH,ERLU,R12,Sasha,ifeye,Erlu Blue,Regular,,40,10,25,25,90,Vocal Boost,,,,267,600
+SSHERLUR13,SSH,ERLU,R13,Sasha,ifeye,Erlu Blue,Regular,,40,10,25,25,95,Vocal Boost,,,,267,1000
+SSHERLUR21,SSH,ERLU,R21,Sasha,ifeye,Erlu Blue,Regular,,40,10,25,25,85,,Main Vocal,,,267,400
+SSHERLUR22,SSH,ERLU,R22,Sasha,ifeye,Erlu Blue,Regular,,40,10,25,25,90,,Main Vocal,,,267,600
+SSHERLUR23,SSH,ERLU,R23,Sasha,ifeye,Erlu Blue,Regular,,40,10,25,25,95,,Main Vocal,,,267,1000
+SSHERLUR31,SSH,ERLU,R31,Sasha,ifeye,Erlu Blue,Regular,,40,10,25,25,85,,,Echo Effect,,267,400
+SSHERLUR32,SSH,ERLU,R32,Sasha,ifeye,Erlu Blue,Regular,,40,10,25,25,90,,,Echo Effect,,267,600
+SSHERLUR33,SSH,ERLU,R33,Sasha,ifeye,Erlu Blue,Regular,,40,10,25,25,95,,,Echo Effect,,267,1000
+SSHERLUSPC,SSH,ERLU,SPC,Sasha,ifeye,Erlu Blue,Special,,40,10,25,25,90,Vocal Boost,Main Vocal,,,267,2500
+SSHERLULMT,SSH,ERLU,LMT,Sasha,ifeye,Erlu Blue,Limited,,40,10,25,25,95,,,Echo Effect,Full Bloom,267,2000
+SSHERLUFCR,SSH,ERLU,FCR,Sasha,ifeye,Erlu Blue,FCR,,40,10,25,25,95,,Main Vocal,,Full Bloom,267,2000
+SSHERLUPOB,SSH,ERLU,POB,Sasha,ifeye,Erlu Blue,POB,,40,10,25,25,100,,Main Vocal,Echo Effect,,267,2500
+SUIUNGMR11,SUI,UNGM,R11,Sui,KiiiKiii,Uncut Gem,Regular,,69,28,44,49,80,Peak Turn,,,,300,400
+SUIUNGMR12,SUI,UNGM,R12,Sui,KiiiKiii,Uncut Gem,Regular,,79,33,54,59,85,Peak Turn,,,,300,600
+SUIUNGMR13,SUI,UNGM,R13,Sui,KiiiKiii,Uncut Gem,Regular,,84,38,64,69,95,Peak Turn,,,,300,1000
+SUIUNGMR21,SUI,UNGM,R21,Sui,KiiiKiii,Uncut Gem,Regular,,64,23,44,59,80,,,Power Sync,,300,400
+SUIUNGMR22,SUI,UNGM,R22,Sui,KiiiKiii,Uncut Gem,Regular,,74,28,49,69,90,,,Power Sync,,300,600
+SUIUNGMR23,SUI,UNGM,R23,Sui,KiiiKiii,Uncut Gem,Regular,,84,33,59,74,100,,,Power Sync,,300,1000
+SUIUNGMR31,SUI,UNGM,R31,Sui,KiiiKiii,Uncut Gem,Regular,,59,33,54,59,85,Stage Fright,,Echo Effect,,300,400
+SUIUNGMR32,SUI,UNGM,R32,Sui,KiiiKiii,Uncut Gem,Regular,,64,38,64,69,95,Stage Fright,,Echo Effect,,300,600
+SUIUNGMR33,SUI,UNGM,R33,Sui,KiiiKiii,Uncut Gem,Regular,,74,43,74,74,105,Stage Fright,,Echo Effect,,300,1000
+SUIUNGMSPC,SUI,UNGM,SPC,Sui,KiiiKiii,Uncut Gem,Special,,84,38,64,74,100,Peak Turn,,Power Sync,,300,2500
+SUIUNGMLMT,SUI,UNGM,LMT,Sui,KiiiKiii,Uncut Gem,Limited,,84,38,59,69,90,Backup Star,,,Full Bloom,300,2000
+SUIUNGMFCR,SUI,UNGM,FCR,Sui,KiiiKiii,Uncut Gem,FCR,,74,33,54,54,95,,Main Vocal,Echo Effect,Mic Drop,300,2000
+SUIUNGMPOB,SUI,UNGM,POB,Sui,KiiiKiii,Uncut Gem,POB,,89,43,64,69,95,Balanced Performance,,Fanchant Boost,,300,2500
+SWNCBFVR11,SWN,CBFV,R11,Swan,Purple Kiss,Cabin Fever,Regular,,40,20,25,15,85,Vocal Boost,,,,267,400
+SWNCBFVR12,SWN,CBFV,R12,Swan,Purple Kiss,Cabin Fever,Regular,,40,20,25,15,90,Vocal Boost,,,,267,600
+SWNCBFVR13,SWN,CBFV,R13,Swan,Purple Kiss,Cabin Fever,Regular,,40,20,25,15,95,Vocal Boost,,,,267,1000
+SWNCBFVR21,SWN,CBFV,R21,Swan,Purple Kiss,Cabin Fever,Regular,,40,20,25,15,85,,Main Vocal,,,267,400
+SWNCBFVR22,SWN,CBFV,R22,Swan,Purple Kiss,Cabin Fever,Regular,,40,20,25,15,90,,Main Vocal,,,267,600
+SWNCBFVR23,SWN,CBFV,R23,Swan,Purple Kiss,Cabin Fever,Regular,,40,20,25,15,95,,Main Vocal,,,267,1000
+SWNCBFVR31,SWN,CBFV,R31,Swan,Purple Kiss,Cabin Fever,Regular,,40,20,25,15,85,,,Echo Effect,,267,400
+SWNCBFVR32,SWN,CBFV,R32,Swan,Purple Kiss,Cabin Fever,Regular,,40,20,25,15,90,,,Echo Effect,,267,600
+SWNCBFVR33,SWN,CBFV,R33,Swan,Purple Kiss,Cabin Fever,Regular,,40,20,25,15,95,,,Echo Effect,,267,1000
+SWNCBFVSPC,SWN,CBFV,SPC,Swan,Purple Kiss,Cabin Fever,Special,,40,20,25,15,90,Vocal Boost,Main Vocal,,,267,2500
+SWNCBFVLMT,SWN,CBFV,LMT,Swan,Purple Kiss,Cabin Fever,Limited,,40,20,25,15,95,,,Echo Effect,Full Bloom,267,2000
+SWNCBFVFCR,SWN,CBFV,FCR,Swan,Purple Kiss,Cabin Fever,FCR,,40,20,25,15,95,,Main Vocal,,Full Bloom,267,2000
+SWNCBFVPOB,SWN,CBFV,POB,Swan,Purple Kiss,Cabin Fever,POB,,40,20,25,15,100,,Main Vocal,Echo Effect,,267,2500
+TAEERLUR11,TAE,ERLU,R11,Taerin,ifeye,Erlu Blue,Regular,,16,20,40,24,85,Sharp Moves,,,,267,400
+TAEERLUR12,TAE,ERLU,R12,Taerin,ifeye,Erlu Blue,Regular,,16,20,40,24,90,Sharp Moves,,,,267,600
+TAEERLUR13,TAE,ERLU,R13,Taerin,ifeye,Erlu Blue,Regular,,16,20,40,24,95,Sharp Moves,,,,267,1000
+TAEERLUR21,TAE,ERLU,R21,Taerin,ifeye,Erlu Blue,Regular,,16,20,40,24,85,,Main Dancer,,,267,400
+TAEERLUR22,TAE,ERLU,R22,Taerin,ifeye,Erlu Blue,Regular,,16,20,40,24,90,,Main Dancer,,,267,600
+TAEERLUR23,TAE,ERLU,R23,Taerin,ifeye,Erlu Blue,Regular,,16,20,40,24,95,,Main Dancer,,,267,1000
+TAEERLUR31,TAE,ERLU,R31,Taerin,ifeye,Erlu Blue,Regular,,16,20,40,24,85,,,Power Sync,,267,400
+TAEERLUR32,TAE,ERLU,R32,Taerin,ifeye,Erlu Blue,Regular,,16,20,40,24,90,,,Power Sync,,267,600
+TAEERLUR33,TAE,ERLU,R33,Taerin,ifeye,Erlu Blue,Regular,,16,20,40,24,95,,,Power Sync,,267,1000
+TAEERLUSPC,TAE,ERLU,SPC,Taerin,ifeye,Erlu Blue,Special,,16,20,40,24,90,Sharp Moves,Main Dancer,,,267,2500
+TAEERLULMT,TAE,ERLU,LMT,Taerin,ifeye,Erlu Blue,Limited,,16,20,40,24,95,,,Power Sync,Full Bloom,267,2000
+TAEERLUFCR,TAE,ERLU,FCR,Taerin,ifeye,Erlu Blue,FCR,,16,20,40,24,95,,Main Dancer,,Full Bloom,267,2000
+TAEERLUPOB,TAE,ERLU,POB,Taerin,ifeye,Erlu Blue,POB,,16,20,40,24,100,,Main Dancer,Power Sync,,267,2500
+WINARMGR11,WIN,ARMG,R11,Winter,Aespa,Armageddon,Regular,,30,20,20,30,85,Composed Presence,,,,350,400
+WINARMGR12,WIN,ARMG,R12,Winter,Aespa,Armageddon,Regular,,30,20,20,30,90,Composed Presence,,,,350,600
+WINARMGR13,WIN,ARMG,R13,Winter,Aespa,Armageddon,Regular,,30,20,20,30,95,Composed Presence,,,,350,1000
+WINARMGR21,WIN,ARMG,R21,Winter,Aespa,Armageddon,Regular,,30,20,20,30,85,,Max Effort,,,350,400
+WINARMGR22,WIN,ARMG,R22,Winter,Aespa,Armageddon,Regular,,30,20,20,30,90,,Max Effort,,,350,600
+WINARMGR23,WIN,ARMG,R23,Winter,Aespa,Armageddon,Regular,,30,20,20,30,95,,Max Effort,,,350,1000
+WINARMGR31,WIN,ARMG,R31,Winter,Aespa,Armageddon,Regular,,30,20,20,30,85,,,Total Reinforcement,,350,400
+WINARMGR32,WIN,ARMG,R32,Winter,Aespa,Armageddon,Regular,,30,20,20,30,90,,,Total Reinforcement,,350,600
+WINARMGR33,WIN,ARMG,R33,Winter,Aespa,Armageddon,Regular,,30,20,20,30,95,,,Total Reinforcement,,350,1000
+WINARMGSPC,WIN,ARMG,SPC,Winter,Aespa,Armageddon,Special,,30,20,20,30,90,Composed Presence,Max Effort,,,350,2500
+WINARMGLMT,WIN,ARMG,LMT,Winter,Aespa,Armageddon,Limited,,30,20,20,30,95,,,Total Reinforcement,Full Bloom,350,2000
+WINARMGFCR,WIN,ARMG,FCR,Winter,Aespa,Armageddon,FCR,,30,20,20,30,95,,Max Effort,,Full Bloom,350,2000
+WINARMGPOB,WIN,ARMG,POB,Winter,Aespa,Armageddon,POB,,30,20,20,30,100,,Max Effort,Total Reinforcement,,350,2500
+XNYAA25R11,XNY,AA25,R11,Xinyu,tripleS,Assemble25,Regular,,26,17,25,32,85,Stylish Execution,,,,225,400
+XNYAA25R12,XNY,AA25,R12,Xinyu,tripleS,Assemble25,Regular,,26,17,25,32,90,Stylish Execution,,,,225,600
+XNYAA25R13,XNY,AA25,R13,Xinyu,tripleS,Assemble25,Regular,,26,17,25,32,95,Stylish Execution,,,,225,1000
+XNYAA25R21,XNY,AA25,R21,Xinyu,tripleS,Assemble25,Regular,,26,17,25,32,85,,Main Visual,,,225,400
+XNYAA25R22,XNY,AA25,R22,Xinyu,tripleS,Assemble25,Regular,,26,17,25,32,90,,Main Visual,,,225,600
+XNYAA25R23,XNY,AA25,R23,Xinyu,tripleS,Assemble25,Regular,,26,17,25,32,95,,Main Visual,,,225,1000
+XNYAA25R31,XNY,AA25,R31,Xinyu,tripleS,Assemble25,Regular,,26,17,25,32,85,,,Spotlight Focus,,225,400
+XNYAA25R32,XNY,AA25,R32,Xinyu,tripleS,Assemble25,Regular,,26,17,25,32,90,,,Spotlight Focus,,225,600
+XNYAA25R33,XNY,AA25,R33,Xinyu,tripleS,Assemble25,Regular,,26,17,25,32,95,,,Spotlight Focus,,225,1000
+XNYAA25SPC,XNY,AA25,SPC,Xinyu,tripleS,Assemble25,Special,,26,17,25,32,90,Stylish Execution,Main Visual,,,225,2500
+XNYAA25LMT,XNY,AA25,LMT,Xinyu,tripleS,Assemble25,Limited,summer,26,17,25,32,95,,,Spotlight Focus,Full Bloom,225,2000
+XNYAA25FCR,XNY,AA25,FCR,Xinyu,tripleS,Assemble25,FCR,,26,17,25,32,95,,Main Visual,,Full Bloom,225,2000
+XNYAA25POB,XNY,AA25,POB,Xinyu,tripleS,Assemble25,POB,,26,17,25,32,100,,Main Visual,Spotlight Focus,,225,2500
+YSYAA25R11,YSY,AA25,R11,Seoyeon,tripleS,Assemble25,Regular,,27,11,26,36,85,Stylish Execution,,,,225,400
+YSYAA25R12,YSY,AA25,R12,Seoyeon,tripleS,Assemble25,Regular,,27,11,26,36,90,Stylish Execution,,,,225,600
+YSYAA25R13,YSY,AA25,R13,Seoyeon,tripleS,Assemble25,Regular,,27,11,26,36,95,Stylish Execution,,,,225,1000
+YSYAA25R21,YSY,AA25,R21,Seoyeon,tripleS,Assemble25,Regular,,27,11,26,36,85,,Main Visual,,,225,400
+YSYAA25R22,YSY,AA25,R22,Seoyeon,tripleS,Assemble25,Regular,,27,11,26,36,90,,Main Visual,,,225,600
+YSYAA25R23,YSY,AA25,R23,Seoyeon,tripleS,Assemble25,Regular,,27,11,26,36,95,,Main Visual,,,225,1000
+YSYAA25R31,YSY,AA25,R31,Seoyeon,tripleS,Assemble25,Regular,,27,11,26,36,85,,,Spotlight Focus,,225,400
+YSYAA25R32,YSY,AA25,R32,Seoyeon,tripleS,Assemble25,Regular,,27,11,26,36,90,,,Spotlight Focus,,225,600
+YSYAA25R33,YSY,AA25,R33,Seoyeon,tripleS,Assemble25,Regular,,27,11,26,36,95,,,Spotlight Focus,,225,1000
+YSYAA25SPC,YSY,AA25,SPC,Seoyeon,tripleS,Assemble25,Special,,27,11,26,36,90,Stylish Execution,Main Visual,,,225,2500
+YSYAA25LMT,YSY,AA25,LMT,Seoyeon,tripleS,Assemble25,Limited,summer,27,11,26,36,95,,,Spotlight Focus,Full Bloom,225,2000
+YSYAA25FCR,YSY,AA25,FCR,Seoyeon,tripleS,Assemble25,FCR,,27,11,26,36,95,,Main Visual,,Full Bloom,225,2000
+YSYAA25POB,YSY,AA25,POB,Seoyeon,tripleS,Assemble25,POB,,27,11,26,36,100,,Main Visual,Spotlight Focus,,225,2500
+YUKCBFVR11,YUK,CBFV,R11,Yuki,Purple Kiss,Cabin Fever,Regular,,15,40,25,20,85,Technical Flow,,,,267,400
+YUKCBFVR12,YUK,CBFV,R12,Yuki,Purple Kiss,Cabin Fever,Regular,,15,40,25,20,90,Technical Flow,,,,267,600
+YUKCBFVR13,YUK,CBFV,R13,Yuki,Purple Kiss,Cabin Fever,Regular,,15,40,25,20,95,Technical Flow,,,,267,1000
+YUKCBFVR21,YUK,CBFV,R21,Yuki,Purple Kiss,Cabin Fever,Regular,,15,40,25,20,85,,Main Rapper,,,267,400
+YUKCBFVR22,YUK,CBFV,R22,Yuki,Purple Kiss,Cabin Fever,Regular,,15,40,25,20,90,,Main Rapper,,,267,600
+YUKCBFVR23,YUK,CBFV,R23,Yuki,Purple Kiss,Cabin Fever,Regular,,15,40,25,20,95,,Main Rapper,,,267,1000
+YUKCBFVR31,YUK,CBFV,R31,Yuki,Purple Kiss,Cabin Fever,Regular,,15,40,25,20,85,,,Hyper Rhythm,,267,400
+YUKCBFVR32,YUK,CBFV,R32,Yuki,Purple Kiss,Cabin Fever,Regular,,15,40,25,20,90,,,Hyper Rhythm,,267,600
+YUKCBFVR33,YUK,CBFV,R33,Yuki,Purple Kiss,Cabin Fever,Regular,,15,40,25,20,95,,,Hyper Rhythm,,267,1000
+YUKCBFVSPC,YUK,CBFV,SPC,Yuki,Purple Kiss,Cabin Fever,Special,,15,40,25,20,90,Technical Flow,Main Rapper,,,267,2500
+YUKCBFVLMT,YUK,CBFV,LMT,Yuki,Purple Kiss,Cabin Fever,Limited,,15,40,25,20,95,,,Hyper Rhythm,Full Bloom,267,2000
+YUKCBFVFCR,YUK,CBFV,FCR,Yuki,Purple Kiss,Cabin Fever,FCR,,15,40,25,20,95,,Main Rapper,,Full Bloom,267,2000
+YUKCBFVPOB,YUK,CBFV,POB,Yuki,Purple Kiss,Cabin Fever,POB,,15,40,25,20,100,,Main Rapper,Hyper Rhythm,,267,2500
+YYJUNNAR11,YYJ,UNNA,R11,Yeonjung,WJSN,Unnatural,Regular,,39,9,23,29,85,Vocal Boost,,,,200,400
+YYJUNNAR12,YYJ,UNNA,R12,Yeonjung,WJSN,Unnatural,Regular,,39,9,23,29,90,Vocal Boost,,,,200,600
+YYJUNNAR13,YYJ,UNNA,R13,Yeonjung,WJSN,Unnatural,Regular,,39,9,23,29,95,Vocal Boost,,,,200,1000
+YYJUNNAR21,YYJ,UNNA,R21,Yeonjung,WJSN,Unnatural,Regular,,39,9,23,29,85,,Main Vocal,,,200,400
+YYJUNNAR22,YYJ,UNNA,R22,Yeonjung,WJSN,Unnatural,Regular,,39,9,23,29,90,,Main Vocal,,,200,600
+YYJUNNAR23,YYJ,UNNA,R23,Yeonjung,WJSN,Unnatural,Regular,,39,9,23,29,95,,Main Vocal,,,200,1000
+YYJUNNAR31,YYJ,UNNA,R31,Yeonjung,WJSN,Unnatural,Regular,,39,9,23,29,85,,,Echo Effect,,200,400
+YYJUNNAR32,YYJ,UNNA,R32,Yeonjung,WJSN,Unnatural,Regular,,39,9,23,29,90,,,Echo Effect,,200,600
+YYJUNNAR33,YYJ,UNNA,R33,Yeonjung,WJSN,Unnatural,Regular,,39,9,23,29,95,,,Echo Effect,,200,1000
+YYJUNNASPC,YYJ,UNNA,SPC,Yeonjung,WJSN,Unnatural,Special,,39,9,23,29,90,Vocal Boost,Main Vocal,,,200,2500
+YYJUNNALMT,YYJ,UNNA,LMT,Yeonjung,WJSN,Unnatural,Limited,,39,9,23,29,95,,,Echo Effect,Full Bloom,200,2000
+YYJUNNAFCR,YYJ,UNNA,FCR,Yeonjung,WJSN,Unnatural,FCR,,39,9,23,29,95,,Main Vocal,,Full Bloom,200,2000
+YYJUNNAPOB,YYJ,UNNA,POB,Yeonjung,WJSN,Unnatural,POB,,39,9,23,29,100,,Main Vocal,Echo Effect,,200,2500
