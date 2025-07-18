@@ -6,6 +6,9 @@ from config import TOKEN
 from db.connection import create_pool
 from db.schema import create_all_tables
 from db.loop_events import events_loop
+from keep_alive import keep_alive
+
+keep_alive()
 
 logging.basicConfig(level=logging.INFO)
 
