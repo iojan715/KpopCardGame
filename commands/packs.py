@@ -6,8 +6,9 @@ from utils.language import get_user_language
 from db.connection import get_pool
 from datetime import timezone, datetime
 from utils.paginator import Paginator, PreviousButton, NextButton
+from commands.starter import version as v
 
-version = "?v=255"
+version = v
 
 class PacksGroup(app_commands.Group):
     def __init__(self):

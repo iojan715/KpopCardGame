@@ -7,6 +7,7 @@ from utils.localization import get_translation
 from utils.language import get_user_language
 from asyncpg import Pool
 
+version = "?v=255"
 
 class StartView(discord.ui.View):
     def __init__(self, interaction: discord.Interaction):

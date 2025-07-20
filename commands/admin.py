@@ -172,16 +172,17 @@ class AdminGroup(app_commands.Group):
                     for row in reader:
                         await conn.execute("""
                             INSERT INTO redeemables (
-                                redeemable_id, name, type, weight
+                                redeemable_id, name, type, effect, weight
                             ) VALUES (
-                                $1, $2, $3, $4
+                                $1, $2, $3, $4, $5
                             )
                             ON CONFLICT (redeemable_id) DO UPDATE SET
                                 name = EXCLUDED.name,
                                 type = EXCLUDED.type,
+                                effect = EXCLUDED.effect,
                                 weight = EXCLUDED.weight;
                         """, 
-                        row["redeemable_id"], row["name"], row["type"], int(row["weight"]))
+                        row["redeemable_id"], row["name"], row["type"], row.get("effect"), int(row["weight"]))
                         inserted += 1
             
             elif content_type == "badges":

@@ -1,14 +1,14 @@
-redeemable_id,name,type,weight
-RECRT,Recruitment,redeem,20
-CONTR,Contract,redeem,0
-SHOPS,Shop,redeem,40
-TRNNG,Training,redeem,80
-INVIT,Invitation,boost,10
-ORGAN,Organizer,boost,0
-REHRS,Rehearsal,boost,30
-BTFSN,Better Fusion,redeem,10
-TCONT,Tactical Contract,redeem,0
-DBRWR,Double Reward,boost,0
-DISCN,Discount,boost,20
-MDCNT,Media Content,boost,250
-EXCNT,Exclusive Content,boost,15
+redeemable_id,name,type,effect,weight
+CONTR,Contract,redeem,ALL,0
+ORGAN,Organizer,boost,,0
+TCONT,Tactical Contract,boost,,0
+DBRWR,Double Reward,boost,,0
+INVIT,Invitation,boost,,15
+BTFSN,Better Fusion,boost,,15
+EXCNT,Exclusive Content,boost,group,10
+RECRT,Recruitment,redeem,RG1,20
+DISCN,Discount,boost,,15
+REHRS,Rehearsal,boost,,50
+SHOPS,Shop,redeem,item,120
+TRNNG,Training,redeem,p_card,180
+MDCNT,Media Content,boost,group,250

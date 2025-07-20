@@ -9,8 +9,9 @@ from db.connection import get_pool
 from datetime import datetime
 from utils.paginator import Paginator
 from collections import Counter, defaultdict
+from commands.starter import version as v
 
-version = "?v=255"
+version = v
 
 # --- /inventory
 class InventoryGroup(app_commands.Group):
