@@ -6,7 +6,9 @@ from utils.language import get_user_language
 from db.connection import get_pool
 from datetime import timezone, datetime
 import random, string
+from commands.starter import version as v
 
+version = v
 
 class Group(app_commands.Group):
     def __init__(self):
@@ -647,23 +649,142 @@ class EquippedCardsPaginator:
         self.per_page = per_page
         self.current_page = 0
         self.total_pages = (len(members) + per_page - 1) // per_page
+        self.guild = interaction.guild
 
-    def get_current_embeds(self):
+    async def get_current_embeds(self):
         start = self.current_page * self.per_page
         end = start + self.per_page
         page_members = self.members[start:end]
-        
+        pool = get_pool()
         embeds = []
         for row in page_members:
-            idol = f"🃏 {get_translation(self.language,"utilities.idol_card")}: `{row["card_id"] or "n/a"}`\n"
-            mic = f"🎤 {get_translation(self.language,"utilities.mic")}: `{row["mic_id"] or "n/a"}`\n"
-            outfit = f"👗 {get_translation(self.language,"utilities.outfit")}: `{row["outfit_id"] or "n/a"}`\n"
-            accesory = f"💍 {get_translation(self.language,"utilities.accesory")}: `{row["accessory_id"] or "n/a"}`\n"
-            consumable = f"🍬 {get_translation(self.language,"utilities.consumable")}: `{row["consumable_id"] or "n/a"}`"
+            async with pool.acquire() as conn:
+                card_id=mic_id=outfit_id=accessory_id=consumable_id=""
+                if row['card_id']:
+                    card_id, u_c = row['card_id'].split(".")
+                if row['mic_id']:
+                    mic_id, um = row['mic_id'].split(".")
+                if row['outfit_id']:
+                    outfit_id, uo = row['outfit_id'].split(".")
+                if row['accessory_id']:
+                    accessory_id, ua = row['accessory_id'].split(".")
+                if row['consumable_id']:
+                    consumable_id, uc = row['consumable_id'].split(".")
+                card_data = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", card_id)
+                idol_data = await conn.fetchrow("SELECT * FROM idol_base WHERE idol_id = $1", row['idol_id'])
+                
+                mic_durability=outfit_durability=accessory_durability=consumable_durability=""
+                mic_name=outfit_name=accessory_name=consumale_name="n/a"
+                card_name = ""
+                if card_data:
+                    c_name = await conn.fetchval("SELECT name FROM idol_base WHERE idol_id = $1", card_data['idol_id'])
+                    card_name = f"`{c_name} -"
+                    
+                mic_data = await conn.fetchrow(
+                    "SELECT * FROM cards_item WHERE item_id = $1",
+                    mic_id)
+                if mic_data:
+                    mic_name = mic_data['name']
+                    mic_durability += "⏳"
+                    mic_durability += str(await conn.fetchval("SELECT durability FROM user_item_cards WHERE unique_id = $1", um))
+                    
+                outfit_data = await conn.fetchrow(
+                    "SELECT * FROM cards_item WHERE item_id = $1",
+                    outfit_id)
+                if outfit_data:
+                    outfit_name = outfit_data['name']
+                    outfit_durability += "⏳"
+                    outfit_durability += str(await conn.fetchval("SELECT durability FROM user_item_cards WHERE unique_id = $1", uo))
+                
+                accessory_data = await conn.fetchrow(
+                    "SELECT * FROM cards_item WHERE item_id = $1",
+                    accessory_id)
+                if accessory_data:
+                    accessory_name = accessory_data['name']
+                    accessory_durability += "⏳"
+                    accessory_durability += str(await conn.fetchval("SELECT durability FROM user_item_cards WHERE unique_id = $1", ua))
+                
+                consumale_data = await conn.fetchrow(
+                    "SELECT * FROM cards_item WHERE item_id = $1",
+                    consumable_id)
+                if consumale_data:
+                    consumale_name = consumale_data['name']
+                    consumable_durability += "⏳"
+                    consumable_durability += str(await conn.fetchval("SELECT durability FROM user_item_cards WHERE unique_id = $1", uc))
+                
+            
+            idol = f"🃏 {get_translation(self.language,"utilities.idol_card")}: {card_name} {card_data['set_name'] if card_data else "`n/a`"} {f"- {card_data['rarity_id']}`" if card_data else ""}\n"
+            mic = f"🎤 {get_translation(self.language,"utilities.mic")}: `{mic_name}` {mic_durability}\n"
+            outfit = f"👗 {get_translation(self.language,"utilities.outfit")}: `{outfit_name}` {outfit_durability}\n"
+            accesory = f"💍 {get_translation(self.language,"utilities.accesory")}: `{accessory_name}` {accessory_durability}\n"
+            consumable = f"🍬 {get_translation(self.language,"utilities.consumable")}: `{consumale_name}` {consumable_durability}"
 
             embed = discord.Embed(title=row["name"], color=discord.Color.green())
             embed.add_field(name=f"{get_translation(self.language, "group_list.equipped_cards")}", value=idol+mic+outfit+accesory+consumable, inline=False)
+            if card_data:
+                url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{card_id}.webp{version}"
+                embed.set_thumbnail(url=url)
             embeds.append(embed)
+            vocal=rap=dance=visual=energy=plus_vocal=plus_rap=plus_dance=plus_visual=plus_energy=0
+            p_vocal=p_rap=p_dance=p_visual=p_energy=""
+            skills = ""
+            if card_data:
+                vocal += card_data['vocal']
+                rap += card_data['rap']
+                dance += card_data['dance']
+                visual += card_data['visual']
+                energy += card_data['energy']
+                
+                if card_data['p_skill']:
+                    skills += f"{discord.utils.get(self.guild.emojis, name="PassiveSkill")} "
+                if card_data['a_skill']:
+                    skills += f"{discord.utils.get(self.guild.emojis, name="ActiveSkill")} "
+                if card_data['s_skill']:
+                    skills += f"{discord.utils.get(self.guild.emojis, name="SupportSkill")} "
+                if card_data['u_skill']:
+                    skills += f"{discord.utils.get(self.guild.emojis, name="UltimateSkill")} "
+            else:
+                vocal += idol_data['vocal']
+                rap += idol_data['rap']
+                dance += idol_data['dance']
+                visual += idol_data['visual']
+                energy += 50
+            items_data = [mic_data,outfit_data,accessory_data,consumale_data]
+            for id in items_data:
+                if id:
+                    plus_vocal += id['plus_vocal']
+                    if plus_vocal > 0:
+                        p_vocal = f" (+{plus_vocal})"
+                    elif plus_vocal < 0:
+                        p_vocal = f" ({plus_vocal})"
+                        
+                    plus_rap += id['plus_rap']
+                    if plus_rap > 0:
+                        p_rap = f" (+{plus_rap})"
+                    elif plus_rap < 0:
+                        p_rap = f" ({plus_rap})"
+                        
+                    plus_dance += id['plus_dance']
+                    if plus_dance > 0:
+                        p_dance = f" (+{plus_dance})"
+                    elif plus_dance < 0:
+                        p_dance = f" ({plus_dance})"
+                        
+                    plus_visual += id['plus_visual']
+                    if plus_visual > 0:
+                        p_visual = f" (+{plus_visual})"
+                    elif plus_visual < 0:
+                        p_visual = f" ({plus_visual})"
+                        
+                    plus_energy += id['plus_energy']
+                    if plus_energy > 0:
+                        p_energy = f" (+{plus_energy})"
+                    elif plus_energy < 0:
+                        p_energy = f" ({plus_energy})"
+            
+            embed.add_field(name=f"**🎤 Vocal: {vocal}{p_vocal}**", value=f"**🎶 Rap: {rap}{p_rap}**", inline=True)
+            embed.add_field(name=f"**💃 Dance: {dance}{p_dance}**", value=f"**✨ Visual: {visual}{p_visual}**", inline=True)
+            embed.add_field(name=f"**⚡ Energy: {energy}{p_energy}**", value=f"**Skills: {skills}**", inline=True)
 
         page_info = discord.Embed(
             description=f"### Total: {len(self.members)}\nPage: {self.current_page + 1} / {self.total_pages}",
@@ -682,11 +803,11 @@ class EquippedCardsPaginator:
         return view
 
     async def start(self):
-        embeds = self.get_current_embeds()
+        embeds = await self.get_current_embeds()
         await self.interaction.response.edit_message(embeds=embeds, view=self.get_view())
 
     async def update(self, interaction: discord.Interaction):
-        embeds = self.get_current_embeds()
+        embeds = await self.get_current_embeds()
         await interaction.response.edit_message(embeds=embeds, view=self.get_view())
         
 class PreviousCardsButton(discord.ui.Button):

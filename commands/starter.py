@@ -198,7 +198,7 @@ class SponsorCommand(commands.Cog):
             
             influence = extra_influence + user["influence_temp"]
             
-            sponsor = 120 + 600*(influence/(influence+200000))
+            sponsor = 140 + 600*(influence/(influence+200000))
 
             total_credits = int((total_elapsed_hours * 60) * (sponsor / 60))  # 100 por hora
 

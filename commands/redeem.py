@@ -24,7 +24,7 @@ class RedeemGroup(app_commands.Group):
 
         # Validación de ID
         if not (len(card_id) == 10 or (len(card_id) == 6 and card_id[:3].isalpha())):
-            return await interaction.followup.send("❌ El ID ingresado no es válido.", ephemeral=True)
+            return await interaction.response.send_message(content="❌ El ID ingresado no es válido.", ephemeral=True)
 
         user_id = interaction.user.id
 
@@ -60,8 +60,13 @@ class RedeemGroup(app_commands.Group):
                 WHERE ur.user_id = $1
                 AND ur.quantity > 0
             """, user_id)
+            
+            a_red = await conn.fetch(
+                "SELECT * FROM redeemables"
+            )
 
         matching = []
+        all_redeemables =[]
         if is_idol_card:
             for r in redeemables:
                 if r["effect"] == "ALL" or r["effect"] == effect_code:
@@ -69,6 +74,13 @@ class RedeemGroup(app_commands.Group):
                         "redeemable_id": r["redeemable_id"],
                         "name": r["name"],
                         "effect": r["effect"]
+                    })
+            for ar in a_red:
+                if ar["effect"] == "ALL" or ar["effect"] == effect_code:
+                    all_redeemables.append({
+                        "redeemable_id": ar["redeemable_id"],
+                        "name": ar["name"],
+                        "effect": ar["effect"]
                     })
         else:
             for r in redeemables:
@@ -78,9 +90,13 @@ class RedeemGroup(app_commands.Group):
                         "name": r["name"],
                         "effect": r["effect"]
                     })
-
-        if not matching:
-            return await interaction.response.send_message(content="❌ No tienes ningún redeemable compatible con esta carta.", ephemeral=True)
+            for ar in a_red:
+                if ar["effect"] == "item":
+                    all_redeemables.append({
+                        "redeemable_id": ar["redeemable_id"],
+                        "name": ar["name"],
+                        "effect": ar["effect"]
+                    })
 
         image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{card_id}.webp"
 
@@ -90,16 +106,21 @@ class RedeemGroup(app_commands.Group):
             color=discord.Color.purple()
         )
         embed.set_thumbnail(url=image_url)
-
-        for m in matching:
-            async with pool.acquire() as conn:
-                cantidad = await conn.fetchrow("""
-                    SELECT quantity FROM user_redeemables
-                    WHERE user_id = $1 AND redeemable_id = $2
-                """, user_id, m["redeemable_id"])
-            embed.add_field(name=m["name"], value=f"Tienes: **{cantidad['quantity']}**", inline=True)
-
-        view = RedeemableView(card_id, is_idol_card, matching)
+        for r in all_redeemables:
+            cantidad=0
+            for m in matching:
+                if r['redeemable_id'] == m['redeemable_id']:
+                    async with pool.acquire() as conn:
+                        q = await conn.fetchrow("""
+                            SELECT quantity FROM user_redeemables
+                            WHERE user_id = $1 AND redeemable_id = $2
+                        """, user_id, m["redeemable_id"])
+                        if q:
+                            cantidad = q['quantity']
+            embed.add_field(name=r["name"], value=f"Tienes: **{cantidad}**", inline=True)
+        view=discord.ui.View()
+        if matching:
+            view = RedeemableView(card_id, is_idol_card, matching)
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
 class RedeemableView(discord.ui.View):

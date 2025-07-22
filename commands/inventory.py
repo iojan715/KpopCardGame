@@ -177,9 +177,12 @@ class InventoryGroup(app_commands.Group):
         for row in rows:
             async with pool.acquire() as conn:
                 idol_row = await conn.fetchrow("""
-                    SELECT idol_name, set_name, rarity, group_name, rarity_id
-                    FROM cards_idol WHERE card_id = $1
+                    SELECT * FROM cards_idol WHERE card_id = $1
                 """, row["card_id"])
+                idol_base_row = await conn.fetchrow(
+                    "SELECT * FROM idol_base WHERE idol_id = $1",
+                    row['idol_id']
+                )
                 
                 name = idol_row['idol_name']
                 card_set = idol_row['set_name']
@@ -211,9 +214,13 @@ class InventoryGroup(app_commands.Group):
                 "Legacy": discord.Color.dark_purple(),
             }
             embed_color = RARITY_COLORS.get(c_rarity, discord.Color.default())
-
+            
+            cantidad_copias = ""
+            if card_counts[row['card_id']] > 1:
+                cantidad_copias = f" `x{card_counts[row['card_id']]} copias`"
+                
             embed = discord.Embed(
-                title=f"{name} - *{group_name}* {blocked}{c_status}",
+                title=f"{name} - *{group_name}*{cantidad_copias} {blocked}{c_status}",
                 description=f"{card_set} `{rarity}`",
                 color=embed_color
             )
@@ -221,16 +228,31 @@ class InventoryGroup(app_commands.Group):
             image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{row['card_id']}.webp{version}"
             embed.set_thumbnail(url=image_url)
             
-            cantidad_copias = ""
-            if card_counts[row['card_id']] > 1:
-                cantidad_copias = f" `x{card_counts[row['card_id']]} copias`"
+            skills = ""
+            if idol_row['p_skill']:
+                skills += "🟢"
+            if idol_row['a_skill']:
+                skills += "🔵"
+            if idol_row['s_skill']:
+                skills += "🟡"
+            if idol_row['u_skill']:
+                skills += "🔴"
+                
+            vocal = idol_row['vocal'] - idol_base_row['vocal']
+            rap = idol_row['rap'] - idol_base_row['rap']
+            dance = idol_row['dance'] - idol_base_row['dance']
+            visual = idol_row['visual'] - idol_base_row['visual']
+            energy = idol_row['energy'] - 50
             
-            embed.add_field(name=cantidad_copias, value="", inline=False)
+            embed.add_field(name=f"**🎤 Vocal: {idol_base_row['vocal']} (+{vocal})**", value=f"**🎶 Rap: {idol_base_row['rap']} (+{rap})**", inline=True)
+            embed.add_field(name=f"**💃 Dance: {idol_base_row['dance']} (+{dance})**", value=f"**✨ Visual: {idol_base_row['visual']} (+{visual})**", inline=True)
+            embed.add_field(name=f"**⚡ Energy: 50 (+{energy})**", value=f"**Skills: {skills}**", inline=True)
+            
             embed.set_footer(text=f"{row['card_id']}.{row['unique_id']}")
             #{row['date_obtained'].strftime('%Y-%m-%d %H:%M:%S')}
             embeds.append(embed)
 
-        paginator = Paginator(embeds)
+        paginator = Paginator(embeds, embeds_per_page=3)
         await paginator.start(interaction)
 
     
@@ -374,9 +396,16 @@ class InventoryGroup(app_commands.Group):
 
         embeds = []
         for row in rows:
+            async with pool.acquire() as conn:
+                eq_data = await conn.fetchrow(f"SELECT * FROM groups_members WHERE {row['type']}_id = $1", f"{row['item_id']}.{row['unique_id']}")
+                equiped_desc = ""
+                if eq_data:
+                    group_name = await conn.fetchval("SELECT name FROM groups WHERE group_id = $1", eq_data['group_id'])
+                    idol_name = await conn.fetchval("SELECT name FROM idol_base WHERE idol_id = $1", eq_data['idol_id'])
+                    equiped_desc += f"\n> Equipped to: {idol_name} - {group_name}"
             embed = discord.Embed(
                 title=f"{"✅" if row['status'] == "available" else ""} {row['name']} ⌛{row['durability']}",
-                description=f"`{row['type'].capitalize()}`",
+                description=f"`{row['type'].capitalize()}`{equiped_desc}",
                 color=discord.Color.teal()
             )
 
@@ -593,8 +622,9 @@ class CardGroup(app_commands.Group):
             # Buscar primero como carta idol
             row = await conn.fetchrow("""
                 SELECT * FROM user_idol_cards
-                WHERE unique_id = $1 AND user_id = $2
-            """, unique_id, user_id)
+                WHERE unique_id = $1
+            """, unique_id)
+            print(row)
 
             if row:
                 card_type = "idol"
@@ -1063,20 +1093,26 @@ class CardGroup(app_commands.Group):
 
             if not row or row["status"] != "available":
                 return await interaction.response.send_message("❌ No se encontró el ítem o no está disponible.", ephemeral=True)
-
+            
             if item_type == "idol":
                 ref_data = await conn.fetchrow("SELECT idol_name, set_name, rarity, value FROM cards_idol WHERE card_id = $1", row["card_id"])
                 image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{row['card_id']}.webp{version}"
             else:
-                ref_data = await conn.fetchrow("SELECT name, value FROM cards_item WHERE item_id = $1", row["item_id"])
+                ref_data = await conn.fetchrow("SELECT name, value, max_durability FROM cards_item WHERE item_id = $1", row["item_id"])
                 image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{row['item_id']}.webp{version}"
 
             if not ref_data:
                 return await interaction.response.send_message("❌ No se encontró la información del ítem.", ephemeral=True)
 
             value = ref_data["value"]
-            refund = value * 2
-            xp = value // 100
+            
+            if item_type != "idol":
+                durability = row['durability']/ref_data['max_durability']
+                print(durability)
+                value = int(value*durability)
+            
+            refund = int(value * 2)
+            xp = max(value // 100,1)
 
             name = ref_data.get("idol_name", ref_data.get("name"))
             desc = f"{ref_data['set_name']} - {ref_data['rarity']}" if item_type == "idol" else "Objeto de soporte"

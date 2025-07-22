@@ -21,7 +21,7 @@ async def refresh_profile_view(interaction: discord.Interaction, user_id: int, o
     lang_name = LANGUAGES.get(user_data["language"], user_data["language"])
     embed = discord.Embed(title=f"🏢 Agencia: {user_data['agency_name'] or 'Sin nombre'}", color=discord.Color.blue())
     embed.add_field(name="Créditos", value=f"{user_data['credits']:,} 💰", inline=True)
-    embed.add_field(name="Nivel", value=f"{user_data['level']} ({user_data['xp']} XP)", inline=True)
+    embed.add_field(name=f"Nivel {user_data['level']}", value=f"{user_data['xp']}/{level_data['xp_needed']} XP", inline=True)
     embed.add_field(name="Idioma", value=lang_name, inline=True)
     if owner:
         embed.add_field(name="Banco", value=f"{user_data['bank']:,} 🏦", inline=True)
@@ -275,7 +275,7 @@ class AgencyCommand(commands.Cog):
         lang_name = LANGUAGES.get(user_data["language"], user_data["language"])
         embed = discord.Embed(title=f"🏢 Agencia: {user_data['agency_name'] or 'Sin nombre'}", color=discord.Color.blue())
         embed.add_field(name="Créditos", value=f"{user_data['credits']:,} 💰", inline=True)
-        embed.add_field(name="Nivel", value=f"{user_data['level']} ({user_data['xp']} XP)", inline=True)
+        embed.add_field(name=f"Nivel {user_data['level']}", value=f"{user_data['xp']}/{level_data['xp_needed']} XP", inline=True)
         embed.add_field(name="Idioma", value=lang_name, inline=True)
         if owner:
             embed.add_field(name="Banco", value=f"{user_data['bank']:,} 🏦", inline=True)

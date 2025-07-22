@@ -8,6 +8,9 @@ from typing import List
 from db.connection import get_pool
 from utils.language import get_user_language
 from utils.localization import get_translation
+from commands.starter import version as v
+
+version = v
 
 class PresentationGroup(app_commands.Group):
     def __init__(self):
@@ -502,7 +505,7 @@ async def show_current_section_view(interaction: discord.Interaction, presentati
             idol_data = await conn.fetchrow("SELECT name FROM idol_base WHERE idol_id = $1", active_idol['idol_id'])
             card_id = active_idol['card_id']
             if card_id:
-                idol_image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{card_id}.webp"
+                idol_image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{card_id}.webp{version}"
                 active_idol_text = f"`{card_id}`"
             else:
                 active_idol_text = "> Sin carta asignada"
@@ -604,6 +607,13 @@ async def show_current_section_view(interaction: discord.Interaction, presentati
                     can_use_ult = active_idol["can_ult"]
                     u_status = "✅" if can_use_ult else "❌"
                     embed.add_field(name="🔴 US", value=f"{ult_name} {u_status}", inline=True)
+                    
+            energy_left = round(active_idol["max_energy"] - active_idol["used_energy"], 1)
+            energy_percent = round((energy_left / active_idol["max_energy"]) * 100, 1)
+            
+            embed.add_field(name=f"**🎤 Vocal: {active_idol['vocal']}**", value=f"**🎶 Rap: {active_idol['rap']}**")
+            embed.add_field(name=f"**💃 Dance: {active_idol['dance']}**", value=f"**✨ Visual: {active_idol['visual']}**")
+            embed.add_field(name=f"{"🔋" if energy_percent > 60 else ":low_battery:"} Energy: {energy_percent}%", value=f"> ⚡{energy_left}/{active_idol['max_energy']}", inline=True)
 
         section_type = ""        
         if section['type_plus']:
@@ -619,12 +629,18 @@ async def show_current_section_view(interaction: discord.Interaction, presentati
         
         embeds.append(embed)
         embeds.append(embed2)
+        
+        idols_in_group = await conn.fetch("SELECT * FROM presentation_members WHERE presentation_id = $1", presentation_id)
             
     view = discord.ui.View(timeout=120)
     
     # Obtener free_switches
     free_switches = presentation["free_switches"]
     disabled = free_switches < 0 or not idol_data
+    
+    if len(idols_in_group) == 1:
+        disabled = False
+    
     view.add_item(BasicActionButton(presentation_id, disabled=disabled))
     
     view.add_item(SwitchIdolButton(presentation_id))
@@ -750,6 +766,9 @@ class IdolSwitchPaginator:
             embed.add_field(name=f"{"🔋" if energy_percent > 60 else ":low_battery:"} Energy: {energy_percent}%", value=f"> ⚡{energy_left}/{idol['max_energy']}", inline=True)
             embed.set_footer(text=f"⭐ Score: {idol['individual_score']}")
 
+            if idol['card_id']:
+                embed.set_thumbnail(url= f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{idol['card_id']}.webp{version}")
+            
             is_active = idol["current_position"] == "active"
             view.add_item(SelectIdolToSwitchButton(
                 self.presentation_id,
@@ -1682,8 +1701,7 @@ async def perform_section_action(conn, presentation_id: str, idol_row, song_sect
         "SELECT * FROM presentation_members WHERE presentation_id = $1 AND current_position <> 'back' AND current_position <> 'active'",
         presentation_id
     )
-    print(f" idol stats {Vc, Rc, Dc, Lc}")
-    print(f" section stats{Vs, Rs, Ds, Ls}")
+    
     section_bonus_applied = False
     for m in members:
         if m['current_position'] == 'participated':
@@ -1701,8 +1719,7 @@ async def perform_section_action(conn, presentation_id: str, idol_row, song_sect
             Vs += song_section['plus_vocal']
             Rs += song_section['plus_rap'] 
             Ds += song_section['plus_dance'] 
-            Ls += song_section['plus_visual'] 
-            print(f"bonus_applied {song_section['type_plus']}")
+            Ls += song_section['plus_visual']
             section_bonus_applied = True
     
     Vc = int(Vc)
@@ -1710,7 +1727,6 @@ async def perform_section_action(conn, presentation_id: str, idol_row, song_sect
     Dc = int(Dc)
     Lc = int(Lc)
     
-    print(f" section stats{Vs, Rs, Ds, Ls}")
     # Overrides por ultimate
     if "override_stat" in skill_bonus:
         for stat, val in skill_bonus["override_stat"].items():
@@ -1722,14 +1738,10 @@ async def perform_section_action(conn, presentation_id: str, idol_row, song_sect
                 Ds = val
             elif stat == "visual":
                 Ls = val
-    print(f" section stats{Vs, Rs, Ds, Ls}")
-    
-    print(f" idol stats {Vc, Rc, Dc, Lc}")
     Vc += skill_bonus.get('vocal', 0)
     Rc += skill_bonus.get('rap', 0)
     Dc += skill_bonus.get("dance", 0)
     Lc += skill_bonus.get("visual", 0)
-    print(f" idol stats {Vc, Rc, Dc, Lc}")
 
     duration = song_section["duration"]
     
@@ -1766,14 +1778,11 @@ async def perform_section_action(conn, presentation_id: str, idol_row, song_sect
             if ef["lowest_stat_mod"]:
                 lowest = min(stats_section, key=lambda x: (x[1], ["vocal", "rap", "dance", "visual"].index(x[0])))
                 locals()[f"{lowest[0][0].upper()}s"] += ef["lowest_stat_mod"]
-
-    print(f" section stats{Vs, Rs, Ds, Ls}")
     
     H = presentation_row["total_hype"]
     Ph = min(1.2, max(0.8, ((0.4 * H) - 20) / 100 + 1))
 
     base_energy_cost = duration
-    print(base_energy_cost)
     if effect:
         base_energy_cost += effect["extra_cost"]
         base_energy_cost *= effect["relative_cost"]
@@ -1785,17 +1794,15 @@ async def perform_section_action(conn, presentation_id: str, idol_row, song_sect
     base_energy_cost += skill_bonus.get("extra_cost", 0)
     base_energy_cost *= skill_bonus.get("relative_cost", 1)
     base_energy_cost = round(base_energy_cost,2)
-    print(base_energy_cost)
     
     new_used_energy = min(idol_row["max_energy"], idol_row["used_energy"] + base_energy_cost)
 
     base_score = ((Vc * Vs) + (Rc * Rs) + (Dc * Ds) + (Lc * Ls)) * duration * Er * Ph
-    print(base_score)
+    
     base_score *= skill_bonus.get("score", 1)
     if effect: base_score *= effect["score_mod"]
     if s_effect: base_score *= s_effect["score_mod"]
     base_score = int(base_score)
-    print(base_score)
 
     await conn.execute("""
         INSERT INTO presentation_sections (presentation_id, section, score_got, active_card_id)
@@ -2862,9 +2869,6 @@ async def apply_passive_skill_if_applicable(conn, idol_row, section_row, present
 
     condition = skill["condition"]
     condition_values = json.loads(skill["condition_values"])
-    
-    print(condition)
-    print(condition_values)
 
     
     condition_checkers = {
@@ -2903,12 +2907,8 @@ async def apply_passive_skill_if_applicable(conn, idol_row, section_row, present
     if check_only:
         return True
 
-
     condition_effect = skill["condition_effect"]
     condition_params = json.loads(skill["condition_params"])
-
-    print(condition_effect)
-    print(condition_params)
 
     effect_appliers = {
         "stat_boost": apply_stat_boost,
