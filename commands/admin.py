@@ -46,6 +46,7 @@ class AdminGroup(app_commands.Group):
     @app_commands.describe(content_type="Tipo de contenido que deseas subir (ej. packs)")
     @app_commands.choices(content_type = CONTENT_CHOICES)
     async def upload_content(self, interaction: discord.Interaction, content_type: str):
+        await interaction.response.defer(ephemeral=True, thinking=True)
         language = await get_user_language(interaction.user.id)
         ALLOWED_CONTENT_TYPES = ["packs",
                                  "levels",
@@ -64,12 +65,12 @@ class AdminGroup(app_commands.Group):
         if content_type != "all" and content_type not in ALLOWED_CONTENT_TYPES:
             contenido = ', '.join(ALLOWED_CONTENT_TYPES)
             content_type_not_found = get_translation(language,"upload_content.content_type_not_found",contenido=contenido)
-            await interaction.response.send_message(content_type_not_found, ephemeral=True)
+            await interaction.edit_original_response(content=content_type_not_found)
             return
         file_path = f"data_upload/{content_type}.csv"
         if content_type != "all" and not os.path.exists(file_path):
             file_not_found = get_translation(language, "upload_content.file_not_found", file_path=file_path)
-            await interaction.response.send_message(file_not_found, ephemeral=True)
+            await interaction.edit_original_response(content=file_not_found)
             return
 
         pool = await get_pool()
@@ -87,7 +88,7 @@ class AdminGroup(app_commands.Group):
                     if content_type == "all":
                         continue
                     file_not_found = get_translation(language, "upload_content.file_not_found", file_path=file_path)
-                    await interaction.response.send_message(file_not_found, ephemeral=True)
+                    await interaction.edit_original_response(content=file_not_found)
                     return
 
                 
@@ -563,9 +564,8 @@ class AdminGroup(app_commands.Group):
         else:
             succesfull = get_translation(language, "upload_content.succesfull", inserted=inserted_total, content_type=content_type)
 
-        await interaction.response.send_message(
-            succesfull,
-            ephemeral=True
+        await interaction.edit_original_response(
+            content= succesfull
         )
 
 
