@@ -187,7 +187,7 @@ class PacksGroup(app_commands.Group):
                     if tipo != "redeemable" and tipo != "performance":
                         embed.set_footer(text=f"{id}.{u_id}")
                         
-                    image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/d_no_image.jpg/{id}.jpg{version}"
+                    image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/d_no_image.jpg/{id}.webp{version}"
                     embed.set_thumbnail(url=image_url)
                     final_embeds.append(embed)
 

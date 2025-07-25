@@ -169,7 +169,7 @@ class InventoryGroup(app_commands.Group):
         language = await get_user_language(user_id=user_id)  
             
         if not rows:
-            await interaction.response.send_message("No tienes cartas de idol por ahora.", ephemeral=True)
+            await interaction.response.send_message("No hay cartas para mostrar.", ephemeral=True)
             return
 
         card_counts = Counter([row['card_id'] for row in rows])
@@ -252,8 +252,12 @@ class InventoryGroup(app_commands.Group):
             #{row['date_obtained'].strftime('%Y-%m-%d %H:%M:%S')}
             embeds.append(embed)
 
-        paginator = Paginator(embeds, embeds_per_page=3)
+#        def create_view(p: Paginator):
+#            return InventoryCardView(p, rows, equip_logic=equip_card_logic, unequip_logic=unequip_card_logic)
+
+        paginator = Paginator(embeds, embeds_per_page=3 )#, custom_view_factory=create_view)
         await paginator.start(interaction)
+
 
     
     @idol_cards.autocomplete("idol")
@@ -586,6 +590,173 @@ class NextSimpleButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
         self.paginator.current_page = (self.paginator.current_page + 1) % self.paginator.total_pages
         await self.paginator.update(interaction)
+
+
+class InventoryCardView(discord.ui.View):
+    def __init__(self, paginator: Paginator, cards: list, equip_logic, unequip_logic):
+        super().__init__(timeout=120)
+        self.paginator = paginator
+        self.cards = cards
+        self.equip_logic = equip_logic
+        self.unequip_logic = unequip_logic
+
+        # Botones de navegación
+        self.add_item(self.PreviousPageButton())
+        self.add_item(self.NextPageButton())
+
+        # Botones para las cartas actuales en la página
+        start = paginator.current_page * paginator.embeds_per_page
+        end = start + paginator.embeds_per_page
+        page_cards = cards[start:end]
+
+        for card in page_cards:
+            self.add_item(EquipButton(card, self.equip_logic))
+            self.add_item(UnequipButton(card, self.unequip_logic))
+
+    class PreviousPageButton(discord.ui.Button):
+        def __init__(self):
+            super().__init__(label="⬅️ Anterior", style=discord.ButtonStyle.secondary)
+
+        async def callback(self, interaction: discord.Interaction):
+            view = self.view  # type: InventoryCardView
+            await view.paginator.previous_page(interaction, custom_view_factory=lambda p: InventoryCardView(p, view.cards, view.equip_logic, view.unequip_logic))
+
+    class NextPageButton(discord.ui.Button):
+        def __init__(self):
+            super().__init__(label="Siguiente ➡️", style=discord.ButtonStyle.secondary)
+
+        async def callback(self, interaction: discord.Interaction):
+            view = self.view  # type: InventoryCardView
+            await view.paginator.next_page(interaction, custom_view_factory=lambda p: InventoryCardView(p, view.cards, view.equip_logic, view.unequip_logic))
+
+
+class EquipButton(discord.ui.Button):
+    def __init__(self, card_row, equip_logic):
+        label = f"⚔️ Equipar {card_row['card_id']}.{card_row['unique_id']}"
+        super().__init__(label=label, style=discord.ButtonStyle.success, custom_id=f"equip_{card_row['unique_id']}")
+        self.card_row = card_row
+        self.equip_logic = equip_logic
+
+    async def callback(self, interaction: discord.Interaction):
+        await self.equip_logic(interaction, self.card_row)
+
+class UnequipButton(discord.ui.Button):
+    def __init__(self, card_row, unequip_logic):
+        label = f"🔻 Desequipar {card_row['card_id']}.{card_row['unique_id']}"
+        super().__init__(label=label, style=discord.ButtonStyle.danger, custom_id=f"unequip_{card_row['unique_id']}")
+        self.card_row = card_row
+        self.unequip_logic = unequip_logic
+
+    async def callback(self, interaction: discord.Interaction):
+        await self.unequip_logic(interaction, self.card_row)
+
+async def equip_card_logic(interaction: discord.Interaction, card: dict):
+    pool = get_pool()
+    user_id = interaction.user.id
+    language = await get_user_language(user_id)
+
+    async with pool.acquire() as conn:
+        # Obtener los grupos donde esté el idol
+        groups = await conn.fetch("""
+            SELECT g.group_id, g.name FROM groups g
+            JOIN groups_members gm ON gm.group_id = g.group_id
+            WHERE gm.user_id = $1 AND gm.idol_id = $2
+        """, user_id, card["idol_id"])
+
+    if not groups:
+        return await interaction.response.send_message(
+            get_translation(language, "equip_idol.no_groups_for_idol"),
+            ephemeral=True
+        )
+
+    # Crear botones para elegir el grupo
+    view = discord.ui.View(timeout=60)
+    for group in groups:
+        view.add_item(SelectGroupButton(card=card, group=group))
+
+    embed = discord.Embed(
+        title=get_translation(language, "equip_idol.select_group_title"),
+        description=get_translation(language, "equip_idol.select_group_desc", idol_name=card["idol_name"]),
+        color=discord.Color.blurple()
+    )
+
+    await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+
+
+async def unequip_card_logic(interaction: discord.Interaction, card: dict):
+    pool = get_pool()
+    user_id = interaction.user.id
+    language = await get_user_language(user_id)
+
+    card_id = card["card_id"]
+    unique_id = card["unique_id"]
+
+    async with pool.acquire() as conn:
+        idol_card = await conn.fetchrow("""
+            SELECT * FROM user_idol_cards
+            WHERE unique_id = $1 AND user_id = $2
+        """, unique_id, user_id)
+
+        if idol_card:
+            if idol_card["status"] != "equipped":
+                return await interaction.response.send_message(
+                    get_translation(language, "unequip_idol.not_equipped"), ephemeral=True)
+
+            await conn.execute("""
+                UPDATE groups_members SET card_id = NULL
+                WHERE user_id = $1 AND card_id = $2
+            """, user_id, card_id)
+
+            await conn.execute("""
+                UPDATE user_idol_cards SET status = 'available'
+                WHERE unique_id = $1
+            """, unique_id)
+
+            return await interaction.response.send_message(
+                get_translation(language, "unequip_idol.success", card_id=card_id), ephemeral=True)
+
+        # Si no es idol, probar como ítem
+        item_card = await conn.fetchrow("""
+            SELECT * FROM user_item_cards
+            WHERE unique_id = $1 AND user_id = $2
+        """, unique_id, user_id)
+
+        if not item_card:
+            return await interaction.response.send_message("❌ No se encontró esa carta.", ephemeral=True)
+
+        if item_card["status"] != "equipped":
+            return await interaction.response.send_message("⚠️ Esa carta no está equipada.", ephemeral=True)
+
+        slot_columns = ["mic_id", "outfit_id", "accessory_id", "consumable_id"]
+        found_slot = None
+
+        for slot in slot_columns:
+            result = await conn.fetchrow(f"""
+                SELECT group_id, idol_id FROM groups_members
+                WHERE user_id = $1 AND {slot} = $2
+            """, user_id, card_id)
+            if result:
+                found_slot = slot
+                break
+
+        if not found_slot:
+            return await interaction.response.send_message(
+                "⚠️ No se encontró en qué idol está equipada esta carta de ítem.", ephemeral=True)
+
+        await conn.execute(f"""
+            UPDATE groups_members SET {found_slot} = NULL
+            WHERE user_id = $1 AND {found_slot} = $2
+        """, user_id, card_id)
+
+        await conn.execute("""
+            UPDATE user_item_cards SET status = 'available'
+            WHERE unique_id = $1
+        """, unique_id)
+
+        return await interaction.response.send_message(
+            f"✅ Carta de ítem `{card_id}` ha sido desequipada correctamente.", ephemeral=True)
+
+
 
 # --- /cards
 class CardGroup(app_commands.Group):

@@ -168,13 +168,13 @@ class CollectionCommand(commands.Cog):
                         if card:
                             model_key = card["idol_id"] + card["set_id"] + model
                             owned = model_key in user_regular_models
-                            description += f"{'✅' if owned else '❌'} {rarity} {model[-1]}\n"
+                            description += f"`{card['card_id']}` - {'✅' if owned else '❌'} {rarity} {model[-1]}\n"
                             if not owned:
                                 completed = False
                 else:
                     card = grouped[rarity][0]
                     owned = card["card_id"] in user_non_regular_ids
-                    description += f"{'✅' if owned else '❌'} {rarity}\n"
+                    description += f"`{card['card_id']}` - {'✅' if owned else '❌'} {rarity}\n"
                     if not owned:
                         completed = False
 
