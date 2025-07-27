@@ -1,4 +1,4 @@
-import discord, json, inspect
+import discord, json, inspect, math
 from discord.ext import commands
 from discord import app_commands, ui, Interaction
 from datetime import datetime, timezone
@@ -11,13 +11,79 @@ from utils.localization import get_translation
 from commands.starter import version as v
 
 version = v
+base_cost = 2500
 
 class PresentationGroup(app_commands.Group):
     def __init__(self):
         super().__init__(name="presentation", description="Crear y gestionar presentaciones")
 
+    @app_commands.command(name="list", description="Listar tus presentaciones")
+    async def list_presentations(self, interaction: discord.Interaction):
+        user_id = interaction.user.id
+        pool = get_pool()
+
+        # 1) Traer las presentaciones del usuario
+        base_query = """
+                SELECT *
+                FROM presentations
+                WHERE user_id = $1
+                ORDER BY presentation_date DESC
+                """
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(
+                base_query,
+                user_id
+            )
+
+        if not rows:
+            return await interaction.response.send_message(
+                "❌ No tienes presentaciones guardadas.", ephemeral=True
+            )
+
+        STATUS_MAP = {
+            "preparation":    ("🛠️", "Preparación"),
+            "active":         ("▶️", "En curso"),
+            "completed":      ("🎉", "Completada"),
+            "finished":       ("⌛", "Finalizada"),
+            "cancelled":      ("❌", "Cancelada"),
+            "expired":        ("⏰", "Expirada"),
+        }
+        
+        # 2) Crear embeds de vista previa
+        embeds = []
+        for r in rows:
+            async with pool.acquire() as conn:
+                group_name = await conn.fetchval("SELECT name FROM groups WHERE group_id = $1", r['group_id'])
+                song_name = await conn.fetchval("SELECT name FROM songs WHERE song_id = $1", r['song_id'])
+
+            emoji, label = STATUS_MAP.get(r["status"], ("❓", r["status"].capitalize()))
+            status = f"{emoji} {label}"
+            
+            embed = discord.Embed(
+                title=f"🎬 Presentación {r['presentation_id']}",
+                color=discord.Color.blurple()
+            )
+            embed.add_field(name=f"**Tipo:** {r["presentation_type"].capitalize()}", value=f"**Estado:** {status}", inline=False)
+            embed.add_field(name=f"**Grupo:** {group_name if group_name else "`n/a`"}", value=f"**Canción:** {song_name if song_name else "`n/a`"}", inline=False)
+            embed.add_field(name=f"Creación: `{r["presentation_date"].strftime("%Y-%m-%d %H:%M")}`", value="", inline=False)
+            embed.set_footer(text=f"{r['presentation_id']}")
+            embeds.append(embed)
+
+        # 3) Arrancar el paginador
+        paginator = PresentationListPaginator(
+            embeds=embeds,
+            rows=rows,
+            interaction=interaction,
+            base_query=base_query,
+            query_params=(user_id,),
+            embeds_per_page=3
+        )
+        await paginator.start()
+
+
     PRESENTATION_CHOICES = [
         app_commands.Choice(name="Live", value="live"),
+        app_commands.Choice(name="Practice", value="practice"),
         # futuros tipos se agregarán aquí
     ]
 
@@ -32,11 +98,14 @@ class PresentationGroup(app_commands.Group):
         pool = get_pool()
         language = await get_user_language(user_id)
         translation = lambda k: get_translation(language, k)
+        ptype = type.value
 
-        cost = 1000
-        if type == "practice": 
-            cost = cost * 0.2
-        elif type == "event":
+        cost = base_cost
+        extra_desc = ""
+        if ptype == "practice": 
+            cost = int(cost * 0.2)
+            extra_desc = "\n> ⚠️ Esta presentación no otorgará popularidad ni XP"
+        elif ptype == "event":
             cost = 0
 
         async with pool.acquire() as conn:
@@ -50,9 +119,9 @@ class PresentationGroup(app_commands.Group):
             return
 
         # Muestra vista de confirmación
-        view = ConfirmCreatePresentationView(user_id, type.value, cost)
+        view = ConfirmCreatePresentationView(user_id, ptype, cost)
         await interaction.response.send_message(
-            content=f"🎤 ¿Quieres crear una presentación de tipo **{type.name}**?\n💸 Costo: **{cost} créditos**",
+            content=f"🎤 ¿Quieres crear una presentación de tipo **{type.name}**?\n💸 Costo: **{cost} créditos**{extra_desc}",
             view=view,
             ephemeral=True
         )
@@ -195,6 +264,332 @@ class PresentationGroup(app_commands.Group):
             ephemeral=True
         )
 
+
+# --- list
+class PresentationDetailButton(discord.ui.Button):
+    def __init__(self, rowdata: dict, paginator: "PresentationListPaginator"):
+        super().__init__(
+            label=f"Detalles",
+            style=discord.ButtonStyle.primary
+        )
+        self.rowdata = rowdata
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        # Placeholder: aquí iría la vista detallada
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            group_name = await conn.fetchval("SELECT name FROM groups WHERE group_id = $1", self.rowdata['group_id'])
+            song_name = await conn.fetchval("SELECT name FROM songs WHERE song_id = $1", self.rowdata['song_id'])
+        
+        STATUS_MAP = {
+            "preparation":    ("🛠️", "Preparación"),
+            "active":         ("▶️", "En curso"),
+            "completed":      ("🎉", "Completada"),
+            "finished":       ("⌛", "Finalizada"),
+            "cancelled":      ("❌", "Cancelada"),
+            "expired":        ("⏰", "Expirada"),
+        }
+        emoji, label = STATUS_MAP.get(self.rowdata["status"], ("❓", self.rowdata["status"].capitalize()))
+        status = f"{emoji} {label}"
+            
+        embed = discord.Embed(
+            title=f"Detalles — {self.rowdata['presentation_id']}",
+            description=(
+                f"**Tipo:** {self.rowdata['presentation_type'].capitalize()}\n"
+                f"**Estado:** {status}\n"
+                f"**Grupo:** {group_name if group_name else "`n/a`"}\n"
+                f"**Canción:** {song_name if song_name else "`n/a`"}\n"
+                f"**Creación:** `{self.rowdata['presentation_date'].strftime("%Y-%m-%d %H:%M")}`\n"
+                f"**Ultima acción:** `{self.rowdata['last_action'].strftime("%Y-%m-%d %H:%M")}`\n"
+                f"**Sección:** `{self.rowdata['current_section']}`\n"
+                f"**Puntuación:** `{format(self.rowdata['total_score'],',')}`\n"
+                f"**Hype:** `{round(self.rowdata['total_hype'],1)}`\n"
+                f"**Popularidad:** `{format(self.rowdata['total_popularity'],',')}`\n"
+            ),
+            color=discord.Color.gold()
+        )
+        view = discord.ui.View()
+        view.add_item(PublishPracticeButton(rowdata=self.rowdata, paginator=self.paginator))
+        # volver atrás
+        view.add_item(BackToPresentationListButton(self.paginator))
+        await interaction.response.edit_message(embed=embed, view=view)
+
+class PublishPracticeButton(discord.ui.Button):
+    def __init__(self, rowdata: dict, paginator: "PresentationListPaginator"):
+        super().__init__(label="Publicar práctica", style=discord.ButtonStyle.primary, emoji="📢", disabled=(rowdata['status']!='finished' or rowdata['presentation_type']!='practice'))
+        self.rowdata = rowdata
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        # Construir embed de confirmación
+        total_score = self.rowdata["total_score"]
+        # obtenemos average_score
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            avg = await conn.fetchval(
+                "SELECT average_score FROM songs WHERE song_id = $1",
+                self.rowdata["song_id"]
+            ) or 1.0
+
+        # cálculo al 80%
+        raw_pop = 1000 * (total_score / avg)
+        popularity = int(raw_pop * 0.8)
+        xp = popularity // 10
+        r_popularity = f"{format(popularity,',')}"
+        
+        cost = int(base_cost*0.8)  # 80% restante
+        r_cost = f"{format(cost,',')}"
+
+        embed = discord.Embed(
+            title="📢 Publicar práctica",
+            description=(
+                f"Esto te otorgará el 80% de la popularidad generada en la presentación con base en el puntaje. Deberás cubrir el 80% restante del costo de la presentación.\n\n"
+                f"> Costo: **`{r_cost}` 💵**\n\nRecibirás:\n"
+                f"> **{r_popularity}** de popularidad\n"
+                f"> **{xp} XP**\n\n"
+                "¿Confirmas?"
+            ),
+            color=discord.Color.blurple()
+        )
+        view = ConfirmPublishPracticeView(
+            user_id=interaction.user.id,
+            presentation_id=self.rowdata["presentation_id"],
+            popularity=popularity,
+            xp=xp,
+            cost=cost,
+            paginator=self.paginator
+        )
+        await interaction.response.edit_message(embed=embed, view=view)
+        
+class ConfirmPublishPracticeView(discord.ui.View):
+    def __init__(self, user_id: int, presentation_id: str, popularity: int, xp: int, cost: int, paginator: "PresentationListPaginator"):
+        super().__init__(timeout=120)
+        self.user_id = user_id
+        self.presentation_id = presentation_id
+        self.popularity = popularity
+        self.xp = xp
+        self.cost = cost
+        self.paginator = paginator
+
+    @discord.ui.button(label="✅ Confirmar", style=discord.ButtonStyle.success)
+    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if interaction.user.id != self.user_id:
+            return await interaction.response.send_message("❌ No puedes usar este botón.", ephemeral=True)
+
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            # 1) Cobrar 2000 créditos
+            await conn.execute(
+                "UPDATE users SET credits = credits - $1 WHERE user_id = $2",
+                self.cost, self.user_id
+            )
+            # 2) Otorgar XP
+            await conn.execute(
+                "UPDATE users SET xp = xp + $1 WHERE user_id = $2",
+                self.xp, self.user_id
+            )
+            # 3) Actualizar presentación a completed y total_popularity
+            await conn.execute(
+                """
+                UPDATE presentations
+                SET status = 'completed',
+                    total_popularity = total_popularity + $1
+                WHERE presentation_id = $2
+                """,
+                self.popularity, self.presentation_id
+            )
+            # 4) Añadir popularidad al grupo
+            await conn.execute(
+                "UPDATE groups SET popularity = popularity + $1 WHERE group_id = (SELECT group_id FROM presentations WHERE presentation_id = $2)",
+                self.popularity, self.presentation_id
+            )
+
+        # 5) Volver a la lista actualizada
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(self.paginator.base_query, *self.paginator.query_params)
+        if not rows:
+            return await interaction.response.edit_message(
+                content="⚠️ No se encontraron presentaciones.",
+                embed=None, view=None
+            )
+            
+        STATUS_MAP = {
+            "preparation":    ("🛠️", "Preparación"),
+            "active":         ("▶️", "En curso"),
+            "completed":      ("🎉", "Completada"),
+            "finished":       ("⌛", "Finalizada"),
+            "cancelled":      ("❌", "Cancelada"),
+            "expired":        ("⏰", "Expirada"),
+        }
+        # regenerar embeds
+        embeds = []
+        for r in rows:
+            async with pool.acquire() as conn:
+                group_name = await conn.fetchval("SELECT name FROM groups WHERE group_id = $1", r['group_id'])
+                song_name = await conn.fetchval("SELECT name FROM songs WHERE song_id = $1", r['song_id'])
+            
+            emoji, label = STATUS_MAP.get(r["status"], ("❓", r["status"].capitalize()))
+            status = f"{emoji} {label}"
+            
+            e = discord.Embed(
+                title=f"🎬 Presentación {r['presentation_id']}",
+                color=discord.Color.blurple()
+            )
+            e.add_field(name=f"**Tipo:** {r["presentation_type"].capitalize()}", value=f"**Estado:** {status}", inline=False)
+            e.add_field(name=f"**Grupo:** {group_name if group_name else "`n/a`"}", value=f"**Canción:** {song_name if song_name else "`n/a`"}", inline=False)
+            e.add_field(name=f"Creación: `{r["presentation_date"].strftime("%Y-%m-%d %H:%M")}`", value="", inline=False)
+            e.set_footer(text=f"{r['presentation_id']}")
+            embeds.append(e)
+        
+        new_p = PresentationListPaginator(embeds, rows, interaction, self.paginator.base_query, self.paginator.query_params)
+        await new_p.restart(interaction)
+
+    @discord.ui.button(label="✖ Cancelar", style=discord.ButtonStyle.danger)
+    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if interaction.user.id != self.user_id:
+            return await interaction.response.send_message("❌ No puedes usar este botón.", ephemeral=True)
+        # Simplemente regresamos a la vista de detalles original
+        # Repetimos lo mismo que PresentationDetailButton.callback
+        await BackToPresentationListButton(self.paginator).callback(interaction)
+
+
+class BackToPresentationListButton(discord.ui.Button):
+    def __init__(self, paginator: "PresentationListPaginator"):
+        super().__init__(label="🔙 Volver", style=discord.ButtonStyle.secondary, row=2)
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        # re-ejecutar la consulta
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(self.paginator.base_query, *self.paginator.query_params)
+        if not rows:
+            return await interaction.response.edit_message(
+                content="⚠️ No se encontraron presentaciones.",
+                embed=None, view=None
+            )
+            
+        STATUS_MAP = {
+            "preparation":    ("🛠️", "Preparación"),
+            "active":         ("▶️", "En curso"),
+            "completed":      ("🎉", "Completada"),
+            "finished":       ("⌛", "Finalizada"),
+            "cancelled":      ("❌", "Cancelada"),
+            "expired":        ("⏰", "Expirada"),
+        }
+        # regenerar embeds
+        embeds = []
+        for r in rows:
+            async with pool.acquire() as conn:
+                group_name = await conn.fetchval("SELECT name FROM groups WHERE group_id = $1", r['group_id'])
+                song_name = await conn.fetchval("SELECT name FROM songs WHERE song_id = $1", r['song_id'])
+            
+            emoji, label = STATUS_MAP.get(r["status"], ("❓", r["status"].capitalize()))
+            status = f"{emoji} {label}"
+            
+            e = discord.Embed(
+                title=f"🎬 Presentación {r['presentation_id']}",
+                color=discord.Color.blurple()
+            )
+            e.add_field(name=f"**Tipo:** {r["presentation_type"].capitalize()}", value=f"**Estado:** {status}", inline=False)
+            e.add_field(name=f"**Grupo:** {group_name if group_name else "`n/a`"}", value=f"**Canción:** {song_name if song_name else "`n/a`"}", inline=False)
+            e.add_field(name=f"Creación: `{r["presentation_date"].strftime("%Y-%m-%d %H:%M")}`", value="", inline=False)
+            e.set_footer(text=f"{r['presentation_id']}")
+            embeds.append(e)
+
+        new_p = PresentationListPaginator(
+            embeds=embeds,
+            rows=rows,
+            interaction=interaction,
+            base_query=self.paginator.base_query,
+            query_params=self.paginator.query_params,
+            embeds_per_page=self.paginator.embeds_per_page
+        )
+        await new_p.restart(interaction)
+
+class PresentationListPaginator:
+    def __init__(
+        self,
+        embeds: list[discord.Embed],
+        rows: list[dict],
+        interaction: discord.Interaction,
+        base_query: str,
+        query_params: tuple,
+        embeds_per_page: int = 3
+    ):
+        self.all_embeds = embeds
+        self.all_rows = rows
+        self.interaction = interaction
+        self.embeds_per_page = embeds_per_page
+        self.current_page = 0
+        self.total_pages = (len(embeds) + embeds_per_page - 1) // embeds_per_page
+        self.base_query = base_query
+        self.query_params = query_params
+
+    def get_page_embeds(self):
+        start = self.current_page * self.embeds_per_page
+        end = start + self.embeds_per_page
+        page = self.all_embeds[start:end]
+        footer = discord.Embed(
+            description=f"Página {self.current_page+1}/{self.total_pages} • Total: {len(self.all_embeds)}",
+            color=discord.Color.dark_gray()
+        )
+        return [footer] + page
+
+    def get_view(self):
+        view = discord.ui.View(timeout=120)
+        start = self.current_page * self.embeds_per_page
+        end = start + self.embeds_per_page
+        for row in self.all_rows[start:end]:
+            view.add_item(PresentationDetailButton(rowdata=row, paginator=self))
+        view.add_item(PreviousListPageButton(self))
+        view.add_item(NextListPageButton(self))
+        return view
+
+    async def start(self):
+        await self.interaction.response.send_message(
+            embeds=self.get_page_embeds(),
+            view=self.get_view(),
+            ephemeral=True
+        )
+
+    async def restart(self, interaction: discord.Interaction):
+        self.current_page = 0
+        await interaction.response.edit_message(
+            embeds=self.get_page_embeds(),
+            view=self.get_view()
+        )
+
+    async def update(self, interaction: discord.Interaction):
+        await interaction.response.edit_message(
+            embeds=self.get_page_embeds(),
+            view=self.get_view()
+        )
+
+    async def previous_page(self, interaction: discord.Interaction):
+        self.current_page = (self.current_page - 1) % self.total_pages
+        await self.update(interaction)
+
+    async def next_page(self, interaction: discord.Interaction):
+        self.current_page = (self.current_page + 1) % self.total_pages
+        await self.update(interaction)
+
+class PreviousListPageButton(discord.ui.Button):
+    def __init__(self, paginator: PresentationListPaginator):
+        super().__init__(label="⬅️", style=discord.ButtonStyle.secondary, row=2)
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        await self.paginator.previous_page(interaction)
+
+class NextListPageButton(discord.ui.Button):
+    def __init__(self, paginator: PresentationListPaginator):
+        super().__init__(label="➡️", style=discord.ButtonStyle.secondary, row=2)
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        await self.paginator.next_page(interaction)
 
 
 # --- create
@@ -576,6 +971,14 @@ async def show_current_section_view(interaction: discord.Interaction, presentati
         if active_idol and active_idol["card_id"]:
             card = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", active_idol["card_id"])
             Er = active_idol['max_energy']-active_idol['used_energy']
+                                
+            energy_left = round(active_idol["max_energy"] - active_idol["used_energy"], 1)
+            energy_percent = round((energy_left / active_idol["max_energy"]) * 100, 1)
+            
+            embed.add_field(name=f"**🎤 Vocal: {active_idol['vocal']}**", value=f"**🎶 Rap: {active_idol['rap']}**")
+            embed.add_field(name=f"**💃 Dance: {active_idol['dance']}**", value=f"**✨ Visual: {active_idol['visual']}**")
+            embed.add_field(name=f"{"🔋" if energy_percent > 60 else ":low_battery:"} Energy: {energy_percent}%", value=f"> ⚡{energy_left}/{active_idol['max_energy']}", inline=True)
+
             if card:
                 # 🟢 Passive Skill (PS)
                 if card["p_skill"]:
@@ -607,13 +1010,6 @@ async def show_current_section_view(interaction: discord.Interaction, presentati
                     can_use_ult = active_idol["can_ult"]
                     u_status = "✅" if can_use_ult else "❌"
                     embed.add_field(name="🔴 US", value=f"{ult_name} {u_status}", inline=True)
-                    
-            energy_left = round(active_idol["max_energy"] - active_idol["used_energy"], 1)
-            energy_percent = round((energy_left / active_idol["max_energy"]) * 100, 1)
-            
-            embed.add_field(name=f"**🎤 Vocal: {active_idol['vocal']}**", value=f"**🎶 Rap: {active_idol['rap']}**")
-            embed.add_field(name=f"**💃 Dance: {active_idol['dance']}**", value=f"**✨ Visual: {active_idol['visual']}**")
-            embed.add_field(name=f"{"🔋" if energy_percent > 60 else ":low_battery:"} Energy: {energy_percent}%", value=f"> ⚡{energy_left}/{active_idol['max_energy']}", inline=True)
 
         section_type = ""        
         if section['type_plus']:
@@ -1126,6 +1522,7 @@ async def show_performance_cards_by_type(interaction: discord.Interaction, prese
 
 async def send_performance_card_page(interaction, presentation_id, pages, page_index, card_type, language):
     pool = get_pool()
+    total = len(pages)
     current_rows = pages[page_index]
     embed = discord.Embed(
         title=f"{'🎯' if card_type == 'reinforcement' else '🎇'} Cartas: {card_type.title()}",
@@ -1173,10 +1570,29 @@ async def send_performance_card_page(interaction, presentation_id, pages, page_i
         view.add_item(PerformanceCardPreviewButton(presentation_id, pcard_id, card_type, label=card_name))
 
     # Navegación
-    if page_index > 0:
-        view.add_item(PerformanceCardPageButton(presentation_id, pages, page_index - 1, card_type, language, "⏪"))
-    if page_index < len(pages) - 1:
-        view.add_item(PerformanceCardPageButton(presentation_id, pages, page_index + 1, card_type, language, "⏩"))
+    prev_index = (page_index - 1) % total
+    next_index = (page_index + 1) % total
+
+    view.add_item(
+        PerformanceCardPageButton(
+            presentation_id,
+            pages,
+            prev_index,
+            card_type,
+            language,
+            "⏪"
+        )
+    )
+    view.add_item(
+        PerformanceCardPageButton(
+            presentation_id,
+            pages,
+            next_index,
+            card_type,
+            language,
+            "⏩"
+        )
+    )
 
     view.add_item(PerformanceCardsCancelButton(presentation_id))
     await interaction.response.edit_message(embed=embed, view=view)
@@ -1345,8 +1761,16 @@ class ConfirmUsePerformanceCardButton(discord.ui.Button):
                             ORDER BY pm.id ASC
                         """, self.presentation_id)
 
-                    view = ChooseIdolForPerformanceCardView(self.presentation_id, self.pcard_id, effect, allow_active=False, idols=list(idols))
-                    await view.send(interaction)
+                    p = PerformanceIdolPaginator(
+                        interaction=interaction,
+                        presentation_id=self.presentation_id,
+                        pcard_id=self.pcard_id,
+                        effect=effect,
+                        allow_active=(effect=='solo_recovery'),
+                        idols=list(idols),
+                        idols_per_page=3
+                    )
+                    await p.start()
                     return
 
                 elif effect == "solo_recovery":
@@ -1358,8 +1782,16 @@ class ConfirmUsePerformanceCardButton(discord.ui.Button):
                             WHERE pm.presentation_id = $1
                             ORDER BY pm.id ASC
                         """, self.presentation_id)
-                    view = ChooseIdolForPerformanceCardView(self.presentation_id, self.pcard_id, effect, allow_active=True, idols=list(idols))
-                    await view.send(interaction)
+                    p = PerformanceIdolPaginator(
+                        interaction=interaction,
+                        presentation_id=self.presentation_id,
+                        pcard_id=self.pcard_id,
+                        effect=effect,
+                        allow_active=(effect=='solo_recovery'),
+                        idols=list(idols),
+                        idols_per_page=3
+                    )
+                    await p.start()
                     return
 
                 # Si no requirió vista, se descuenta cantidad y uso
@@ -1381,8 +1813,143 @@ class ConfirmUsePerformanceCardButton(discord.ui.Button):
         # Seguridad final (no debería llegar aquí)
         await interaction.response.edit_message(content="❌ Acción no reconocida.")
 
+
+class PerformanceIdolPaginator:
+    def __init__(
+        self,
+        interaction: discord.Interaction,
+        presentation_id: str,
+        pcard_id: str,
+        effect: str,
+        allow_active: bool,
+        idols: list[dict],
+        idols_per_page: int = 3
+    ):
+        self.interaction = interaction
+        self.presentation_id = presentation_id
+        self.pcard_id = pcard_id
+        self.effect = effect
+        self.allow_active = allow_active
+        self.idols = idols
+        self.idols_per_page = idols_per_page
+
+        self.current_page = 0
+        self.total_pages = (len(idols) + idols_per_page - 1) // idols_per_page
+
+    def get_page_idols(self):
+        start = self.current_page * self.idols_per_page
+        end = start + self.idols_per_page
+        return self.idols[start:end]
+
+    def build_view(self):
+        view = discord.ui.View(timeout=120)
+        # Botones de selección para cada ídol de esta página
+        for idol in self.get_page_idols():
+            label = f"{idol['name']} ({idol['idol_id']})"
+            disabled = (idol["current_position"] == "active" and not self.allow_active)
+            view.add_item(
+                ChooseIdolForPerformanceCardButton(
+                    presentation_id=self.presentation_id,
+                    pcard_id=self.pcard_id,
+                    effect=self.effect,
+                    idol_id=idol["id"],
+                    label=label,
+                    disabled=disabled
+                )
+            )
+
+        # Navegación
+        if self.total_pages > 1:
+            view.add_item(
+                PerformancePrevButton(self)
+            )
+            view.add_item(
+                PerformanceNextButton(self)
+            )
+
+        # Cancelar
+        view.add_item(
+            CancelPerformanceCardPreviewButton(self.presentation_id)
+        )
+        return view
+
+    def build_embeds(self):
+        embeds = []
+        page_idols = self.get_page_idols()
+        for idol in page_idols:
+            embed = discord.Embed(
+                title=f"🎤 {idol['name']} ({idol['idol_id']})",
+                description=f"Posición: `{idol['current_position']}`",
+                color=discord.Color.green()
+            )
+            # Stats
+            embed.add_field(
+                name="Stats",
+                value=(
+                    f"🎶 Vocal: {idol['vocal']}\n"
+                    f"🎤 Rap: {idol['rap']}\n"
+                    f"💃 Dance: {idol['dance']}\n"
+                    f"📸 Visual: {idol['visual']}"
+                ),
+                inline=False
+            )
+            # energy %
+            energy_left = idol['max_energy'] - idol['used_energy']
+            energy_pct = round((energy_left / idol['max_energy']) * 100, 1)
+            embed.add_field(
+                name="⚡ Energy",
+                value=f"{energy_left}/{idol['max_energy']} ({energy_pct}%)",
+                inline=False
+            )
+            embed.set_footer(
+                text=(
+                    f"Ídol {self.current_page * self.idols_per_page + page_idols.index(idol)+1}"
+                    f" de {len(self.idols)} • Página {self.current_page+1}/{self.total_pages}"
+                )
+            )
+            # miniatura
+            if idol.get('card_id'):
+                embed.set_thumbnail(
+                    url=f"https://res.cloudinary.com/.../{idol['card_id']}.webp"
+                )
+            embeds.append(embed)
+        return embeds
+
+    async def start(self):
+        embeds = self.build_embeds()
+        view = self.build_view()
+        await self.interaction.response.send_message(
+            content="🔁 Elige un ídol para aplicar la carta:",
+            embeds=embeds,
+            view=view,
+            ephemeral=True
+        )
+
+    async def update(self, interaction: discord.Interaction):
+        embeds = self.build_embeds()
+        view = self.build_view()
+        await interaction.response.edit_message(embeds=embeds, view=view)
+
+class PerformancePrevButton(discord.ui.Button):
+    def __init__(self, paginator: PerformanceIdolPaginator):
+        super().__init__(label="⏪", style=discord.ButtonStyle.secondary, row=2)
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        self.paginator.current_page = (self.paginator.current_page - 1) % self.paginator.total_pages
+        await self.paginator.update(interaction)
+
+class PerformanceNextButton(discord.ui.Button):
+    def __init__(self, paginator: PerformanceIdolPaginator):
+        super().__init__(label="⏩", style=discord.ButtonStyle.secondary, row=2)
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        self.paginator.current_page = (self.paginator.current_page + 1) % self.paginator.total_pages
+        await self.paginator.update(interaction)
+
 class ChooseIdolForPerformanceCardView(discord.ui.View):
-    def __init__(self, presentation_id: str, pcard_id: str, effect: str, allow_active: bool, idols: list, page_index: int = 0):
+    def __init__(self, presentation_id: str, pcard_id: str, effect: str, allow_active: bool, idols: list, page_index: int = 0, idols_per_page: int = 3):
         super().__init__(timeout=120)
         self.presentation_id = presentation_id
         self.pcard_id = pcard_id
@@ -1390,33 +1957,61 @@ class ChooseIdolForPerformanceCardView(discord.ui.View):
         self.allow_active = allow_active
         self.idols = idols  # lista de dicts con info de cada idol
         self.page_index = page_index
+        self.idols_per_page = idols_per_page
 
         self.build_buttons()
 
     def build_buttons(self):
         self.clear_items()
 
-        current_idol = self.idols[self.page_index]
-        label = f"{current_idol['name']} ({current_idol['idol_id']})"
+        # calculamos el slice de ídols a mostrar en esta página
+        start = self.page_index * self.idols_per_page
+        end = start + self.idols_per_page
+        page_idols = self.idols[start:end]
 
-        disabled = (current_idol["current_position"] == "active" and not self.allow_active)
+        # fila 1: hasta 3 botones de idols
+        for idol in page_idols:
+            label = f"{idol['name']} ({idol['idol_id']})"
+            disabled = (idol["current_position"] == "active" and not self.allow_active)
+            self.add_item(
+                ChooseIdolForPerformanceCardButton(
+                    presentation_id=self.presentation_id,
+                    pcard_id=self.pcard_id,
+                    effect=self.effect,
+                    idol_id=idol["id"],  # id en presentation_members
+                    label=label,
+                    disabled=disabled
+                )
+            )
 
-        self.add_item(ChooseIdolForPerformanceCardButton(
-            presentation_id=self.presentation_id,
-            pcard_id=self.pcard_id,
-            effect=self.effect,
-            idol_id=current_idol["id"],  # este es el id en presentation_members
-            label=label,
-            disabled=disabled
-        ))
-
+        # fila 2: botones de paginación
+        # “<<” volver a página anterior
         if self.page_index > 0:
-            self.add_item(ChooseIdolForPerformanceCardPageButton(self, self.page_index - 1, label="⏪"))
+            self.add_item(
+                ChooseIdolForPerformanceCardPageButton(
+                    view=self,
+                    new_index=self.page_index - 1,
+                    label="⏪",
+                )
+            )
 
-        if self.page_index < len(self.idols) - 1:
-            self.add_item(ChooseIdolForPerformanceCardPageButton(self, self.page_index + 1, label="⏩"))
+        # “>>” ir a la siguiente página
+        if end < len(self.idols):
+            self.add_item(
+                ChooseIdolForPerformanceCardPageButton(
+                    view=self,
+                    new_index=self.page_index + 1,
+                    label="⏩",
+                )
+            )
 
-        self.add_item(CancelPerformanceCardPreviewButton(self.presentation_id))
+        # boton cancelar
+        self.add_item(
+            CancelPerformanceCardPreviewButton(
+                presentation_id=self.presentation_id
+            )
+        )
+
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         pool = get_pool()
@@ -1425,23 +2020,32 @@ class ChooseIdolForPerformanceCardView(discord.ui.View):
             return presentation and presentation["user_id"] == interaction.user.id
 
     async def send(self, interaction: discord.Interaction):
-        current = self.idols[self.page_index]
+        # construimos el embed de la página actual
+        start = self.page_index * self.idols_per_page
+        end = start + self.idols_per_page
+        page_idols = self.idols[start:end]
+
+        desc_lines = []
+        for idol in page_idols:
+            desc_lines.append(
+                f"**{idol['name']}** ({idol['idol_id']}) — Posición: `{idol['current_position']}`"
+            )
+        description = "\n".join(desc_lines)
+
         embed = discord.Embed(
-            title=f"🎤 Idol: {current['name']} ({current['idol_id']})",
-            description=f"Posición actual: `{current['current_position']}`",
+            title="🎤 Elige un idol",
+            description=description,
             color=discord.Color.green()
         )
-        embed.add_field(name="Stats",
-                        value=f"🎶 Vocal: {current['vocal']}\n🎤 Rap: {current['rap']}\n💃 Dance: {current['dance']}\n📸 Visual: {current['visual']}",
-                        inline=False)
-        embed.set_footer(text=f"Idol {self.page_index + 1} de {len(self.idols)}")
+        embed.set_footer(text=f"Página {self.page_index+1} de {math.ceil(len(self.idols)/self.idols_per_page)}")
 
+        # reconstruimos los botones
         self.build_buttons()
         await interaction.response.edit_message(embed=embed, view=self)
 
 class ChooseIdolForPerformanceCardPageButton(discord.ui.Button):
     def __init__(self, view: ChooseIdolForPerformanceCardView, new_index: int, label: str):
-        super().__init__(label=label, style=discord.ButtonStyle.primary)
+        super().__init__(label=label, style=discord.ButtonStyle.primary, row=2)
         self.view_data = view
         self.new_index = new_index
 
@@ -1457,7 +2061,15 @@ class ChooseIdolForPerformanceCardPageButton(discord.ui.Button):
         await new_view.send(interaction)
 
 class ChooseIdolForPerformanceCardButton(discord.ui.Button):
-    def __init__(self, presentation_id: str, pcard_id: str, effect: str, idol_id: str, label: str, disabled: bool):
+    def __init__(
+        self,
+        presentation_id: str,
+        pcard_id: str,
+        effect: str,
+        idol_id: str,
+        label: str,
+        disabled: bool
+    ):
         super().__init__(label=label, style=discord.ButtonStyle.primary, disabled=disabled)
         self.presentation_id = presentation_id
         self.pcard_id = pcard_id
@@ -1516,6 +2128,7 @@ class CancelPerformanceCardPreviewButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         await show_current_section_view(interaction, self.presentation_id, edit=True)
+
 
 # - start performance
 class PresentationSelectToPerformView(ui.View):
@@ -1897,7 +2510,7 @@ async def perform_section_action(conn, presentation_id: str, idol_row, song_sect
 
     new_switch = {"optional": 1, "forced": -1, "locked": 0}.get(change_rule, 1)
 
-    p_card_uses = 1 + new_duration // 5
+    p_card_uses = 1 + new_duration // 6
     
     await conn.execute("""
         UPDATE presentations SET free_switches = $1, performance_card_uses = $2
@@ -2104,19 +2717,9 @@ class UltimateSkillUseButton(discord.ui.Button):
             score, hype, final, base_score = await perform_section_action(conn, self.presentation_id, idol, section, presentation, bonus)
 
             if final:
-                average_score = await conn.fetchval("SELECT average_score FROM songs WHERE song_id = $1", presentation['song_id'])
-                final_score = await conn.fetchval("SELECT total_score FROM presentations WHERE presentation_id = $1", presentation['presentation_id'])
-                popularity = int(1000 * (final_score / average_score))
-                xp_got = popularity // 10
-
-                await conn.execute("UPDATE users SET xp = xp + $1 WHERE user_id = $2", xp_got, presentation['user_id'])
-                await conn.execute("""
-                    UPDATE presentations SET status = 'completed', current_section = current_section + 1, total_popularity = $1 WHERE presentation_id = $2
-                """, popularity, self.presentation_id)
-                await conn.execute("UPDATE groups SET popularity = popularity + $1 WHERE group_id = $2", popularity, presentation["group_id"])
-
+                content = await finalize_presentation(conn, presentation)
                 return await interaction.response.edit_message(
-                    content=f"🎉 ¡Presentación completada!\nPuntuación total: {format(final_score,',')} _(Esperado: {format(int(average_score),',')})_\nPopularidad ganada: {format(popularity,',')}\nXP obtenida: {xp_got}",
+                    content=content,
                     embed=None,
                     view=None
                 )
@@ -2422,37 +3025,12 @@ class ActiveSkillUseButton(discord.ui.Button):
             score, hype, final, base_score = await perform_section_action(conn, self.presentation_id, idol, section, presentation, bonus)
 
             if final:
-                average_score = await conn.fetchval("""
-                    SELECT average_score FROM songs WHERE song_id = $1
-                """, presentation['song_id'])
-
-                final_score = await conn.fetchval("""
-                    SELECT total_score FROM presentations WHERE presentation_id = $1
-                """, presentation['presentation_id'])
-                popularity = int(1000 * (final_score / average_score))
-                
-                xp_got = popularity//10
-                
-                await conn.execute(
-                    "UPDATE users SET xp = xp + $1 WHERE user_id = $2",
-                    xp_got, presentation['user_id']
-                )
-
-                await conn.execute("""
-                    UPDATE presentations SET status = 'completed', current_section = current_section + 1, total_popularity = $1 WHERE presentation_id = $2
-                """, popularity, self.presentation_id)
-
-                await conn.execute("""
-                    UPDATE groups SET popularity = popularity + $1
-                    WHERE group_id = $2
-                """, popularity, presentation["group_id"])
-
-                await interaction.response.edit_message(
-                    content=f"🎉 ¡Presentación completada!\nPuntuación total: {format(final_score,',')} _(Esperado: {format(int(average_score),',')})_\nPopularidad ganada: {format(popularity,',')}\nXP obtenida: {xp_got}",
+                content = await finalize_presentation(conn, presentation)
+                return await interaction.response.edit_message(
+                    content=content,
                     embed=None,
                     view=None
                 )
-                return
     
             embed = discord.Embed(
                 title="🎯 Habilidad activa usada",
@@ -2971,36 +3549,12 @@ class BasicActionButton(discord.ui.Button):
             
 
             if final:
-                # Termina presentación
-                average_score = await conn.fetchval("""
-                    SELECT average_score FROM songs WHERE song_id = $1
-                """, song_id)
-
-                final_score = presentation["total_score"] + score
-                popularity = int(1000 * (final_score / average_score))
-                
-                xp_got = popularity//10
-                
-                await conn.execute(
-                    "UPDATE users SET xp = xp + $1 WHERE user_id = $2",
-                    xp_got, presentation['user_id']
-                )
-
-                await conn.execute("""
-                    UPDATE presentations SET status = 'completed', current_section = current_section + 1, total_popularity = $1 WHERE presentation_id = $2
-                """, popularity, self.presentation_id)
-
-                await conn.execute("""
-                    UPDATE groups SET popularity = popularity + $1
-                    WHERE group_id = $2
-                """, popularity, presentation["group_id"])
-
-                await interaction.response.edit_message(
-                    content=f"🎉 ¡Presentación completada!\nPuntuación total: {format(final_score,',')} _(Esperado: {format(int(average_score),',')})_\nPopularidad ganada: {format(popularity,',')}\nXP obtenida: {xp_got}",
+                content = await finalize_presentation(conn, presentation)
+                return await interaction.response.edit_message(
+                    content=content,
                     embed=None,
                     view=None
                 )
-                return
 
             
 
@@ -3035,6 +3589,73 @@ class ReturnToSectionButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
         await show_current_section_view(interaction, self.presentation_id, edit=True)
 
+async def finalize_presentation(conn, presentation: dict) -> str:
+    """
+    Ejecuta la lógica de fin de presentación:
+    - Si es type == 'live', otorga popularidad y XP.
+    - Si es type == 'practice', no otorga recompensa.
+    Devuelve el contenido (string) para el edit_message.
+    """
+    presentation_id = presentation["presentation_id"]
+    user_id = presentation["user_id"]
+    group_id = presentation["group_id"]
+    ptype = presentation.get("presentation_type", "live")
+
+    # Consulta valores base
+    average_score = await conn.fetchval(
+        "SELECT average_score FROM songs WHERE song_id = $1",
+        presentation["song_id"]
+    )
+    # total_score ya fue actualizada por el botón antes de llegar aquí
+    total_score = await conn.fetchval(
+        "SELECT total_score FROM presentations WHERE presentation_id = $1",
+        presentation_id
+    )
+
+    if ptype == "live":
+        # 1) calcular popularidad y XP
+        popularity = int(1000 * (total_score / average_score))
+        xp = popularity // 10
+
+        # 2) persistir cambios
+        await conn.execute(
+            "UPDATE users SET xp = xp + $1 WHERE user_id = $2",
+            xp, user_id
+        )
+        await conn.execute(
+            """
+            UPDATE presentations
+            SET status = 'completed',
+                current_section = current_section + 1,
+                total_popularity = $1
+            WHERE presentation_id = $2
+            """,
+            popularity, presentation_id
+        )
+        await conn.execute(
+            "UPDATE groups SET popularity = popularity + $1 WHERE group_id = $2",
+            popularity, group_id
+        )
+
+        # 3) mensaje final
+        return (
+            f"## 🎉 ¡Presentación completada!\n**Puntuación total:** {format(total_score,',')} _(Esperado: {format(int(average_score),',')})_\n> **Popularidad ganada:** {format(popularity,',')}\n> **XP obtenida:** {xp}"
+        )
+
+    else:  # practice
+        # sólo marcar completada
+        await conn.execute(
+            """
+            UPDATE presentations
+            SET status = 'finished',
+                current_section = current_section + 1
+            WHERE presentation_id = $1
+            """,
+            presentation_id
+        )
+        return (
+            f"## ✅ Práctica finalizada.\n**Puntuación total:** {format(total_score,',')}\n> -(no se ha recibido popularidad ni XP)-"
+        )
 
 async def setup(bot):
     bot.tree.add_command(PresentationGroup())

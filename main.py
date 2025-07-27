@@ -2,6 +2,7 @@ import discord
 import logging
 import os
 from discord.ext import commands
+from datetime import datetime
 from config import TOKEN
 from db.connection import create_pool
 from db.schema import create_all_tables
@@ -37,11 +38,21 @@ async def on_app_command_error(interaction: discord.Interaction, error: discord.
 
 @bot.event
 async def on_interaction(interaction: discord.Interaction):
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     user = interaction.user
+
     if interaction.type.name == "component":
-        logging.info(f"[Botón presionado] Usuario: {user} ({user.id}) - Custom ID: {interaction.data.get('custom_id')}")
+        comp = interaction.data
+        custom_id = comp.get("custom_id")
+        label = getattr(interaction.component, "label", None)
+        if label:
+            logging.info(f"[{now}] [Botón presionado] Usuario: {user} ({user.id}) – Custom ID: {custom_id} – Label: {label}")
+        else:
+            logging.info(f"[{now}] [Componente activado] Usuario: {user} ({user.id}) – Custom ID: {custom_id}")
+
     elif interaction.type.name == "application_command":
-        logging.info(f"[Comando usado] Usuario: {user} ({user.id}) - Comando: /{interaction.command.name}")
+        full_cmd = interaction.command.qualified_name
+        logging.info(f"[{now}] [Comando usado] Usuario: {user} ({user.id}) – Comando: /{full_cmd}")
 
 
 # 🔁 Carga todas las extensiones de la carpeta commands/

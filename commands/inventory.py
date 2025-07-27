@@ -7,7 +7,7 @@ from utils.localization import get_translation
 from utils.language import get_user_language
 from db.connection import get_pool
 from datetime import datetime
-from utils.paginator import Paginator
+from utils.paginator import Paginator, NextButton, PreviousButton
 from collections import Counter, defaultdict
 from commands.starter import version as v
 
@@ -151,7 +151,7 @@ class InventoryGroup(app_commands.Group):
                 order_column = order_by.value
         order_dir = "ASC"
         if order:
-            order_dir = order.values
+            order_dir = order.value
         if not order and not order_by:
             order_dir = "DESC"
         base_query += f" ORDER BY {order_column} {order_dir}"
@@ -173,91 +173,10 @@ class InventoryGroup(app_commands.Group):
             return
 
         card_counts = Counter([row['card_id'] for row in rows])
-        embeds = []
-        for row in rows:
-            async with pool.acquire() as conn:
-                idol_row = await conn.fetchrow("""
-                    SELECT * FROM cards_idol WHERE card_id = $1
-                """, row["card_id"])
-                idol_base_row = await conn.fetchrow(
-                    "SELECT * FROM idol_base WHERE idol_id = $1",
-                    row['idol_id']
-                )
-                
-                name = idol_row['idol_name']
-                card_set = idol_row['set_name']
-                rarity = idol_row['rarity']
-                group_name = idol_row['group_name']
-                
-                c_rarity = rarity
-                
-                if rarity == "Regular":
-                    model = idol_row['rarity_id'][1]
-                    level = idol_row['rarity_id'][2]
-                    rarity += f" {model} - Lvl.{level}"
-                
-            blocked = "🔐" if row["is_locked"] else ""
-            c_status = ""
-            if row['status'] == 'equipped':
-                c_status = "👥"
-            elif row['status'] == "trading":
-                c_status = "🔄"
-            elif row['status'] == "on_sale":
-                c_status = "💲"
-            
-            RARITY_COLORS = {
-                "Regular": discord.Color.light_gray(),
-                "Special": discord.Color.purple(),
-                "Limited": discord.Color.yellow(),
-                "FCR": discord.Color.fuchsia(),
-                "POB": discord.Color.blue(),
-                "Legacy": discord.Color.dark_purple(),
-            }
-            embed_color = RARITY_COLORS.get(c_rarity, discord.Color.default())
-            
-            cantidad_copias = ""
-            if card_counts[row['card_id']] > 1:
-                cantidad_copias = f" `x{card_counts[row['card_id']]} copias`"
-                
-            embed = discord.Embed(
-                title=f"{name} - *{group_name}*{cantidad_copias} {blocked}{c_status}",
-                description=f"{card_set} `{rarity}`",
-                color=embed_color
-            )
-            
-            image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{row['card_id']}.webp{version}"
-            embed.set_thumbnail(url=image_url)
-            
-            skills = ""
-            if idol_row['p_skill']:
-                skills += "🟢"
-            if idol_row['a_skill']:
-                skills += "🔵"
-            if idol_row['s_skill']:
-                skills += "🟡"
-            if idol_row['u_skill']:
-                skills += "🔴"
-                
-            vocal = idol_row['vocal'] - idol_base_row['vocal']
-            rap = idol_row['rap'] - idol_base_row['rap']
-            dance = idol_row['dance'] - idol_base_row['dance']
-            visual = idol_row['visual'] - idol_base_row['visual']
-            energy = idol_row['energy'] - 50
-            
-            embed.add_field(name=f"**🎤 Vocal: {idol_base_row['vocal']} (+{vocal})**", value=f"**🎶 Rap: {idol_base_row['rap']} (+{rap})**", inline=True)
-            embed.add_field(name=f"**💃 Dance: {idol_base_row['dance']} (+{dance})**", value=f"**✨ Visual: {idol_base_row['visual']} (+{visual})**", inline=True)
-            embed.add_field(name=f"**⚡ Energy: 50 (+{energy})**", value=f"**Skills: {skills}**", inline=True)
-            
-            embed.set_footer(text=f"{row['card_id']}.{row['unique_id']}")
-            #{row['date_obtained'].strftime('%Y-%m-%d %H:%M:%S')}
-            embeds.append(embed)
+        embeds = await generate_idol_card_embeds(rows, pool)
 
-#        def create_view(p: Paginator):
-#            return InventoryCardView(p, rows, equip_logic=equip_card_logic, unequip_logic=unequip_card_logic)
-
-        paginator = Paginator(embeds, embeds_per_page=3 )#, custom_view_factory=create_view)
-        await paginator.start(interaction)
-
+        paginator = InventoryEmbedPaginator(embeds, rows, interaction, base_query, params, embeds_per_page=3)
+        await paginator.start()
 
     
     @idol_cards.autocomplete("idol")
@@ -392,46 +311,22 @@ class InventoryGroup(app_commands.Group):
             rows = await conn.fetch(query, *params)
 
         language = await get_user_language(user_id=user_id)
-        durability = get_translation(language, "inventory.durability")
 
         if not rows:
             await interaction.response.send_message("No tienes item cards por ahora.", ephemeral=True)
             return
 
-        embeds = []
-        for row in rows:
-            async with pool.acquire() as conn:
-                eq_data = await conn.fetchrow(f"SELECT * FROM groups_members WHERE {row['type']}_id = $1", f"{row['item_id']}.{row['unique_id']}")
-                equiped_desc = ""
-                if eq_data:
-                    group_name = await conn.fetchval("SELECT name FROM groups WHERE group_id = $1", eq_data['group_id'])
-                    idol_name = await conn.fetchval("SELECT name FROM idol_base WHERE idol_id = $1", eq_data['idol_id'])
-                    equiped_desc += f"\n> Equipped to: {idol_name} - {group_name}"
-            embed = discord.Embed(
-                title=f"{"✅" if row['status'] == "available" else ""} {row['name']} ⌛{row['durability']}",
-                description=f"`{row['type'].capitalize()}`{equiped_desc}",
-                color=discord.Color.teal()
-            )
-
-            image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{row['item_id']}.webp{version}"
-            embed.set_thumbnail(url=image_url)
-
-            stats = [
-                ("Vocal", row["plus_vocal"]),
-                ("Rap", row["plus_rap"]),
-                ("Dance", row["plus_dance"]),
-                ("Visual", row["plus_visual"]),
-                ("Energy", row["plus_energy"]),
-            ]
-            bonus_str = "\n".join(f"**{f'+{v}' if v > 0 else v}** {k}" for k, v in stats if v != 0)
-            if bonus_str:
-                embed.add_field(name="Bonos:", value=bonus_str, inline=False)
-
-            embed.set_footer(text=f"{row['item_id']}.{row['unique_id']}")
-            embeds.append(embed)
-
-        paginator = Paginator(embeds, embeds_per_page=3)
-        await paginator.start(interaction)
+        embeds = await generate_item_card_embeds(rows, pool)
+        
+        paginator = ItemInventoryEmbedPaginator(
+            embeds=embeds,
+            rows=rows,
+            interaction=interaction,
+            base_query=query,
+            query_params=tuple(params),
+            embeds_per_page=3
+        )
+        await paginator.start()
 
 
     @app_commands.command(name="performance_cards", description="Ver tus performance cards")
@@ -592,169 +487,1262 @@ class NextSimpleButton(discord.ui.Button):
         await self.paginator.update(interaction)
 
 
-class InventoryCardView(discord.ui.View):
-    def __init__(self, paginator: Paginator, cards: list, equip_logic, unequip_logic):
-        super().__init__(timeout=120)
-        self.paginator = paginator
-        self.cards = cards
-        self.equip_logic = equip_logic
-        self.unequip_logic = unequip_logic
 
-        # Botones de navegación
-        self.add_item(self.PreviousPageButton())
-        self.add_item(self.NextPageButton())
+# - item_cards
+async def generate_item_card_embeds(rows: list[dict], pool) -> list[discord.Embed]:
+    """
+    Dada la lista de rows de user_item_cards JOIN cards_item,
+    construye y devuelve la lista de embeds correspondientes.
+    """
+    embeds: list[discord.Embed] = []
+    for row in rows:
+        # Obtenemos info de equipamiento
+        equipped_desc = ""
+        async with pool.acquire() as conn:
+            eq_data = await conn.fetchrow(
+                f"SELECT * FROM groups_members WHERE {row['type']}_id = $1",
+                f"{row['item_id']}.{row['unique_id']}"
+            )
+            if eq_data:
+                group_name = await conn.fetchval(
+                    "SELECT name FROM groups WHERE group_id = $1",
+                    eq_data["group_id"]
+                )
+                idol_name = await conn.fetchval(
+                    "SELECT name FROM idol_base WHERE idol_id = $1",
+                    eq_data["idol_id"]
+                )
+                equipped_desc = f"\n> Equipped to: {idol_name} - {group_name}"
 
-        # Botones para las cartas actuales en la página
-        start = paginator.current_page * paginator.embeds_per_page
-        end = start + paginator.embeds_per_page
-        page_cards = cards[start:end]
+        # Construcción del embed
+        title_prefix = "✅ " if row["status"] == "available" else ""
+        embed = discord.Embed(
+            title=f"{title_prefix}{row['name']} ⌛{row['durability']}",
+            description=f"`{row['type'].capitalize()}`{equipped_desc}",
+            color=discord.Color.teal()
+        )
 
-        for card in page_cards:
-            self.add_item(EquipButton(card, self.equip_logic))
-            self.add_item(UnequipButton(card, self.unequip_logic))
+        image_url = (
+            f"https://res.cloudinary.com/dyvgkntvd/image/upload/"
+            f"f_webp,d_no_image.jpg/{row['item_id']}.webp{version}"
+        )
+        embed.set_thumbnail(url=image_url)
 
-    class PreviousPageButton(discord.ui.Button):
-        def __init__(self):
-            super().__init__(label="⬅️ Anterior", style=discord.ButtonStyle.secondary)
+        # Campos de bonos
+        stats = [
+            ("Vocal", row["plus_vocal"]),
+            ("Rap", row["plus_rap"]),
+            ("Dance", row["plus_dance"]),
+            ("Visual", row["plus_visual"]),
+            ("Energy", row["plus_energy"]),
+        ]
+        bonus_str = "\n".join(f"**{f'+{v}' if v > 0 else v}** {k}" for k, v in stats if v != 0)
+        if bonus_str:
+            embed.add_field(name="Bonos:", value=bonus_str, inline=False)
 
-        async def callback(self, interaction: discord.Interaction):
-            view = self.view  # type: InventoryCardView
-            await view.paginator.previous_page(interaction, custom_view_factory=lambda p: InventoryCardView(p, view.cards, view.equip_logic, view.unequip_logic))
+        embed.set_footer(text=f"{row['item_id']}.{row['unique_id']}")
+        embeds.append(embed)
 
-    class NextPageButton(discord.ui.Button):
-        def __init__(self):
-            super().__init__(label="Siguiente ➡️", style=discord.ButtonStyle.secondary)
-
-        async def callback(self, interaction: discord.Interaction):
-            view = self.view  # type: InventoryCardView
-            await view.paginator.next_page(interaction, custom_view_factory=lambda p: InventoryCardView(p, view.cards, view.equip_logic, view.unequip_logic))
+    return embeds
 
 
-class EquipButton(discord.ui.Button):
-    def __init__(self, card_row, equip_logic):
-        label = f"⚔️ Equipar {card_row['card_id']}.{card_row['unique_id']}"
-        super().__init__(label=label, style=discord.ButtonStyle.success, custom_id=f"equip_{card_row['unique_id']}")
-        self.card_row = card_row
-        self.equip_logic = equip_logic
+class ItemInventoryEmbedPaginator:
+    def __init__(
+        self,
+        embeds: list[discord.Embed],
+        rows: list[dict],
+        interaction: discord.Interaction,
+        base_query: str,
+        query_params: tuple,
+        embeds_per_page: int = 3
+    ):
+        self.all_embeds = embeds
+        self.all_rows = rows
+        self.interaction = interaction
+        self.embeds_per_page = embeds_per_page
+        self.current_page = 0
+        self.total_pages = (len(embeds) + embeds_per_page - 1) // embeds_per_page
+        self.current_page_embeds: list[discord.Embed] = []
 
-    async def callback(self, interaction: discord.Interaction):
-        await self.equip_logic(interaction, self.card_row)
+        self.base_query = base_query
+        self.query_params = query_params
 
-class UnequipButton(discord.ui.Button):
-    def __init__(self, card_row, unequip_logic):
-        label = f"🔻 Desequipar {card_row['card_id']}.{card_row['unique_id']}"
-        super().__init__(label=label, style=discord.ButtonStyle.danger, custom_id=f"unequip_{card_row['unique_id']}")
-        self.card_row = card_row
-        self.unequip_logic = unequip_logic
+    def get_page_embeds(self):
+        start = self.current_page * self.embeds_per_page
+        end = start + self.embeds_per_page
+        page = self.all_embeds[start:end]
+        footer = discord.Embed(
+            description=f"### Total: {len(self.all_embeds)}\n**Página** {self.current_page+1}/{self.total_pages}",
+            color=discord.Color.dark_gray()
+        )
+        return [footer] + page
 
-    async def callback(self, interaction: discord.Interaction):
-        await self.unequip_logic(interaction, self.card_row)
+    def get_view(self):
+        view = discord.ui.View(timeout=120)
+        start = self.current_page * self.embeds_per_page
+        end = start + self.embeds_per_page
+        rows_this_page = self.all_rows[start:end]
 
-async def equip_card_logic(interaction: discord.Interaction, card: dict):
-    pool = get_pool()
-    user_id = interaction.user.id
-    language = await get_user_language(user_id)
+        for row in rows_this_page:
+            view.add_item(ItemCardDetailButton(row, self))
 
-    async with pool.acquire() as conn:
-        # Obtener los grupos donde esté el idol
-        groups = await conn.fetch("""
-            SELECT g.group_id, g.name FROM groups g
-            JOIN groups_members gm ON gm.group_id = g.group_id
-            WHERE gm.user_id = $1 AND gm.idol_id = $2
-        """, user_id, card["idol_id"])
+        view.add_item(PreviousPageButton(self))
+        view.add_item(NextPageButton(self))
+        return view
 
-    if not groups:
-        return await interaction.response.send_message(
-            get_translation(language, "equip_idol.no_groups_for_idol"),
+    async def start(self):
+        self.current_page_embeds = self.get_page_embeds()
+        await self.interaction.response.send_message(
+            embeds=self.current_page_embeds,
+            view=self.get_view(),
             ephemeral=True
         )
 
-    # Crear botones para elegir el grupo
-    view = discord.ui.View(timeout=60)
-    for group in groups:
-        view.add_item(SelectGroupButton(card=card, group=group))
+    async def restart(self, interaction: discord.Interaction):
+        self.current_page = 0
+        self.current_page_embeds = self.get_page_embeds()
+        await interaction.response.edit_message(
+            embeds=self.current_page_embeds,
+            view=self.get_view()
+        )
 
-    embed = discord.Embed(
-        title=get_translation(language, "equip_idol.select_group_title"),
-        description=get_translation(language, "equip_idol.select_group_desc", idol_name=card["idol_name"]),
-        color=discord.Color.blurple()
-    )
+    async def update(self, interaction: discord.Interaction):
+        self.current_page_embeds = self.get_page_embeds()
+        await interaction.response.edit_message(
+            embeds=self.current_page_embeds,
+            view=self.get_view()
+        )
 
-    await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+    async def previous_page(self, interaction: discord.Interaction):
+        self.current_page = (self.current_page - 1) % self.total_pages
+        await self.update(interaction)
+
+    async def next_page(self, interaction: discord.Interaction):
+        self.current_page = (self.current_page + 1) % self.total_pages
+        await self.update(interaction)
+
+class ItemCardDetailButton(discord.ui.Button):
+    def __init__(self, row_data: dict, paginator: "ItemInventoryEmbedPaginator"):
+        self.row_data = row_data
+        self.paginator = paginator
+        self.item_id = row_data["item_id"]
+        self.unique_id = row_data["unique_id"]
+        label = f"{self.item_id}.{self.unique_id}"
+        super().__init__(label=label, style=discord.ButtonStyle.primary)
+
+    async def callback(self, interaction: discord.Interaction):
+        embed = discord.Embed(
+            title=f"Detalles de {self.row_data['name']}",
+            description=f"ID: `{self.item_id}.{self.unique_id}`\nTipo: `{self.row_data['type']}`\nDurabilidad: ⌛{self.row_data['durability']}",
+            color=discord.Color.teal()
+        )
+
+        stats = [
+            ("Vocal", self.row_data["plus_vocal"]),
+            ("Rap", self.row_data["plus_rap"]),
+            ("Dance", self.row_data["plus_dance"]),
+            ("Visual", self.row_data["plus_visual"]),
+            ("Energy", self.row_data["plus_energy"]),
+        ]
+        bonus_str = "\n".join(f"**{f'+{v}' if v > 0 else v}** {k}" for k, v in stats if v != 0)
+        if bonus_str:
+            embed.add_field(name="Bonos:", value=bonus_str, inline=False)
+
+        image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{self.item_id}.webp{version}"
+        embed.set_thumbnail(url=image_url)
+
+        view = ItemCardDetailView(
+            row_data=self.row_data,
+            query=self.paginator.base_query,
+            params=self.paginator.query_params,
+            paginator=self.paginator,
+            status=self.row_data["status"]
+        )
+
+        await interaction.response.edit_message(embed=embed, view=view)
 
 
-async def unequip_card_logic(interaction: discord.Interaction, card: dict):
-    pool = get_pool()
-    user_id = interaction.user.id
-    language = await get_user_language(user_id)
+class ItemCardDetailView(discord.ui.View):
+    def __init__(self, row_data: dict, query: str, params: list, paginator, status: str):
+        super().__init__(timeout=120)
 
-    card_id = card["card_id"]
-    unique_id = card["unique_id"]
+        self.add_item(EquipItemButton(row_data, paginator))
+        self.add_item(UnequipItemButton(row_data, paginator))
+        self.add_item(RefundItemButton(row_data, query, params, paginator))
+        
+        self.add_item(BackToItemInventoryButton(query, params, paginator))
 
-    async with pool.acquire() as conn:
-        idol_card = await conn.fetchrow("""
-            SELECT * FROM user_idol_cards
-            WHERE unique_id = $1 AND user_id = $2
-        """, unique_id, user_id)
+class BackToItemInventoryButton(discord.ui.Button):
+    def __init__(
+        self,
+        base_query: str,
+        query_params: list,
+        paginator: "ItemInventoryEmbedPaginator"
+    ):
+        super().__init__(label="Volver", style=discord.ButtonStyle.secondary, row=2)
+        self.base_query = base_query
+        self.query_params = query_params
+        self.paginator = paginator
 
-        if idol_card:
-            if idol_card["status"] != "equipped":
-                return await interaction.response.send_message(
-                    get_translation(language, "unequip_idol.not_equipped"), ephemeral=True)
+    async def callback(self, interaction: discord.Interaction):
+        pool = get_pool()
+        # Volvemos a ejecutar la consulta original
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(
+                self.paginator.base_query,
+                *self.paginator.query_params
+            )
 
-            await conn.execute("""
-                UPDATE groups_members SET card_id = NULL
-                WHERE user_id = $1 AND card_id = $2
-            """, user_id, card_id)
+        if not rows:
+            return await interaction.response.edit_message(
+                content="⚠️ No se encontraron ítems con estos filtros.",
+                embed=None,
+                view=None
+            )
 
-            await conn.execute("""
-                UPDATE user_idol_cards SET status = 'available'
-                WHERE unique_id = $1
-            """, unique_id)
+        embeds = await generate_item_card_embeds(rows, pool)
+        new_paginator = ItemInventoryEmbedPaginator(
+            embeds=embeds,
+            rows=rows,
+            interaction=interaction,
+            base_query=self.paginator.base_query,
+            query_params=self.paginator.query_params,
+            embeds_per_page=self.paginator.embeds_per_page
+        )
+        # Reinciamos la paginación
+        await new_paginator.restart(interaction)
 
+
+class EquipItemButton(discord.ui.Button):
+    def __init__(self, row_data: dict, paginator: "ItemInventoryEmbedPaginator"):
+        super().__init__(label="Equipar", style=discord.ButtonStyle.primary)
+        self.row_data = row_data
+        self.paginator = paginator
+        self.base_query = paginator.base_query
+        self.query_params = paginator.query_params
+
+    async def callback(self, interaction: discord.Interaction):
+        pool = get_pool()
+        user_id = interaction.user.id
+        language = await get_user_language(user_id)
+
+        # 1. Validar estado
+        if self.row_data["status"] not in ("available", "equipped"):
             return await interaction.response.send_message(
-                get_translation(language, "unequip_idol.success", card_id=card_id), ephemeral=True)
+                get_translation(language, "equip_idol.unavailable"),
+                ephemeral=True
+            )
 
-        # Si no es idol, probar como ítem
-        item_card = await conn.fetchrow("""
-            SELECT * FROM user_item_cards
-            WHERE unique_id = $1 AND user_id = $2
-        """, unique_id, user_id)
+        # 2. Buscar grupos activos
+        async with pool.acquire() as conn:
+            groups = await conn.fetch(
+                """
+                SELECT group_id, name
+                FROM groups
+                WHERE user_id = $1 AND status = 'active'
+                """,
+                user_id
+            )
 
-        if not item_card:
-            return await interaction.response.send_message("❌ No se encontró esa carta.", ephemeral=True)
+        # 3. Si no hay grupos, volvemos al inventario
+        if not groups:
+            view = discord.ui.View()
+            view.add_item(BackToItemInventoryButton(self.paginator))
+            return await interaction.response.edit_message(
+                content=get_translation(language, "equip_item.no_groups"),
+                embed=None,
+                view=view
+            )
 
-        if item_card["status"] != "equipped":
-            return await interaction.response.send_message("⚠️ Esa carta no está equipada.", ephemeral=True)
+        # 4. Mostrar selección de grupo
+        embed = discord.Embed(
+            title=get_translation(language, "equip_item.select_group_title"),
+            description=get_translation(
+                language, "equip_item.select_group_desc",
+                item_name=self.row_data["name"],
+                item_id=f"{self.row_data['item_id']}.{self.row_data['unique_id']}"
+            ),
+            color=discord.Color.blue()
+        )
+        view = SelectGroupForItemView(self.row_data, self.paginator)
+        for g in groups:
+            view.add_item(SelectGroupItemButton(self.row_data, g, self.paginator))
 
-        slot_columns = ["mic_id", "outfit_id", "accessory_id", "consumable_id"]
-        found_slot = None
+        # botón volver
+        view.add_item(BackToItemInventoryButton(self.base_query, self.query_params, self.paginator))
 
-        for slot in slot_columns:
-            result = await conn.fetchrow(f"""
-                SELECT group_id, idol_id FROM groups_members
-                WHERE user_id = $1 AND {slot} = $2
-            """, user_id, card_id)
-            if result:
-                found_slot = slot
-                break
+        await interaction.response.edit_message(embed=embed, view=view)
 
-        if not found_slot:
+class SelectGroupForItemView(discord.ui.View):
+    def __init__(self, row_data: dict, paginator: "ItemInventoryEmbedPaginator"):
+        super().__init__(timeout=120)
+        self.row_data = row_data
+        self.paginator = paginator
+
+
+class SelectGroupItemButton(discord.ui.Button):
+    def __init__(self, row_data: dict, group: dict, paginator: "ItemInventoryEmbedPaginator"):
+        super().__init__(label=group["name"], style=discord.ButtonStyle.primary)
+        self.row_data = row_data
+        self.group = group
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        pool = get_pool()
+        language = await get_user_language(interaction.user.id)
+
+        # Fetch miembros del grupo
+        async with pool.acquire() as conn:
+            members = await conn.fetch(
+                """
+                SELECT gm.idol_id, ib.name AS idol_name, gm.*
+                FROM groups_members gm
+                JOIN idol_base ib ON ib.idol_id = gm.idol_id
+                WHERE gm.group_id = $1 AND gm.user_id = $2
+                """,
+                self.group["group_id"], interaction.user.id
+            )
+
+        # Construir vista de selección de idol
+        embed = discord.Embed(
+            title=get_translation(language, "equip_item.select_idol_title"),
+            description=get_translation(language, "equip_item.select_idol_desc",
+                                       group_name=self.group["name"]),
+            color=discord.Color.blue()
+        )
+        view = discord.ui.View(timeout=120)
+        for m in members:
+            label = f"{m['idol_name']} ({m['idol_id']})"
+            view.add_item(SelectMemberItemButton(self.row_data, self.group, m, self.paginator))
+        # volver & cancelar
+        view.add_item(BackToItemInventoryButton(self.paginator.base_query,self.paginator.query_params,self.paginator))
+        view.add_item(CancelItemEquipButton(self.paginator))
+
+        await interaction.response.edit_message(embed=embed, view=view)
+
+class SelectMemberItemButton(discord.ui.Button):
+    def __init__(
+        self,
+        row_data: dict,
+        group: dict,
+        member: dict,
+        paginator: "ItemInventoryEmbedPaginator"
+    ):
+        label = f"{member['idol_name']} ({member['idol_id']})"
+        super().__init__(label=label, style=discord.ButtonStyle.success)
+        self.row_data = row_data
+        self.group = group
+        self.member = member
+        self.paginator = paginator
+        self.base_query = paginator.base_query
+        self.query_params = paginator.query_params
+
+    async def callback(self, interaction: discord.Interaction):
+        pool = get_pool()
+
+        # Determinar slot según tipo
+        slot_map = {
+            "mic": "mic_id",
+            "outfit": "outfit_id",
+            "accessory": "accessory_id",
+            "consumable": "consumable_id"
+        }
+        slot = slot_map.get(self.row_data["type"])
+        if not slot:
+            return await interaction.response.edit_message(
+                content="❌ Tipo de ítem inválido.",
+                view=None
+            )
+
+        async with pool.acquire() as conn:
+            # 1) Desequipar antiguo si existe
+            old = await conn.fetchval(
+                f"SELECT {slot} FROM groups_members WHERE group_id = $1 AND idol_id = $2",
+                self.group["group_id"], self.member["idol_id"]
+            )
+            if old:
+                await conn.execute(
+                    "UPDATE user_item_cards SET status = 'available' WHERE unique_id = $1",
+                    old.split(".")[1]
+                )
+
+            # 2) Equipar nuevo: limpiar en todo el grupo y poner en este miembro
+            full_id = f"{self.row_data['item_id']}.{self.row_data['unique_id']}"
+            await conn.execute(
+                f"UPDATE groups_members SET {slot} = NULL WHERE {slot} = $1",
+                full_id
+            )
+            await conn.execute(
+                f"UPDATE groups_members SET {slot} = $1 WHERE group_id = $2 AND idol_id = $3",
+                full_id, self.group["group_id"], self.member["idol_id"]
+            )
+
+            # 3) Marcar ítem como equipado
+            await conn.execute(
+                "UPDATE user_item_cards SET status = 'equipped' WHERE unique_id = $1",
+                self.row_data["unique_id"]
+            )
+
+        # 4) Regenerar inventario
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(self.base_query, *self.query_params)
+        embeds = await generate_item_card_embeds(rows, pool)
+        new_p = ItemInventoryEmbedPaginator(
+            embeds, rows, interaction,
+            base_query=self.base_query,
+            query_params=self.query_params,
+            embeds_per_page=self.paginator.embeds_per_page
+        )
+        await new_p.restart(interaction)
+
+class CancelItemEquipButton(discord.ui.Button):
+    def __init__(self, paginator: "ItemInventoryEmbedPaginator"):
+        super().__init__(label="❌ Cancelar", style=discord.ButtonStyle.danger)
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        await self.paginator.restart(interaction)
+
+
+class UnequipItemButton(discord.ui.Button):
+    def __init__(self, row_data: dict, paginator: "ItemInventoryEmbedPaginator"):
+        super().__init__(
+            label="Desequipar",
+            style=discord.ButtonStyle.danger,
+            disabled=(row_data.get("status") != "equipped")
+        )
+        self.row_data = row_data
+        self.paginator = paginator
+        self.base_query = paginator.base_query
+        self.query_params = paginator.query_params
+
+    async def callback(self, interaction: discord.Interaction):
+        # Vista de confirmación
+        view = ConfirmUnequipItemView(self.row_data, self.paginator)
+        embed = discord.Embed(
+            title="⚠️ Confirmar Desequipar",
+            description=(
+                f"¿Seguro que quieres desequipar "
+                f"`{self.row_data['item_id']}.{self.row_data['unique_id']}`?"
+            ),
+            color=discord.Color.orange()
+        )
+        await interaction.response.edit_message(embed=embed, view=view)
+
+
+class ConfirmUnequipItemView(discord.ui.View):
+    def __init__(self, row_data: dict, paginator: "ItemInventoryEmbedPaginator"):
+        super().__init__(timeout=60)
+        self.row_data = row_data
+        self.paginator = paginator
+        # Botones de confirmar y cancelar
+        self.add_item(ConfirmUnequipItemButton(self))
+        self.add_item(CancelUnequipItemButton(self))
+
+
+class ConfirmUnequipItemButton(discord.ui.Button):
+    def __init__(self, parent: ConfirmUnequipItemView):
+        super().__init__(label="✅ Confirmar", style=discord.ButtonStyle.success)
+        self.parent = parent
+
+    async def callback(self, interaction: discord.Interaction):
+        row = self.parent.row_data
+        paginator = self.parent.paginator
+        pool = get_pool()
+        user_id = interaction.user.id
+
+        # Determinar slot por tipo
+        slot_map = {
+            "mic": "mic_id",
+            "outfit": "outfit_id",
+            "accessory": "accessory_id",
+            "consumable": "consumable_id",
+        }
+        slot = slot_map.get(row["type"])
+        full_id = f"{row['item_id']}.{row['unique_id']}"
+
+        async with pool.acquire() as conn:
+            # 1) Quitar del grupo
+            print(slot)
+            print(full_id)
+            await conn.execute(
+                f"UPDATE groups_members SET {slot} = NULL WHERE user_id = $1 AND {slot} = $2",
+                user_id, full_id
+            )
+            # 2) Marcar ítem como disponible
+            await conn.execute(
+                "UPDATE user_item_cards SET status = 'available' WHERE unique_id = $1",
+                row["unique_id"]
+            )
+            # 3) Releer filas filtradas
+            rows = await conn.fetch(paginator.base_query, *paginator.query_params)
+
+        # 4) Regenerar inventario
+        embeds = await generate_item_card_embeds(rows, pool)
+        new_paginator = ItemInventoryEmbedPaginator(
+            embeds=embeds,
+            rows=rows,
+            interaction=interaction,
+            base_query=paginator.base_query,
+            query_params=paginator.query_params,
+            embeds_per_page=paginator.embeds_per_page
+        )
+        await new_paginator.restart(interaction)
+
+
+class CancelUnequipItemButton(discord.ui.Button):
+    def __init__(self, parent: ConfirmUnequipItemView):
+        super().__init__(label="❌ Cancelar", style=discord.ButtonStyle.secondary)
+        self.parent = parent
+
+    async def callback(self, interaction: discord.Interaction):
+        # Volver a la vista de detalles original
+        row = self.parent.row_data
+        paginator = self.parent.paginator
+
+        embed = discord.Embed(
+            title=f"Detalles de {row['name']}",
+            description=(
+                f"ID: `{row['item_id']}.{row['unique_id']}`\n"
+                f"Tipo: `{row['type']}`\n"
+                f"Durabilidad: ⌛{row['durability']}"
+            ),
+            color=discord.Color.teal()
+        )
+        stats = [
+            ("Vocal", row["plus_vocal"]),
+            ("Rap", row["plus_rap"]),
+            ("Dance", row["plus_dance"]),
+            ("Visual", row["plus_visual"]),
+            ("Energy", row["plus_energy"]),
+        ]
+        bonus = "\n".join(f"**+{v}** {k}" for k, v in stats if v)
+        if bonus:
+            embed.add_field(name="Bonos:", value=bonus, inline=False)
+        embed.set_thumbnail(
+            url=f"https://res.cloudinary.com/dyvgkntvd/image/upload/"
+                f"f_webp,d_no_image.jpg/{row['item_id']}.webp{version}"
+        )
+
+        # Vista con los tres botones + volver
+        view = discord.ui.View(timeout=120)
+        view.add_item(BackToItemInventoryButton(paginator))
+        view.add_item(EquipItemButton(row, paginator.base_query, paginator.query_params))
+        view.add_item(
+            UnequipItemButton(row, paginator),
+        )
+        view.add_item(
+            RefundItemButton(row, paginator.base_query, paginator.query_params)
+        )
+
+        await interaction.response.edit_message(embed=embed, view=view)
+
+
+class RefundItemButton(discord.ui.Button):
+    def __init__(
+        self,
+        row_data: dict,
+        base_query: str,
+        query_params: list,
+        paginator: "ItemInventoryEmbedPaginator"
+    ):
+        super().__init__(
+            label="Refund",
+            style=discord.ButtonStyle.secondary,
+            custom_id="refund_item",
+            disabled=(row_data.get("status") != "available")
+        )
+        self.row_data = row_data
+        self.query = base_query
+        self.params = query_params
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        user_id = interaction.user.id
+        uid = self.row_data["unique_id"]
+        pool = get_pool()
+
+        # 1) Verificar que el ítem sigue disponible
+        async with pool.acquire() as conn:
+            row = await conn.fetchrow(
+                "SELECT * FROM user_item_cards WHERE unique_id = $1 AND user_id = $2",
+                uid, user_id
+            )
+        if not row or row["status"] != "available":
+            return await interaction.response.edit_message(
+                content="❌ Este ítem ya no está disponible.",
+                embed=None,
+                view=None
+            )
+
+        # 2) Obtener datos del ítem base para calcular refund
+        async with pool.acquire() as conn:
+            ref_data = await conn.fetchrow(
+                "SELECT name, value, max_durability FROM cards_item WHERE item_id = $1",
+                self.row_data["item_id"]
+            )
+        if not ref_data:
+            return await interaction.response.edit_message(
+                content="❌ No se encontró la información del ítem.",
+                embed=None,
+                view=None
+            )
+
+        # 3) Calcular refund y XP
+        durability_ratio = row["durability"] / ref_data["max_durability"]
+        base_value = ref_data["value"]
+        refund_amount = int(base_value * durability_ratio * 2)
+        xp_amount = max(base_value // 100, 1)
+
+        # 4) Mostrar embed de confirmación
+        name = ref_data["name"]
+        embed = discord.Embed(
+            title="🔁 Reembolso de ítem",
+            description=(
+                f"**{name}**\n"
+                f"ID: `{self.row_data['item_id']}.{uid}`\n\n"
+                f"Obtendrás:\n> **{format(refund_amount, ',')} 💵**\n"
+                f"> **{xp_amount} XP**"
+            ),
+            color=discord.Color.gold()
+        )
+        view = ConfirmItemRefundView(
+            user_id=user_id,
+            unique_id=uid,
+            refund=refund_amount,
+            xp=xp_amount,
+            base_query=self.query,
+            query_params=self.params,
+            paginator=self.paginator
+        )
+        return await interaction.response.edit_message(embed=embed, view=view)
+
+class ConfirmItemRefundView(discord.ui.View):
+    def __init__(
+        self,
+        user_id: int,
+        unique_id: str,
+        refund: int,
+        xp: int,
+        base_query: str,
+        query_params: list,
+        paginator: "ItemInventoryEmbedPaginator"
+    ):
+        super().__init__(timeout=180)
+        self.user_id = user_id
+        self.unique_id = unique_id
+        self.refund = refund
+        self.xp = xp
+        self.base_query = base_query
+        self.query_params = query_params
+        self.paginator = paginator
+
+    @discord.ui.button(label="✅ Confirmar", style=discord.ButtonStyle.success)
+    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+        pool = get_pool()
+
+        # 1) Verificar nuevamente disponibilidad
+        async with pool.acquire() as conn:
+            row = await conn.fetchrow(
+                "SELECT * FROM user_item_cards WHERE unique_id = $1 AND user_id = $2 AND status = 'available'",
+                self.unique_id, self.user_id
+            )
+            if not row:
+                return await interaction.response.edit_message(
+                    content="❌ El ítem ya no está disponible.",
+                    embed=None, view=None
+                )
+            # 2) Borrar de user_item_cards
+            await conn.execute(
+                "DELETE FROM user_item_cards WHERE unique_id = $1 AND user_id = $2",
+                self.unique_id, self.user_id
+            )
+            # 3) Sumar créditos y XP al usuario
+            await conn.execute(
+                "UPDATE users SET credits = credits + $1, xp = xp + $2 WHERE user_id = $3",
+                self.refund, self.xp, self.user_id
+            )
+
+        # 4) Regenerar inventario actualizado
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(self.base_query, *self.query_params)
+        embeds = await generate_item_card_embeds(rows, pool)
+        new_paginator = ItemInventoryEmbedPaginator(
+            embeds=embeds,
+            rows=rows,
+            interaction=interaction,
+            base_query=self.base_query,
+            query_params=self.query_params,
+            embeds_per_page=self.paginator.embeds_per_page
+        )
+        return await new_paginator.restart(interaction)
+
+    @discord.ui.button(label="❌ Cancelar", style=discord.ButtonStyle.danger)
+    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
+        # Volver al inventario sin cambios
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(self.base_query, *self.query_params)
+        embeds = await generate_item_card_embeds(rows, pool)
+        new_paginator = ItemInventoryEmbedPaginator(
+            embeds=embeds,
+            rows=rows,
+            interaction=interaction,
+            base_query=self.base_query,
+            query_params=self.query_params,
+            embeds_per_page=self.paginator.embeds_per_page
+        )
+        return await new_paginator.restart(interaction)
+
+
+
+
+
+
+# - idol_cards
+async def generate_idol_card_embeds(rows: list, pool) -> list[discord.Embed]:
+    """Genera una lista de embeds para cartas de idols."""
+    card_counts = Counter([row['card_id'] for row in rows])
+    embeds = []
+
+    for row in rows:
+        async with pool.acquire() as conn:
+            idol_row = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", row["card_id"])
+            idol_base_row = await conn.fetchrow("SELECT * FROM idol_base WHERE idol_id = $1", row["idol_id"])
+
+        name = idol_row['idol_name']
+        card_set = idol_row['set_name']
+        rarity = idol_row['rarity']
+        group_name = idol_row['group_name']
+
+        c_rarity = rarity
+        if rarity == "Regular":
+            model = idol_row['rarity_id'][1]
+            level = idol_row['rarity_id'][2]
+            rarity += f" {model} - Lvl.{level}"
+
+        blocked = "🔐" if row["is_locked"] else ""
+        c_status = ""
+        if row['status'] == 'equipped':
+            c_status = "👥"
+        elif row['status'] == "trading":
+            c_status = "🔄"
+        elif row['status'] == "on_sale":
+            c_status = "💲"
+
+        RARITY_COLORS = {
+            "Regular": discord.Color.light_gray(),
+            "Special": discord.Color.purple(),
+            "Limited": discord.Color.yellow(),
+            "FCR": discord.Color.fuchsia(),
+            "POB": discord.Color.blue(),
+            "Legacy": discord.Color.dark_purple(),
+        }
+        embed_color = RARITY_COLORS.get(c_rarity, discord.Color.default())
+
+        cantidad_copias = ""
+        if card_counts[row['card_id']] > 1:
+            cantidad_copias = f" `x{card_counts[row['card_id']]} copias`"
+
+        embed = discord.Embed(
+            title=f"{name} - *{group_name}*{cantidad_copias} {blocked}{c_status}",
+            description=f"{card_set} `{rarity}`",
+            color=embed_color
+        )
+
+        image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{row['card_id']}.webp"
+        embed.set_thumbnail(url=image_url)
+
+        skills = ""
+        if idol_row['p_skill']:
+            skills += "🟢"
+        if idol_row['a_skill']:
+            skills += "🔵"
+        if idol_row['s_skill']:
+            skills += "🟡"
+        if idol_row['u_skill']:
+            skills += "🔴"
+
+        vocal = idol_row['vocal'] - idol_base_row['vocal']
+        rap = idol_row['rap'] - idol_base_row['rap']
+        dance = idol_row['dance'] - idol_base_row['dance']
+        visual = idol_row['visual'] - idol_base_row['visual']
+        energy = idol_row['energy'] - 50
+
+        embed.add_field(name=f"**🎤 Vocal: {idol_base_row['vocal']} (+{vocal})**", value=f"**🎶 Rap: {idol_base_row['rap']} (+{rap})**", inline=True)
+        embed.add_field(name=f"**💃 Dance: {idol_base_row['dance']} (+{dance})**", value=f"**✨ Visual: {idol_base_row['visual']} (+{visual})**", inline=True)
+        embed.add_field(name=f"**⚡ Energy: 50 (+{energy})**", value=f"**Skills: {skills}**", inline=True)
+
+        embed.set_footer(text=f"{row['card_id']}.{row['unique_id']}")
+        embeds.append(embed)
+
+    return embeds
+
+class CardDetailButton(discord.ui.Button):
+    def __init__(self, row_data: dict, paginator: "InventoryEmbedPaginator"):
+        self.row_data = row_data
+        self.card_id = row_data["card_id"]
+        self.unique_id = row_data["unique_id"]
+        label = f"{self.card_id}.{self.unique_id}"
+        super().__init__(label=label, style=discord.ButtonStyle.primary)
+
+        self.paginator = paginator
+        self.base_query = paginator.base_query
+        self.query_params = paginator.query_params
+
+    async def callback(self, interaction: discord.Interaction):
+        # Aquí usarás self.row_data para construir un embed detallado
+        embed = discord.Embed(
+            title=f"Detalles de {self.card_id}",
+            description=f"ID único: `{self.card_id}.{self.unique_id}`",
+            color=discord.Color.orange()
+        )
+        # Ejemplo de campos adicionales usando los datos de la carta:
+        embed.add_field(name="Rareza", value=self.row_data.get("rarity", "Desconocido"))
+        embed.add_field(name="Nivel", value=self.row_data.get("level", "??"))
+        embed.add_field(name="Estado", value=self.row_data.get("status", "unknown"))
+        # ... puedes seguir agregando más detalles desde self.row_data ...
+
+        view = discord.ui.View()
+        view.add_item(EquipButton(self.row_data, self.paginator))
+        view.add_item(DesequipButton(self.row_data, self.paginator))
+
+        # Botón para regresar a la vista anterior
+        view.add_item(BackToInventoryButton(self.paginator))
+
+        await interaction.response.edit_message(
+            embed=embed,
+            view=view
+        )
+
+class BackToInventoryButton(discord.ui.Button):
+    def __init__(self, paginator: "InventoryEmbedPaginator"):
+        super().__init__(label="Volver", style=discord.ButtonStyle.secondary)
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(self.paginator.base_query, *self.paginator.query_params)
+
+        if not rows:
+            await interaction.response.edit_message(
+                content="⚠️ No se encontraron cartas con esta búsqueda.",
+                embed=None,
+                view=None
+            )
+            return
+
+        embeds = await generate_idol_card_embeds(rows, pool)
+        new_paginator = InventoryEmbedPaginator(
+            embeds,
+            rows,
+            interaction,
+            base_query=self.paginator.base_query,
+            query_params=self.paginator.query_params,
+            embeds_per_page=self.paginator.embeds_per_page
+        )
+        await new_paginator.restart(interaction)
+
+
+class EquipButton(discord.ui.Button):
+    def __init__(self, row_data: dict, paginator: "InventoryEmbedPaginator"):
+        super().__init__(label="Equipar", style=discord.ButtonStyle.success)
+        self.row_data = row_data
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        # Usamos exactamente la misma "card" que el comando:
+        user_card = self.row_data
+
+        # --- Inicia flujo de selección de grupo ---
+        pool = get_pool()
+        user_id = interaction.user.id
+        language = await get_user_language(user_id)
+
+        # Validar estado
+        if user_card["status"] not in ("available", "equipped"):
             return await interaction.response.send_message(
-                "⚠️ No se encontró en qué idol está equipada esta carta de ítem.", ephemeral=True)
+                get_translation(language, "equip_idol.unavailable"),
+                ephemeral=True
+            )
 
-        await conn.execute(f"""
-            UPDATE groups_members SET {found_slot} = NULL
-            WHERE user_id = $1 AND {found_slot} = $2
-        """, user_id, card_id)
+        # Buscar grupos donde este idol
+        async with pool.acquire() as conn:
+            groups = await conn.fetch(
+                """
+                SELECT g.group_id, g.name
+                FROM groups g
+                JOIN groups_members gm ON g.group_id = gm.group_id
+                WHERE g.user_id = $1 AND gm.idol_id = $2 AND g.status = 'active'
+                ORDER BY g.creation_date DESC
+                """,
+                user_id, user_card["idol_id"]
+            )
+            
+            card = await conn.fetchrow(
+                "SELECT * FROM cards_idol WHERE card_id = $1", user_card['card_id']
+            )
 
-        await conn.execute("""
-            UPDATE user_item_cards SET status = 'available'
-            WHERE unique_id = $1
-        """, unique_id)
+        if not groups:
+            view = discord.ui.View()
+            view.add_item(BackToInventoryButton(self.paginator))
+            return await interaction.response.edit_message(
+                content=get_translation(language, "equip_idol.no_valid_groups"),
+                embed=None,
+                view=view
+            )
 
-        return await interaction.response.send_message(
-            f"✅ Carta de ítem `{card_id}` ha sido desequipada correctamente.", ephemeral=True)
+        # Construir embed y vista de selección
+        embed = discord.Embed(
+            title=get_translation(language, "equip_idol.select_group_title"),
+            description=get_translation(
+                language, "equip_idol.select_group_desc",
+                card_name=f"{card['idol_name']} `{card['set_name']}`"
+            ),
+            color=discord.Color.blue()
+        )
+        view = SelectGroupToEquipView(card, self.paginator)
+        for g in groups:
+            view.add_item(SelectGroupButton(user_card, g, self.paginator))
+        view.add_item(BackToInventoryButton(self.paginator))
+
+        # Editamos el mensaje original del inventario
+        await interaction.response.edit_message(embed=embed, view=view)
+
+class SelectGroupToEquipView(discord.ui.View):
+    def __init__(self, card: dict, paginator: "InventoryEmbedPaginator"):
+        super().__init__(timeout=120)
+        self.card = card
+        self.paginator = paginator
+
+class SelectGroupButton(discord.ui.Button):
+    def __init__(self, card: dict, group: dict, paginator: "InventoryEmbedPaginator"):
+        super().__init__(label=group["name"], style=discord.ButtonStyle.primary)
+        self.card = card
+        self.group = group
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        pool = get_pool()
+        user_id = interaction.user.id
+        language = await get_user_language(user_id)
+
+        async with pool.acquire() as conn:
+            member = await conn.fetchrow(
+                "SELECT * FROM groups_members WHERE group_id = $1 AND user_id = $2 AND idol_id = $3",
+                self.group["group_id"], user_id, self.card["idol_id"]
+            )
+            card_base = await conn.fetchrow(
+                "SELECT * FROM cards_idol WHERE card_id = $1", self.card['card_id']
+            )
+
+        if not member:
+            return await interaction.response.send_message(
+                get_translation(language, "equip_idol.no_matching_members"),
+                ephemeral=True
+            )
+
+        # Confirmación
+        embed = discord.Embed(
+            title=get_translation(language, "equip_idol.confirm_title"),
+            description=get_translation(
+                language, "equip_idol.confirm_desc",
+                card_name=f"{card_base['idol_name']} ({self.card['unique_id']})",
+                group_name=self.group["name"]
+            ),
+            color=discord.Color.orange()
+        )
+        view = ConfirmEquipIdolView(self.card, self.group["group_id"], self.card["idol_id"], self.paginator)
+        await interaction.response.edit_message(embed=embed, view=view)
+
+class ConfirmEquipIdolView(discord.ui.View):
+    def __init__(self, card: dict, group_id: str, idol_id: str, paginator: "InventoryEmbedPaginator"):
+        super().__init__(timeout=60)
+        self.card = card
+        self.group_id = group_id
+        self.idol_id = idol_id
+        self.paginator = paginator
+        self.add_item(ConfirmEquipIdolButton(self))
+        self.add_item(BackToInventoryButton(self.paginator))
+
+class ConfirmEquipIdolButton(discord.ui.Button):
+    def __init__(self, parent: ConfirmEquipIdolView):
+        super().__init__(label="✅ Confirmar", style=discord.ButtonStyle.success)
+        self.parent = parent
+
+    async def callback(self, interaction: discord.Interaction):
+        pool = get_pool()
+        user_id = interaction.user.id
+        language = await get_user_language(user_id)
+
+        card_full_id = f"{self.parent.card['card_id']}.{self.parent.card['unique_id']}"
+        # Obtener nombre para el mensaje final
+        async with pool.acquire() as conn:
+            name_row = await conn.fetchrow(
+                "SELECT idol_name FROM cards_idol WHERE card_id = $1", 
+                self.parent.card["card_id"]
+            )
+            idol_name = name_row["idol_name"]
+
+            # 1) Desequipar carta anterior
+            old_card = await conn.fetchrow(
+                "SELECT card_id FROM groups_members WHERE user_id = $1 AND idol_id = $2 AND group_id = $3",
+                user_id, self.parent.idol_id, self.parent.group_id
+            )
+            if old_card['card_id']:
+                old_id, old_u = old_card['card_id'].split(".")
+                await conn.execute(
+                    "UPDATE user_idol_cards SET status = 'available' WHERE unique_id = $1",
+                    old_u
+                )
+                print("carta anterior desequipada")
+            # 1.1) Desequipar de donde estuviera
+            await conn.execute(
+                "UPDATE groups_members SET card_id = NULL WHERE card_id = $1",
+                card_full_id
+            )
+            # 2) Equipar en el grupo elegido
+            await conn.execute(
+                "UPDATE groups_members SET card_id = $1 WHERE user_id = $2 AND group_id = $3 AND idol_id = $4",
+                card_full_id, user_id, self.parent.group_id, self.parent.idol_id
+            )
+            print("carta equipada")
+            # 3) Marcar la carta como equipada
+            await conn.execute(
+                "UPDATE user_idol_cards SET status = 'equipped' WHERE unique_id = $1",
+                self.parent.card["unique_id"]
+            )
+            print("status cambiado a: equipada")
+            
+            rows = await conn.fetch(
+                self.parent.paginator.base_query,
+                *self.parent.paginator.query_params
+            )
+
+        embeds = await generate_idol_card_embeds(rows, pool)
+
+        new_paginator = InventoryEmbedPaginator(
+            embeds=embeds,
+            rows=rows,
+            interaction=interaction,
+            base_query=self.parent.paginator.base_query,
+            query_params=self.parent.paginator.query_params,
+            embeds_per_page=self.parent.paginator.embeds_per_page
+        )
+
+        await new_paginator.restart(interaction)
+
+
+class DesequipButton(discord.ui.Button):
+    def __init__(self, row_data: dict, paginator: "InventoryEmbedPaginator"):
+        super().__init__(
+            label="Desequipar",
+            style=discord.ButtonStyle.danger,
+            disabled=row_data.get("status") != "equipped"
+        )
+        self.row_data = row_data
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        # Vista de confirmación
+        embed = discord.Embed(
+            title="⚠️ Confirmar desequipar",
+            description=(
+                f"¿Deseas desequipar la carta "
+                f"`{self.row_data['card_id']}.{self.row_data['unique_id']}`?"
+            ),
+            color=discord.Color.orange()
+        )
+        view = ConfirmUnequipView(self.row_data, self.paginator)
+        await interaction.response.edit_message(embed=embed, view=view)
+
+class ConfirmUnequipView(discord.ui.View):
+    def __init__(self, row_data: dict, paginator: "InventoryEmbedPaginator"):
+        super().__init__(timeout=60)
+        self.row_data = row_data
+        self.paginator = paginator
+        # Botones
+        self.add_item(ConfirmUnequipButton(self))
+        self.add_item(CancelUnequipButton(self.paginator))
+        
+class ConfirmUnequipView(discord.ui.View):
+    def __init__(self, row_data: dict, paginator: "InventoryEmbedPaginator"):
+        super().__init__(timeout=60)
+        self.row_data = row_data
+        self.paginator = paginator
+        # Botones
+        self.add_item(ConfirmUnequipButton(self))
+        self.add_item(CancelUnequipButton(self.paginator))
+
+class ConfirmUnequipButton(discord.ui.Button):
+    def __init__(self, parent: ConfirmUnequipView):
+        super().__init__(label="✅ Confirmar", style=discord.ButtonStyle.success)
+        self.parent = parent  # tipo: ConfirmUnequipView
+
+    async def callback(self, interaction: discord.Interaction):
+        row = self.parent.row_data
+        pool = get_pool()
+        user_id = interaction.user.id
+        unique_id = row["unique_id"]
+        full_card_id = f"{row['card_id']}.{unique_id}"
+        # idioma
+        language = await get_user_language(user_id)
+
+        async with pool.acquire() as conn:
+            # 1) Quitar de groups_members
+            await conn.execute(
+                """
+                UPDATE groups_members
+                   SET card_id = NULL
+                 WHERE user_id = $1
+                   AND card_id = $2
+                """,
+                user_id, full_card_id
+            )
+            # 2) Marcar disponible en user_idol_cards
+            await conn.execute(
+                """
+                UPDATE user_idol_cards
+                   SET status = 'available'
+                 WHERE unique_id = $1
+                """,
+                unique_id
+            )
+            # 3) Re-consultar las rows originales
+            rows = await conn.fetch(self.parent.paginator.base_query,
+                                    *self.parent.paginator.query_params)
+
+        # 4) Regenerar embeds
+        embeds = await generate_idol_card_embeds(rows, pool)
+        new_pag = InventoryEmbedPaginator(
+            embeds=embeds,
+            rows=rows,
+            interaction=interaction,
+            base_query=self.parent.paginator.base_query,
+            query_params=self.parent.paginator.query_params,
+            embeds_per_page=self.parent.paginator.embeds_per_page
+        )
+        # 5) Reiniciar el paginador
+        await new_pag.restart(interaction)
+
+class CancelUnequipButton(discord.ui.Button):
+    def __init__(self, paginator: "InventoryEmbedPaginator"):
+        super().__init__(label="❌ Cancelar", style=discord.ButtonStyle.secondary)
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        # simplemente regenerar inventario
+        pool = get_pool()
+        rows = await pool.acquire().__aenter__()  # para simplificar…
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(self.paginator.base_query,
+                                    *self.paginator.query_params)
+        embeds = await generate_idol_card_embeds(rows, pool)
+        new_pag = InventoryEmbedPaginator(
+            embeds=embeds,
+            rows=rows,
+            interaction=interaction,
+            base_query=self.paginator.base_query,
+            query_params=self.paginator.query_params,
+            embeds_per_page=self.paginator.embeds_per_page
+        )
+        await new_pag.restart(interaction)
+        
+
+class PreviousPageButton(discord.ui.Button):
+    def __init__(self, paginator: "InventoryEmbedPaginator"):
+        super().__init__(label="⬅️", style=discord.ButtonStyle.secondary, row=2)
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        await self.paginator.previous_page(interaction)
+
+class NextPageButton(discord.ui.Button):
+    def __init__(self, paginator: "InventoryEmbedPaginator"):
+        super().__init__(label="➡️", style=discord.ButtonStyle.secondary, row=2)
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        await self.paginator.next_page(interaction)
+
+class InventoryEmbedPaginator:
+    def __init__(
+        self,
+        embeds: list[discord.Embed],
+        rows: list[dict],
+        interaction: discord.Interaction,
+        base_query: str,
+        query_params: tuple,
+        embeds_per_page: int = 3
+    ):
+        self.all_embeds = embeds
+        self.all_rows = rows
+        self.interaction = interaction
+        self.embeds_per_page = embeds_per_page
+        self.current_page = 0
+        self.total_pages = (len(embeds) + embeds_per_page - 1) // embeds_per_page
+        self.current_page_embeds: list[discord.Embed] = []
+
+        self.base_query = base_query
+        self.query_params = query_params
+    
+    def get_page_embeds(self):
+        start = self.current_page * self.embeds_per_page
+        end = start + self.embeds_per_page
+        page = self.all_embeds[start:end]
+        # al final, pie de página con info de paginación
+        footer = discord.Embed(
+            description=f"### Total: {len(self.all_embeds)}\n**Página** {self.current_page+1}/{self.total_pages}",
+            color=discord.Color.dark_gray()
+        )
+        return [footer] + page
+
+    def get_view(self):
+        view = discord.ui.View(timeout=120)
+        # botones de detalles para cada embed de carta (sin contar el footer)
+        start = self.current_page * self.embeds_per_page
+        end = start + self.embeds_per_page
+        rows_this_page = self.all_rows[start:end]
+
+        for row in rows_this_page:
+            view.add_item(CardDetailButton(row, self))
+
+        # navegación
+        view.add_item(PreviousPageButton(self))
+        view.add_item(NextPageButton(self))
+        return view
+
+    async def start(self):
+        self.current_page_embeds = self.get_page_embeds()
+        await self.interaction.response.send_message(
+            embeds=self.current_page_embeds,
+            view=self.get_view(),
+            ephemeral=True
+        )
+
+    async def restart(self, interaction: discord.Interaction):
+        self.current_page = 0  # Reiniciar la página
+        self.current_page_embeds = self.get_page_embeds()
+        await interaction.response.edit_message(
+            embeds=self.current_page_embeds,
+            view=self.get_view()
+        )
+
+    async def update(self, interaction: discord.Interaction):
+        self.current_page_embeds = self.get_page_embeds()
+        await interaction.response.edit_message(
+            embeds=self.current_page_embeds,
+            view=self.get_view()
+        )
+
+    async def previous_page(self, interaction: discord.Interaction):
+        self.current_page = (self.current_page - 1) % self.total_pages
+        await self.update(interaction)
+
+    async def next_page(self, interaction: discord.Interaction):
+        self.current_page = (self.current_page + 1) % self.total_pages
+        await self.update(interaction)
 
 
 
@@ -1170,7 +2158,7 @@ class CardGroup(app_commands.Group):
             # Preparar comando
             cmd = f"/cards fusion card_1:{seleccionadas[0][1]}.{seleccionadas[0][2]} card_2:{seleccionadas[1][1]}.{seleccionadas[1][2]} card_3:{seleccionadas[2][1]}.{seleccionadas[2][2]}"
 
-            success = sum(carta[0] for carta in seleccionadas) * 10
+            success = sum(int((carta[0]*(carta[0]+1))/2) for carta in seleccionadas) * 5
             embed = discord.Embed(
                 title=f"{idol_name} - {set_name}",
                 description=f"{cmd}",
@@ -1225,7 +2213,9 @@ class CardGroup(app_commands.Group):
         card_id = f"{idol_id}{set_id}{rarity_id}"
         success = 0
         for row in rows:
-            success += int(row['rarity_id'][-1]) * 10
+            nivel = int(row['rarity_id'][-1])
+            p_nivel = int((nivel*(nivel+1))/2)
+            success += p_nivel * 5
         
         preview = discord.Embed(
             title="✨ Confirmar fusión",
@@ -1364,6 +2354,7 @@ class ConfirmFusionView(discord.ui.View):
             return await interaction.response.send_message("❌ No puedes usar este botón.", ephemeral=True)
 
         pool = await get_pool()
+        xp = 150
         async with pool.acquire() as conn:
             rows = await conn.fetch("""
                 SELECT * FROM user_idol_cards
@@ -1398,10 +2389,13 @@ class ConfirmFusionView(discord.ui.View):
                 if level == 3:
                     chance = 96
                 elif level == 2:
-                    chance = 84
+                    chance = 77
                 else:
-                    chance = 67
+                    chance = 53
+                print(chance)
                 roll = random.randint(1, 100)
+                print(roll)
+                print("\n")
                 emoji = "\n✅" if roll <= chance else "\n❌"
                 result += f"{emoji} "
                 if emoji == "\n❌":
@@ -1431,20 +2425,25 @@ class ConfirmFusionView(discord.ui.View):
             """, self.uids, self.user_id)
 
             await conn.execute("""
-                UPDATE users SET credits = credits - $1 WHERE user_id = $2
-            """, self.cost, self.user_id)
+                UPDATE users SET credits = credits - $1, xp = xp + $2 WHERE user_id = $3
+            """, self.cost, xp, self.user_id)
 
             new_uid = ''.join(random.choices(string.ascii_lowercase + string.digits, k=5))
             await conn.execute("""
                 INSERT INTO user_idol_cards (unique_id, user_id, card_id, idol_id, set_id, rarity_id)
                 VALUES ($1, $2, $3, $4, $5, $6)
             """, new_uid, self.user_id, self.new_card_id, self.idol_id, self.set_id, self.rarity_id)
+            
+            idol_name = await conn.fetchval("SELECT name FROM idol_base WHERE idol_id = $1", self.idol_id)
+            set_name = await conn.fetchval("SELECT set_name FROM cards_idol WHERE set_id = $1", self.set_id)
 
         embed = discord.Embed(
             title="✨ Fusión completada con éxito!",
-            description="Has obtenido una nueva carta **Special** 🎉",
+            description="🎉 Has obtenido una nueva carta **Special**",
             color=discord.Color.purple()
         )
+        embed.add_field(name=f"**{idol_name}** _{set_name}_",value=f"`{self.new_card_id}.{new_uid}`", inline=False)
+        embed.set_footer(text=f"✨ Has obtenido {xp} XP")
         embed.set_image(url=f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{self.new_card_id}.webp{version}")
 
         await interaction.followup.send(embed=embed, ephemeral=False)
@@ -1554,251 +2553,6 @@ class ConfirmLevelUpView(discord.ui.View):
             return await interaction.response.send_message("❌ No puedes usar este botón.", ephemeral=True)
 
         await interaction.response.edit_message(content="❌ Mejora cancelada.", embed=None, view=None)
-
-# equip idol
-class SelectGroupToEquipView(discord.ui.View):
-    def __init__(self, card):
-        super().__init__(timeout=120)
-        self.card = card
-
-class SelectGroupButton(discord.ui.Button):
-    def __init__(self, card, group):
-        super().__init__(label=group["name"], style=discord.ButtonStyle.primary)
-        self.card = card
-        self.group = group
-
-    async def callback(self, interaction: discord.Interaction):
-        pool = get_pool()
-        user_id = interaction.user.id
-        language = await get_user_language(user_id)
-
-        async with pool.acquire() as conn:
-            member = await conn.fetchrow("""
-                SELECT * FROM groups_members
-                WHERE group_id = $1 AND user_id = $2 AND idol_id = $3
-            """, self.group["group_id"], user_id, self.card["idol_id"])
-
-        if not member:
-            await interaction.response.send_message(get_translation(language, "equip_idol.no_matching_members"), ephemeral=True)
-            return
-
-        embed = discord.Embed(
-            title=get_translation(language, "equip_idol.confirm_title"),
-            description=get_translation(language, "equip_idol.confirm_desc",
-                card_name=f"{self.card['idol_name']} ({self.card['unique_id']})",
-                group_name=self.group["name"]
-            ),
-            color=discord.Color.orange()
-        )
-
-        view = ConfirmEquipIdolView(card=self.card, group_id=self.group["group_id"], idol_id=self.card["idol_id"])
-        await interaction.response.edit_message(embed=embed, view=view)
-
-class ConfirmEquipIdolView(discord.ui.View):
-    def __init__(self, card, group_id, idol_id):
-        super().__init__(timeout=60)
-        self.card = card
-        self.group_id = group_id
-        self.idol_id = idol_id
-        self.add_item(ConfirmEquipIdolButton(self))
-        self.add_item(CancelEquipIdolButton(self))
-
-class ConfirmEquipIdolButton(discord.ui.Button):
-    def __init__(self, parent):
-        super().__init__(label="✅ Confirmar", style=discord.ButtonStyle.success)
-        self.parent = parent
-
-    async def callback(self, interaction: discord.Interaction):
-        pool = get_pool()
-        user_id = interaction.user.id
-        language = await get_user_language(user_id)
-
-        async with pool.acquire() as conn:
-            # Desequipar si está en otro 
-            card_id = f"{self.parent.card['card_id']}.{self.parent.card["unique_id"]}"
-            
-            name = await conn.fetchrow("SELECT idol_name FROM cards_idol WHERE card_id = $1", self.parent.card['card_id'])
-            
-            await conn.execute("""
-                UPDATE groups_members SET card_id = NULL
-                WHERE user_id = $1 AND card_id = $2
-            """, user_id, card_id)
-
-            # Equipar en el idol actual
-            await conn.execute("""
-                UPDATE groups_members SET card_id = $1
-                WHERE user_id = $2 AND group_id = $3 AND idol_id = $4
-            """, card_id, user_id, self.parent.group_id, self.parent.idol_id)
-
-            # Cambiar estado de la carta
-            await conn.execute("""
-                UPDATE user_idol_cards SET status = 'equipped'
-                WHERE unique_id = $1
-            """, self.parent.card["unique_id"])
-
-        await interaction.response.edit_message(
-            content=get_translation(language, "equip_idol.success", card_id=card_id, idol_id=name['idol_name']),
-            embed=None, view=None
-        )
-
-class CancelEquipIdolButton(discord.ui.Button):
-    def __init__(self, parent):
-        super().__init__(label="❌ Cancelar", style=discord.ButtonStyle.danger)
-        self.parent = parent
-
-    async def callback(self, interaction: discord.Interaction):
-        language = await get_user_language(interaction.user.id)
-        await interaction.response.edit_message(
-            content=get_translation(language, "equip_idol.cancelled"),
-            embed=None, view=None
-        )
-
-# equip item
-class EquipItemCommand(app_commands.Command):
-    def __init__(self):
-        super().__init__(
-            name="equip_item",
-            description="Equipa una carta de ítem a uno de tus idols",
-            callback=self.callback
-        )
-
-    async def callback(self, interaction: discord.Interaction, item_id: str):
-        pool = get_pool()
-        user_id = interaction.user.id
-
-        async with pool.acquire() as conn:
-            item = await conn.fetchrow("""
-                SELECT uic.*, ci.name, ci.type FROM user_item_cards uic
-                JOIN cards_item ci ON uic.item_id = ci.item_id
-                WHERE uic.user_id = $1 AND uic.unique_id = $2
-            """, user_id, item_id)
-
-            if not item:
-                await interaction.response.send_message("❌ No tienes esa carta de ítem.", ephemeral=True)
-                return
-
-            if item["status"] not in ("available", "equipped"):
-                await interaction.response.send_message("❌ Esa carta no se puede equipar en este momento.", ephemeral=True)
-                return
-
-            groups = await conn.fetch("""
-                SELECT group_id, name FROM groups WHERE user_id = $1
-            """, user_id)
-
-        view = SelectGroupForItemView(item)
-        for g in groups:
-            view.add_item(SelectGroupItemButton(item, g["group_id"], g["name"]))
-        await interaction.response.send_message(
-            f"Selecciona el grupo al que deseas equipar **{item['name']} ({item['unique_id']})**:",
-            view=view,
-            ephemeral=True
-        )
-
-class SelectGroupForItemView(discord.ui.View):
-    def __init__(self, item):
-        super().__init__(timeout=60)
-        self.item = item
-
-class SelectMemberItemView(discord.ui.View):
-    def __init__(self, item, group_id):
-        super().__init__(timeout=60)
-        self.item = item
-        self.group_id = group_id
-
-class BackToItemGroupSelectButton(discord.ui.Button):
-    def __init__(self, item):
-        super().__init__(label="🔙 Volver", style=discord.ButtonStyle.secondary)
-        self.item = item
-
-    async def callback(self, interaction: discord.Interaction):
-        await EquipItemCommand().callback(interaction, self.item["unique_id"])
-
-class SelectGroupItemButton(discord.ui.Button):
-    def __init__(self, user_id, item_row, group):
-        super().__init__(label=group["name"], style=discord.ButtonStyle.secondary)
-        self.user_id = user_id
-        self.item_row = item_row
-        self.group = group
-
-    async def callback(self, interaction: discord.Interaction):
-        pool = get_pool()
-        async with pool.acquire() as conn:
-            members = await conn.fetch("""
-                SELECT gm.*, ig.idol_name
-                FROM groups_members gm
-                JOIN idol_group ig ON gm.idol_id = ig.idol_id
-                WHERE gm.group_id = $1
-            """, self.group["group_id"])
-
-        view = discord.ui.View(timeout=60)
-        for member in members:
-            label = f"{member['idol_name']} ({member['idol_id']})"
-            view.add_item(SelectMemberItemButton(self.item_row, self.group, member, label))
-
-        view.add_item(CancelButtonItemEquip())
-        await interaction.response.edit_message(
-            content="Selecciona al idol que deseas equipar el ítem:",
-            embed=None,
-            view=view
-        )
-
-class SelectMemberItemButton(discord.ui.Button):
-    def __init__(self, item_row, group, member, label):
-        super().__init__(label=label, style=discord.ButtonStyle.success)
-        self.item_row = item_row
-        self.group = group
-        self.member = member
-
-    async def callback(self, interaction: discord.Interaction):
-        pool = get_pool()
-        async with pool.acquire() as conn:
-            type_slot_map = {
-                "mic": "mic_id",
-                "outfit": "outfit_id",
-                "accessory": "accessory_id",
-                "consumable": "consumable_id"
-            }
-            slot = type_slot_map.get(self.item_row["type"])
-            if not slot:
-                await interaction.response.edit_message(content="❌ Tipo de ítem inválido.", view=None)
-                return
-
-            # Desequipar item anterior si existe
-            previous_item_id = self.member[slot]
-            if previous_item_id:
-                await conn.execute("""
-                    UPDATE user_item_cards SET status = 'available'
-                    WHERE unique_id = $1
-                """, previous_item_id)
-
-            await conn.execute(f"""
-                UPDATE groups_members SET {slot} = $1
-                WHERE {slot} = $2
-            """, None, f"{self.item_row["item_id"]}.{self.item_row["unique_id"]}")
-
-            # Actualizar grupo y carta
-            await conn.execute(f"""
-                UPDATE groups_members SET {slot} = $1
-                WHERE group_id = $2 AND idol_id = $3
-            """, f"{self.item_row["item_id"]}.{self.item_row["unique_id"]}", self.group["group_id"], self.member["idol_id"])
-
-            print(self.item_row["unique_id"])
-            await conn.execute("""
-                UPDATE user_item_cards SET status = 'equipped'
-                WHERE unique_id = $1
-            """, self.item_row["unique_id"])
-
-        await interaction.response.edit_message(
-            content=f"✅ Ítem equipado correctamente a **{self.member['idol_name']}**.",
-            view=None
-        )
-
-class CancelButtonItemEquip(discord.ui.Button):
-    def __init__(self):
-        super().__init__(label="❌ Cancelar", style=discord.ButtonStyle.danger)
-
-    async def callback(self, interaction: discord.Interaction):
-        await interaction.response.edit_message(content="❌ Operación cancelada.", view=None)
 
 async def setup(bot):
     bot.tree.add_command(InventoryGroup())

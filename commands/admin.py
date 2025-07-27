@@ -319,9 +319,9 @@ class AdminGroup(app_commands.Group):
                             int(row["level"]),
                             int(row["xp_needed"]),
                             int(row["credits"]) if row.get("credits") else 0,
-                            row.get("pack"),
-                            row.get("redeemable"),
-                            row.get("badge"))
+                            row.get("pack_id"),
+                            row.get("redeemable_id"),
+                            row.get("badge_id"))
                             inserted += 1
                     inserted_total += inserted
                     inserted = 0

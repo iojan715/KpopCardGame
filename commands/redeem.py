@@ -49,7 +49,7 @@ class RedeemGroup(app_commands.Group):
                 effect_code += "R"
                 if rarity[-1] == "1":
                     effect_code += "G1"
-            elif rarity in ["LMT","POB","FCR","ACC", "CON", "MIC", "FIT"]:
+            elif rarity in ["LMT","POB","FCR","ACC", "CON", "MIC", "FIT", "SPC"]:
                 effect_code = rarity
 
             # Buscar redeemables disponibles del usuario
@@ -59,10 +59,11 @@ class RedeemGroup(app_commands.Group):
                 JOIN redeemables r ON r.redeemable_id = ur.redeemable_id
                 WHERE ur.user_id = $1
                 AND ur.quantity > 0
+                ORDER BY r.redeemable_id ASC
             """, user_id)
             
             a_red = await conn.fetch(
-                "SELECT * FROM redeemables"
+                "SELECT * FROM redeemables ORDER BY redeemable_id ASC"
             )
 
         matching = []
