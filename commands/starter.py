@@ -7,7 +7,7 @@ from utils.localization import get_translation
 from utils.language import get_user_language
 from asyncpg import Pool
 
-version = "?v=253"
+version = "?v=252"
 
 class StartView(discord.ui.View):
     def __init__(self, interaction: discord.Interaction):
@@ -199,8 +199,10 @@ class SponsorCommand(commands.Cog):
             influence = extra_influence + user["influence_temp"]
             
             sponsor = 150 + 600*(influence/(influence+200000))
-
-            total_credits = int((total_elapsed_hours * 60) * (sponsor / 60))  # 100 por hora
+            
+            credits_p_minute = sponsor / 60
+            
+            total_credits = int((total_elapsed_hours * 60) * (credits_p_minute))  # 100 por hora
 
             # El botón solo se habilita si pasó al menos 1 hora
             can_claim = elapsed >= timedelta(hours=1)

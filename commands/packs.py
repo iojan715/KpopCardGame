@@ -52,7 +52,7 @@ class PacksGroup(app_commands.Group):
     async def set_autocomplete(self, interaction: discord.Interaction, current: str):
         pool = get_pool()
         async with pool.acquire() as conn:
-            rows = await conn.fetch("SELECT DISTINCT group_name FROM cards_idol ORDER BY group_name ASC")
+            rows = await conn.fetch("SELECT DISTINCT group_name FROM cards_idol WHERE rarity_id = 'FCR' ORDER BY group_name ASC")
         return [
             app_commands.Choice(name=row["group_name"], value=row["group_name"])
             for row in rows if current.lower() in row["group_name"].lower()
@@ -140,7 +140,7 @@ class PacksGroup(app_commands.Group):
                     "Regular": discord.Color.light_gray(),
                     "Special": discord.Color.purple(),
                     "Limited": discord.Color.yellow(),
-                    "FCR": discord.Color.fuchsia(),
+                    "FCR": discord.Color.orange(),
                     "POB": discord.Color.blue(),
                     "Legacy": discord.Color.dark_purple(),
                 }
@@ -608,43 +608,40 @@ async def open_pack(unique_id: str, user_id: int):
                     results.append(("redeemable", f"🎟️ {card['name']}", card["redeemable_id"], None))
 
                 elif tipo == "idol":
-                    rareza = random.choices(list(rarity_weights.keys()), weights=rarity_weights.values())[0]
+                    while True:
+                        rareza = random.choices(list(rarity_weights.keys()), weights=rarity_weights.values())[0]
 
-                    if rareza == "R_":
-                        query = "SELECT * FROM cards_idol WHERE rarity_id LIKE 'R_1'"
-                        params = []
+                        if rareza == "R_":
+                            query = "SELECT * FROM cards_idol WHERE rarity_id LIKE 'R_1'"
+                            params = []
 
-                        idx = 1
-                        
-                        if pack_row['group_name']:
-                            query += f" AND group_name = ${idx}"
-                            idx += 1
-                            params.append(pack_row['group_name'])
-                        if pack_row['set_id']:
-                            query += f" AND set_id = ${idx}"
-                            idx += 1
-                            params.append(pack_row['set_id'])
+                            idx = 1
+                            
+                            if pack_row['group_name']:
+                                query += f" AND group_name = ${idx}"
+                                idx += 1
+                                params.append(pack_row['group_name'])
+                            if pack_row['set_id']:
+                                query += f" AND set_id = ${idx}"
+                                idx += 1
+                                params.append(pack_row['set_id'])
+
+                        else:
+                            query = "SELECT * FROM cards_idol WHERE rarity_id = $1"
+                            params = [rareza]
+                            idx = 2
+                            if pack_row['group_name']:
+                                query += f" AND group_name = ${idx}"
+                                idx += 1
+                                params.append(pack_row['group_name'])
+                            if pack_row['set_id']:
+                                query += f" AND set_id = ${idx}"
+                                idx += 1
+                                params.append(pack_row['set_id'])
 
                         cards = await conn.fetch(query, *params)
-
-                    else:
-                        query = "SELECT * FROM cards_idol WHERE rarity_id = $1"
-                        params = [rareza]
-                        idx = 2
-                        if pack_row['group_name']:
-                            query += f" AND group_name = ${idx}"
-                            idx += 1
-                            params.append(pack_row['group_name'])
-                        if pack_row['set_id']:
-                            query += f" AND set_id = ${idx}"
-                            idx += 1
-                            params.append(pack_row['set_id'])
-
-                        cards = await conn.fetch(query, *params)
-                    
-                    if not cards:
-                        results.append(f"❌ No hay cartas idol de rareza {rareza}.")
-                        continue
+                        if cards:
+                            break
 
                     card = random.choices(cards, weights=[c["weight"] for c in cards])[0]
 

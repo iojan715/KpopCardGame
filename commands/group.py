@@ -857,7 +857,7 @@ class BackToDetailsButton(discord.ui.Button):
         )
         await button.callback(interaction)
 
-# --- Classes and functions to /create manage:
+# --- Classes and functions to /group manage:
 class ManageGroupPaginator:
     def __init__(self, groups: list, interaction: discord.Interaction, language: str, embeds_per_page: int = 3):
         self.groups = groups

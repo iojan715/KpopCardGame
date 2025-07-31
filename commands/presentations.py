@@ -2364,7 +2364,7 @@ async def perform_section_action(conn, presentation_id: str, idol_row, song_sect
     if skill_bonus.get("override_energy") == "fixed":
         Er = 1
     else:
-        Er = 0.5 + restante * 0.5
+        Er = 0.3 + restante * 0.7
 
 
     # Stage y Support effects

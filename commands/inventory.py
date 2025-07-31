@@ -1234,7 +1234,7 @@ async def generate_idol_card_embeds(rows: list, pool) -> list[discord.Embed]:
             "Regular": discord.Color.light_gray(),
             "Special": discord.Color.purple(),
             "Limited": discord.Color.yellow(),
-            "FCR": discord.Color.fuchsia(),
+            "FCR": discord.Color.orange(),
             "POB": discord.Color.blue(),
             "Legacy": discord.Color.dark_purple(),
         }
@@ -1813,7 +1813,7 @@ class CardGroup(app_commands.Group):
                     "Regular": discord.Color.light_gray(),
                     "Special": discord.Color.purple(),
                     "Limited": discord.Color.yellow(),
-                    "FCR": discord.Color.fuchsia(),
+                    "FCR": discord.Color.orange(),
                     "POB": discord.Color.blue(),
                     "Legacy": discord.Color.dark_purple(),
                 }
@@ -2386,18 +2386,18 @@ class ConfirmFusionView(discord.ui.View):
             for row in rows:
                 level = int(row["rarity_id"][-1])
                 chance = 0
+                
                 if level == 3:
                     chance = 96
                 elif level == 2:
                     chance = 77
                 else:
                     chance = 53
-                print(chance)
+                    
                 roll = random.randint(1, 100)
-                print(roll)
-                print("\n")
                 emoji = "\n✅" if roll <= chance else "\n❌"
                 result += f"{emoji} "
+                
                 if emoji == "\n❌":
                     success = False
                 await interaction.edit_original_response(content=result)
