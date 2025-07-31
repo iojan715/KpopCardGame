@@ -1,156 +1,326 @@
 card_id,idol_id,set_id,rarity_id,idol_name,group_name,set_name,rarity,theme,vocal,rap,dance,visual,energy,p_skill,a_skill,s_skill,u_skill,weight,value
 HUMUNGMR11,HUM,UNGM,R11,Haum,KiiiKiii,Uncut Gem,Regular,,65,26,48,52,78,Visual Mastery,,,,300,400
-JYUUNGMR11,JYU,UNGM,R11,Jiyu,KiiiKiii,Uncut Gem,Regular,,60,33,49,49,78,,Charming Wink,,,300,400
-KYAUNGMR11,KYA,UNGM,R11,Kya,KiiiKiii,Uncut Gem,Regular,,63,37,51,40,78,,Max Effort,,,300,400
-LSLUNGMR11,LSL,UNGM,R11,Leesol,KiiiKiii,Uncut Gem,Regular,,56,40,55,40,78,Backup Star,,,,300,400
-SUIUNGMR11,SUI,UNGM,R11,Sui,KiiiKiii,Uncut Gem,Regular,,68,28,46,49,78,Peak Turn,,,,300,400
-HUMUNGMR21,HUM,UNGM,R21,Haum,KiiiKiii,Uncut Gem,Regular,,50,45,48,48,78,,Signature Move,,,300,400
-JYUUNGMR21,JYU,UNGM,R21,Jiyu,KiiiKiii,Uncut Gem,Regular,,45,52,49,45,78,Dazzling Smile,,,,300,400
-KYAUNGMR21,KYA,UNGM,R21,Kya,KiiiKiii,Uncut Gem,Regular,,48,56,51,36,78,,,Excitement Impulse,,300,400
-LSLUNGMR21,LSL,UNGM,R21,Leesol,KiiiKiii,Uncut Gem,Regular,,41,59,55,36,78,,Main Rapper,,,300,400
-SUIUNGMR21,SUI,UNGM,R21,Sui,KiiiKiii,Uncut Gem,Regular,,53,47,46,45,78,,,Power Sync,,300,400
-HUMUNGMR31,HUM,UNGM,R31,Haum,KiiiKiii,Uncut Gem,Regular,,55,31,44,60,80,,,Tactic Rest,,300,400
-JYUUNGMR31,JYU,UNGM,R31,Jiyu,KiiiKiii,Uncut Gem,Regular,,50,38,45,57,80,,,Spotlight Focus,,300,400
-KYAUNGMR31,KYA,UNGM,R31,Kya,KiiiKiii,Uncut Gem,Regular,,53,42,47,48,80,Steady Tempo,,,,300,400
-LSLUNGMR31,LSL,UNGM,R31,Leesol,KiiiKiii,Uncut Gem,Regular,,46,45,51,48,80,,Tactic Focus,,,300,400
-SUIUNGMR31,SUI,UNGM,R31,Sui,KiiiKiii,Uncut Gem,Regular,,63,38,47,62,80,Stage Fright,,Echo Effect,,300,400
-HUMUNGMSPC,HUM,UNGM,SPC,Haum,KiiiKiii,Uncut Gem,Special,,80,37,58,75,100,Visual Mastery,Signature Move,,,300,2500
-JYUUNGMSPC,JYU,UNGM,SPC,Jiyu,KiiiKiii,Uncut Gem,Special,,75,44,59,72,100,Dazzling Smile,Charming Wink,,,300,2500
-KYAUNGMSPC,KYA,UNGM,SPC,Kya,KiiiKiii,Uncut Gem,Special,,78,48,61,63,100,Steady Tempo,,Excitement Impulse,,300,2500
-LSLUNGMSPC,LSL,UNGM,SPC,Leesol,KiiiKiii,Uncut Gem,Special,,71,51,65,63,100,Backup Star,Main Rapper,,,300,2500
-SUIUNGMSPC,SUI,UNGM,SPC,Sui,KiiiKiii,Uncut Gem,Special,,83,39,56,72,100,Peak Turn,,Power Sync,,300,2500
-HUMUNGMLMT,HUM,UNGM,LMT,Haum,KiiiKiii,Uncut Gem,Limited,,69,47,58,72,88,,Max Effort,,All Eyes On Me,300,2000
-JYUUNGMLMT,JYU,UNGM,LMT,Jiyu,KiiiKiii,Uncut Gem,Limited,,64,54,59,69,88,Backup Star,,,Audience Bond,300,2000
-KYAUNGMLMT,KYA,UNGM,LMT,Kya,KiiiKiii,Uncut Gem,Limited,,67,58,61,60,88,Balanced Performance,,,One More Time,300,2000
-LSLUNGMLMT,LSL,UNGM,LMT,Leesol,KiiiKiii,Uncut Gem,Limited,,60,61,65,60,88,Encore Spirit,,,Last Breath,300,2000
-SUIUNGMLMT,SUI,UNGM,LMT,Sui,KiiiKiii,Uncut Gem,Limited,,72,49,56,69,88,Backup Star,,,Full Bloom,300,2000
-HUMUNGMFCR,HUM,UNGM,FCR,Haum,KiiiKiii,Uncut Gem,FCR,,65,33,48,69,90,Encore Spirit,Risky Play,,Mic Drop,300,1800
-JYUUNGMFCR,JYU,UNGM,FCR,Jiyu,KiiiKiii,Uncut Gem,FCR,,60,40,49,66,90,Visual Mastery,,Spotlight Focus,Hidden Charm,300,1800
-KYAUNGMFCR,KYA,UNGM,FCR,Kya,KiiiKiii,Uncut Gem,FCR,,63,44,51,57,90,Peak Fit,Tactic Focus,,Audience Bond,300,1800
-LSLUNGMFCR,LSL,UNGM,FCR,Leesol,KiiiKiii,Uncut Gem,FCR,,56,47,55,57,90,,Power Step,Tactic Rest,Inverse Vitality,300,1800
-SUIUNGMFCR,SUI,UNGM,FCR,Sui,KiiiKiii,Uncut Gem,FCR,,68,35,46,66,90,,Main Vocal,Echo Effect,Mic Drop,300,1800
-HUMUNGMPOB,HUM,UNGM,POB,Haum,KiiiKiii,Uncut Gem,POB,,68,31,50,71,100,Dazzling Smile,Charming Wink,Spotlight Focus,,300,2500
-JYUUNGMPOB,JYU,UNGM,POB,Jiyu,KiiiKiii,Uncut Gem,POB,,72,43,58,77,100,,Charming Wink,Excitement Impulse,,300,2500
-KYAUNGMPOB,KYA,UNGM,POB,Kya,KiiiKiii,Uncut Gem,POB,,75,47,60,68,100,,Harmony Blast,Fanchant Boost,,300,2500
-LSLUNGMPOB,LSL,UNGM,POB,Leesol,KiiiKiii,Uncut Gem,POB,,65,49,61,65,100,Fatigue,Harmony Blast,Total Reinforcement,Hidden Charm,300,2500
-SUIUNGMPOB,SUI,UNGM,POB,Sui,KiiiKiii,Uncut Gem,POB,,80,38,55,77,100,Balanced Performance,,Fanchant Boost,,300,2500
 HUMUNGMR12,HUM,UNGM,R12,Haum,KiiiKiii,Uncut Gem,Regular,,74,28,58,62,86,Visual Mastery,,,,300,700
-JYUUNGMR12,JYU,UNGM,R12,Jiyu,KiiiKiii,Uncut Gem,Regular,,69,35,59,59,86,,Charming Wink,,,300,700
-KYAUNGMR12,KYA,UNGM,R12,Kya,KiiiKiii,Uncut Gem,Regular,,72,39,61,50,86,,Max Effort,,,300,700
-LSLUNGMR12,LSL,UNGM,R12,Leesol,KiiiKiii,Uncut Gem,Regular,,65,42,65,50,86,Backup Star,,,,300,700
-SUIUNGMR12,SUI,UNGM,R12,Sui,KiiiKiii,Uncut Gem,Regular,,77,30,56,59,86,Peak Turn,,,,300,700
-HUMUNGMR22,HUM,UNGM,R22,Haum,KiiiKiii,Uncut Gem,Regular,,57,54,57,54,86,,Signature Move,,,300,700
-JYUUNGMR22,JYU,UNGM,R22,Jiyu,KiiiKiii,Uncut Gem,Regular,,52,61,58,51,86,Dazzling Smile,,,,300,700
-KYAUNGMR22,KYA,UNGM,R22,Kya,KiiiKiii,Uncut Gem,Regular,,55,65,60,42,86,,,Excitement Impulse,,300,700
-LSLUNGMR22,LSL,UNGM,R22,Leesol,KiiiKiii,Uncut Gem,Regular,,48,68,64,42,86,,Main Rapper,,,300,700
-SUIUNGMR22,SUI,UNGM,R22,Sui,KiiiKiii,Uncut Gem,Regular,,60,56,55,51,86,,,Power Sync,,300,700
-HUMUNGMR32,HUM,UNGM,R32,Haum,KiiiKiii,Uncut Gem,Regular,,64,38,51,68,88,,,Tactic Rest,,300,700
-JYUUNGMR32,JYU,UNGM,R32,Jiyu,KiiiKiii,Uncut Gem,Regular,,59,45,52,65,88,,,Spotlight Focus,,300,700
-KYAUNGMR32,KYA,UNGM,R32,Kya,KiiiKiii,Uncut Gem,Regular,,62,49,54,56,88,Steady Tempo,,,,300,700
-LSLUNGMR32,LSL,UNGM,R32,Leesol,KiiiKiii,Uncut Gem,Regular,,55,52,58,56,88,,Tactic Focus,,,300,700
-SUIUNGMR32,SUI,UNGM,R32,Sui,KiiiKiii,Uncut Gem,Regular,,72,45,54,70,88,Stage Fright,,Echo Effect,,300,700
 HUMUNGMR13,HUM,UNGM,R13,Haum,KiiiKiii,Uncut Gem,Regular,,83,31,68,72,92,Visual Mastery,,,,300,1000
-JYUUNGMR13,JYU,UNGM,R13,Jiyu,KiiiKiii,Uncut Gem,Regular,,78,38,69,69,92,,Charming Wink,,,300,1000
-KYAUNGMR13,KYA,UNGM,R13,Kya,KiiiKiii,Uncut Gem,Regular,,81,42,71,60,92,,Max Effort,,,300,1000
-LSLUNGMR13,LSL,UNGM,R13,Leesol,KiiiKiii,Uncut Gem,Regular,,74,45,75,60,92,Backup Star,,,,300,1000
-SUIUNGMR13,SUI,UNGM,R13,Sui,KiiiKiii,Uncut Gem,Regular,,86,33,66,69,92,Peak Turn,,,,300,1000
-HUMUNGMR23,HUM,UNGM,R23,Haum,KiiiKiii,Uncut Gem,Regular,,65,63,63,62,94,,Signature Move,,,300,1000
-JYUUNGMR23,JYU,UNGM,R23,Jiyu,KiiiKiii,Uncut Gem,Regular,,60,70,64,59,94,Dazzling Smile,,,,300,1000
-KYAUNGMR23,KYA,UNGM,R23,Kya,KiiiKiii,Uncut Gem,Regular,,63,74,66,50,94,,,Excitement Impulse,,300,1000
-LSLUNGMR23,LSL,UNGM,R23,Leesol,KiiiKiii,Uncut Gem,Regular,,56,77,70,50,94,,Main Rapper,,,300,1000
-SUIUNGMR23,SUI,UNGM,R23,Sui,KiiiKiii,Uncut Gem,Regular,,68,65,61,59,94,,,Power Sync,,300,1000
+HUMUNGMR21,HUM,UNGM,R21,Haum,KiiiKiii,Uncut Gem,Regular,,49,46,48,48,78,,Signature Move,,,300,400
+HUMUNGMR22,HUM,UNGM,R22,Haum,KiiiKiii,Uncut Gem,Regular,,55,56,57,54,86,,Signature Move,,,300,700
+HUMUNGMR23,HUM,UNGM,R23,Haum,KiiiKiii,Uncut Gem,Regular,,60,66,65,62,94,,Signature Move,,,300,1000
+HUMUNGMR31,HUM,UNGM,R31,Haum,KiiiKiii,Uncut Gem,Regular,,55,31,44,60,80,,,Tactic Rest,,300,400
+HUMUNGMR32,HUM,UNGM,R32,Haum,KiiiKiii,Uncut Gem,Regular,,64,38,51,68,88,,,Tactic Rest,,300,700
 HUMUNGMR33,HUM,UNGM,R33,Haum,KiiiKiii,Uncut Gem,Regular,,73,45,58,76,96,,,Tactic Rest,,300,1000
+HUMUNGMSPC,HUM,UNGM,SPC,Haum,KiiiKiii,Uncut Gem,Special,,80,47,58,75,100,Visual Mastery,Signature Move,,,300,2500
+HUMUNGMLMT,HUM,UNGM,LMT,Haum,KiiiKiii,Uncut Gem,Limited,,69,47,58,72,88,,Max Effort,,All Eyes On Me,300,2000
+HUMUNGMFCR,HUM,UNGM,FCR,Haum,KiiiKiii,Uncut Gem,FCR,,65,33,48,69,90,Encore Spirit,Risky Play,,Mic Drop,300,1800
+HUMUNGMPOB,HUM,UNGM,POB,Haum,KiiiKiii,Uncut Gem,POB,,82,51,62,85,100,Nerves,Charming Wink,Spotlight Focus,,300,2500
+JYUUNGMR11,JYU,UNGM,R11,Jiyu,KiiiKiii,Uncut Gem,Regular,,60,33,49,49,78,,Charming Wink,,,300,400
+JYUUNGMR12,JYU,UNGM,R12,Jiyu,KiiiKiii,Uncut Gem,Regular,,69,35,59,59,86,,Charming Wink,,,300,700
+JYUUNGMR13,JYU,UNGM,R13,Jiyu,KiiiKiii,Uncut Gem,Regular,,78,38,69,69,92,,Charming Wink,,,300,1000
+JYUUNGMR21,JYU,UNGM,R21,Jiyu,KiiiKiii,Uncut Gem,Regular,,44,53,49,45,78,Dazzling Smile,,,,300,400
+JYUUNGMR22,JYU,UNGM,R22,Jiyu,KiiiKiii,Uncut Gem,Regular,,50,63,58,51,86,Dazzling Smile,,,,300,700
+JYUUNGMR23,JYU,UNGM,R23,Jiyu,KiiiKiii,Uncut Gem,Regular,,55,73,66,59,94,Dazzling Smile,,,,300,1000
+JYUUNGMR31,JYU,UNGM,R31,Jiyu,KiiiKiii,Uncut Gem,Regular,,50,38,45,57,80,,,Spotlight Focus,,300,400
+JYUUNGMR32,JYU,UNGM,R32,Jiyu,KiiiKiii,Uncut Gem,Regular,,59,45,52,65,88,,,Spotlight Focus,,300,700
 JYUUNGMR33,JYU,UNGM,R33,Jiyu,KiiiKiii,Uncut Gem,Regular,,68,52,59,73,96,,,Spotlight Focus,,300,1000
+JYUUNGMSPC,JYU,UNGM,SPC,Jiyu,KiiiKiii,Uncut Gem,Special,,75,54,59,72,100,Dazzling Smile,Charming Wink,,,300,2500
+JYUUNGMLMT,JYU,UNGM,LMT,Jiyu,KiiiKiii,Uncut Gem,Limited,,64,54,59,69,88,Backup Star,,,Audience Bond,300,2000
+JYUUNGMFCR,JYU,UNGM,FCR,Jiyu,KiiiKiii,Uncut Gem,FCR,,60,40,49,66,90,Visual Mastery,,Spotlight Focus,Hidden Charm,300,1800
+JYUUNGMPOB,JYU,UNGM,POB,Jiyu,KiiiKiii,Uncut Gem,POB,,77,58,63,82,100,Distracted Mind,Charming Wink,Excitement Impulse,,300,2500
+KYAUNGMR11,KYA,UNGM,R11,Kya,KiiiKiii,Uncut Gem,Regular,,63,37,51,40,78,,Max Effort,,,300,400
+KYAUNGMR12,KYA,UNGM,R12,Kya,KiiiKiii,Uncut Gem,Regular,,72,39,61,50,86,,Max Effort,,,300,700
+KYAUNGMR13,KYA,UNGM,R13,Kya,KiiiKiii,Uncut Gem,Regular,,81,42,71,60,92,,Max Effort,,,300,1000
+KYAUNGMR21,KYA,UNGM,R21,Kya,KiiiKiii,Uncut Gem,Regular,,47,57,51,36,78,,,Excitement Impulse,,300,400
+KYAUNGMR22,KYA,UNGM,R22,Kya,KiiiKiii,Uncut Gem,Regular,,53,67,60,42,86,,,Excitement Impulse,,300,700
+KYAUNGMR23,KYA,UNGM,R23,Kya,KiiiKiii,Uncut Gem,Regular,,58,77,68,50,94,,,Excitement Impulse,,300,1000
+KYAUNGMR31,KYA,UNGM,R31,Kya,KiiiKiii,Uncut Gem,Regular,,53,42,47,48,80,Steady Tempo,,,,300,400
+KYAUNGMR32,KYA,UNGM,R32,Kya,KiiiKiii,Uncut Gem,Regular,,62,49,54,56,88,Steady Tempo,,,,300,700
 KYAUNGMR33,KYA,UNGM,R33,Kya,KiiiKiii,Uncut Gem,Regular,,71,56,61,64,96,Steady Tempo,,,,300,1000
+KYAUNGMSPC,KYA,UNGM,SPC,Kya,KiiiKiii,Uncut Gem,Special,,78,58,61,63,100,Steady Tempo,,Excitement Impulse,,300,2500
+KYAUNGMLMT,KYA,UNGM,LMT,Kya,KiiiKiii,Uncut Gem,Limited,,67,58,61,60,88,Balanced Performance,,,One More Time,300,2000
+KYAUNGMFCR,KYA,UNGM,FCR,Kya,KiiiKiii,Uncut Gem,FCR,,63,44,51,57,90,Peak Fit,Tactic Focus,,Audience Bond,300,1800
+KYAUNGMPOB,KYA,UNGM,POB,Kya,KiiiKiii,Uncut Gem,POB,,80,62,65,73,100,Offbeat,Balanced Stage,Fanchant Boost,,300,2500
+LSLUNGMR11,LSL,UNGM,R11,Leesol,KiiiKiii,Uncut Gem,Regular,,56,40,55,40,78,Backup Star,,,,300,400
+LSLUNGMR12,LSL,UNGM,R12,Leesol,KiiiKiii,Uncut Gem,Regular,,65,42,65,50,86,Backup Star,,,,300,700
+LSLUNGMR13,LSL,UNGM,R13,Leesol,KiiiKiii,Uncut Gem,Regular,,74,45,75,60,92,Backup Star,,,,300,1000
+LSLUNGMR21,LSL,UNGM,R21,Leesol,KiiiKiii,Uncut Gem,Regular,,40,60,55,36,78,,Main Rapper,,,300,400
+LSLUNGMR22,LSL,UNGM,R22,Leesol,KiiiKiii,Uncut Gem,Regular,,46,70,64,42,86,,Main Rapper,,,300,700
+LSLUNGMR23,LSL,UNGM,R23,Leesol,KiiiKiii,Uncut Gem,Regular,,51,80,72,50,94,,Main Rapper,,,300,1000
+LSLUNGMR31,LSL,UNGM,R31,Leesol,KiiiKiii,Uncut Gem,Regular,,46,45,51,48,80,,Tactic Focus,,,300,400
+LSLUNGMR32,LSL,UNGM,R32,Leesol,KiiiKiii,Uncut Gem,Regular,,55,52,58,56,88,,Tactic Focus,,,300,700
 LSLUNGMR33,LSL,UNGM,R33,Leesol,KiiiKiii,Uncut Gem,Regular,,64,59,65,64,96,,Tactic Focus,,,300,1000
+LSLUNGMSPC,LSL,UNGM,SPC,Leesol,KiiiKiii,Uncut Gem,Special,,71,61,65,63,100,Backup Star,Main Rapper,,,300,2500
+LSLUNGMLMT,LSL,UNGM,LMT,Leesol,KiiiKiii,Uncut Gem,Limited,,60,61,65,60,88,Encore Spirit,,,Last Breath,300,2000
+LSLUNGMFCR,LSL,UNGM,FCR,Leesol,KiiiKiii,Uncut Gem,FCR,,56,47,55,57,90,,Power Step,Tactic Rest,Inverse Vitality,300,1800
+LSLUNGMPOB,LSL,UNGM,POB,Leesol,KiiiKiii,Uncut Gem,POB,,73,65,69,73,100,Fatigue,Harmony Blast,,Hidden Charm,300,2500
+SUIUNGMR11,SUI,UNGM,R11,Sui,KiiiKiii,Uncut Gem,Regular,,68,28,46,49,78,Peak Turn,,,,300,400
+SUIUNGMR12,SUI,UNGM,R12,Sui,KiiiKiii,Uncut Gem,Regular,,77,30,56,59,86,Peak Turn,,,,300,700
+SUIUNGMR13,SUI,UNGM,R13,Sui,KiiiKiii,Uncut Gem,Regular,,86,33,66,69,92,Peak Turn,,,,300,1000
+SUIUNGMR21,SUI,UNGM,R21,Sui,KiiiKiii,Uncut Gem,Regular,,52,48,46,45,78,,,Power Sync,,300,400
+SUIUNGMR22,SUI,UNGM,R22,Sui,KiiiKiii,Uncut Gem,Regular,,58,58,55,51,86,,,Power Sync,,300,700
+SUIUNGMR23,SUI,UNGM,R23,Sui,KiiiKiii,Uncut Gem,Regular,,63,68,63,59,94,,,Power Sync,,300,1000
+SUIUNGMR31,SUI,UNGM,R31,Sui,KiiiKiii,Uncut Gem,Regular,,63,38,47,62,80,Stage Fright,,Echo Effect,,300,400
+SUIUNGMR32,SUI,UNGM,R32,Sui,KiiiKiii,Uncut Gem,Regular,,72,45,54,70,88,Stage Fright,,Echo Effect,,300,700
 SUIUNGMR33,SUI,UNGM,R33,Sui,KiiiKiii,Uncut Gem,Regular,,81,52,61,78,96,Stage Fright,,Echo Effect,,300,1000
+SUIUNGMSPC,SUI,UNGM,SPC,Sui,KiiiKiii,Uncut Gem,Special,,83,49,56,72,100,Peak Turn,,Power Sync,,300,2500
+SUIUNGMLMT,SUI,UNGM,LMT,Sui,KiiiKiii,Uncut Gem,Limited,,72,49,56,69,88,Backup Star,,,Full Bloom,300,2000
+SUIUNGMFCR,SUI,UNGM,FCR,Sui,KiiiKiii,Uncut Gem,FCR,,68,35,46,66,90,,Main Vocal,Echo Effect,Mic Drop,300,1800
+SUIUNGMPOB,SUI,UNGM,POB,Sui,KiiiKiii,Uncut Gem,POB,,85,53,60,82,100,Low Morale,Full Impact,Fanchant Boost,,300,2500
+BAEFBRKR11,BAE,FBRK,R11,Bae,NMIXX,Fe3O4 Break,Regular,,47,51,54,36,84,,,Hype Link,,266,400
+BAEFBRKR12,BAE,FBRK,R12,Bae,NMIXX,Fe3O4 Break,Regular,,56,61,62,41,90,,,Hype Link,,266,700
+BAEFBRKR13,BAE,FBRK,R13,Bae,NMIXX,Fe3O4 Break,Regular,,65,68,71,47,98,,,Hype Link,,266,1000
+BAEFBRKR21,BAE,FBRK,R21,Bae,NMIXX,Fe3O4 Break,Regular,,55,36,48,49,84,Swift Lead,,,,266,400
+BAEFBRKR22,BAE,FBRK,R22,Bae,NMIXX,Fe3O4 Break,Regular,,64,43,55,58,90,Swift Lead,,,,266,700
+BAEFBRKR23,BAE,FBRK,R23,Bae,NMIXX,Fe3O4 Break,Regular,,76,49,59,68,96,Swift Lead,,,,266,1000
+BAEFBRKR31,BAE,FBRK,R31,Bae,NMIXX,Fe3O4 Break,Regular,,49,41,59,41,80,,Balanced Stage,,,266,400
+BAEFBRKR32,BAE,FBRK,R32,Bae,NMIXX,Fe3O4 Break,Regular,,57,48,70,47,86,,Balanced Stage,,,266,700
+BAEFBRKR33,BAE,FBRK,R33,Bae,NMIXX,Fe3O4 Break,Regular,,68,54,79,53,92,,Balanced Stage,,,266,1000
+BAEFBRKSPC,BAE,FBRK,SPC,Bae,NMIXX,Fe3O4 Break,Special,,73,61,72,56,96,Swift Lead,,Hype Link,,266,2500
+BAEFBRKLMT,BAE,FBRK,LMT,Bae,NMIXX,Fe3O4 Break,Limited,,69,40,66,69,92,Comeback Path,,,Hype Overflow,266,2000
+BAEFBRKFCR,BAE,FBRK,FCR,Bae,NMIXX,Fe3O4 Break,FCR,,61,68,69,65,94,Blinding Lights,Tactic Focus,,Hyper Rest,266,1800
+BAEFBRKPOB,BAE,FBRK,POB,Bae,NMIXX,Fe3O4 Break,POB,,63,46,59,61,102,Crowd Inspiration,Full Impact,Stage Coordination,,266,2500
+KJWFBRKR11,KJW,FBRK,R11,Jiwoo,NMIXX,Fe3O4 Break,Regular,,43,67,56,22,84,Peak Confidence,,,,266,400
+KJWFBRKR12,KJW,FBRK,R12,Jiwoo,NMIXX,Fe3O4 Break,Regular,,52,77,64,27,90,Peak Confidence,,,,266,1000
+KJWFBRKR13,KJW,FBRK,R13,Jiwoo,NMIXX,Fe3O4 Break,Regular,,61,84,73,33,98,Peak Confidence,,,,266,700
+KJWFBRKR21,KJW,FBRK,R21,Jiwoo,NMIXX,Fe3O4 Break,Regular,,51,52,50,35,84,Flow Mastery,,,,266,400
+KJWFBRKR22,KJW,FBRK,R22,Jiwoo,NMIXX,Fe3O4 Break,Regular,,60,59,57,44,90,Flow Mastery,,,,266,1000
+KJWFBRKR23,KJW,FBRK,R23,Jiwoo,NMIXX,Fe3O4 Break,Regular,,72,65,61,54,96,Flow Mastery,,,,266,2000
+KJWFBRKR31,KJW,FBRK,R31,Jiwoo,NMIXX,Fe3O4 Break,Regular,,45,57,61,27,80,,,Inspiration,,266,2500
+KJWFBRKR32,KJW,FBRK,R32,Jiwoo,NMIXX,Fe3O4 Break,Regular,,53,64,72,33,86,,,Inspiration,,266,700
+KJWFBRKR33,KJW,FBRK,R33,Jiwoo,NMIXX,Fe3O4 Break,Regular,,64,70,81,39,92,,,Inspiration,,266,400
+KJWFBRKSPC,KJW,FBRK,SPC,Jiwoo,NMIXX,Fe3O4 Break,Special,,69,77,74,42,96,Flow Mastery,,Inspiration,,266,1000
+KJWFBRKLMT,KJW,FBRK,LMT,Jiwoo,NMIXX,Fe3O4 Break,Limited,,65,56,68,55,92,Balanced Rhythm,,,Hidden Charm,266,700
+KJWFBRKFCR,KJW,FBRK,FCR,Jiwoo,NMIXX,Fe3O4 Break,FCR,,57,84,71,51,94,Overthinking,Beat Pulse,,Hype Overflow,266,2500
+KJWFBRKPOB,KJW,FBRK,POB,Jiwoo,NMIXX,Fe3O4 Break,POB,,59,62,61,47,102,Quick Reaction,Main Rapper,Tempo Adapt,,266,1800
+KYUFBRKR11,KYU,FBRK,R11,Kyujin,NMIXX,Fe3O4 Break,Regular,,45,62,57,24,84,,,Rhythm Buffer,,266,400
+KYUFBRKR12,KYU,FBRK,R12,Kyujin,NMIXX,Fe3O4 Break,Regular,,54,72,65,29,90,,,Rhythm Buffer,,266,700
+KYUFBRKR13,KYU,FBRK,R13,Kyujin,NMIXX,Fe3O4 Break,Regular,,63,79,74,35,98,,,Rhythm Buffer,,266,1000
+KYUFBRKR21,KYU,FBRK,R21,Kyujin,NMIXX,Fe3O4 Break,Regular,,53,47,51,37,84,Steady Tempo,,,,266,400
+KYUFBRKR22,KYU,FBRK,R22,Kyujin,NMIXX,Fe3O4 Break,Regular,,62,54,58,46,90,Steady Tempo,,,,266,700
+KYUFBRKR23,KYU,FBRK,R23,Kyujin,NMIXX,Fe3O4 Break,Regular,,74,60,62,56,96,Steady Tempo,,,,266,1000
+KYUFBRKR31,KYU,FBRK,R31,Kyujin,NMIXX,Fe3O4 Break,Regular,,47,52,62,29,80,,Steady Lead,,,266,400
+KYUFBRKR32,KYU,FBRK,R32,Kyujin,NMIXX,Fe3O4 Break,Regular,,55,59,73,35,86,,Steady Lead,,,266,700
+KYUFBRKR33,KYU,FBRK,R33,Kyujin,NMIXX,Fe3O4 Break,Regular,,66,65,82,41,92,,Steady Lead,,,266,1000
+KYUFBRKSPC,KYU,FBRK,SPC,Kyujin,NMIXX,Fe3O4 Break,Special,,71,72,75,44,96,Steady Tempo,,Rhythm Buffer,,266,2500
+KYUFBRKLMT,KYU,FBRK,LMT,Kyujin,NMIXX,Fe3O4 Break,Limited,,67,51,69,57,92,Endurance Mode,,,Adaptive Blast,266,2000
+KYUFBRKFCR,KYU,FBRK,FCR,Kyujin,NMIXX,Fe3O4 Break,FCR,,59,79,72,53,94,Vocal Pressure,Main Dancer,,Silent Recovery,266,1800
+KYUFBRKPOB,KYU,FBRK,POB,Kyujin,NMIXX,Fe3O4 Break,POB,,61,57,62,49,102,Confident Rhythm,Deep Dive,Rhythm Buffer,,266,2500
+LLYFBRKR11,LLY,FBRK,R11,Lily,NMIXX,Fe3O4 Break,Regular,,63,37,52,36,84,Clutch Performer,,,,266,400
+LLYFBRKR12,LLY,FBRK,R12,Lily,NMIXX,Fe3O4 Break,Regular,,72,47,60,41,90,Clutch Performer,,,,266,700
+LLYFBRKR13,LLY,FBRK,R13,Lily,NMIXX,Fe3O4 Break,Regular,,81,54,69,47,98,Clutch Performer,,,,266,1000
+LLYFBRKR21,LLY,FBRK,R21,Lily,NMIXX,Fe3O4 Break,Regular,,71,22,46,49,84,,Harmony Blast,,,266,400
+LLYFBRKR22,LLY,FBRK,R22,Lily,NMIXX,Fe3O4 Break,Regular,,80,29,53,58,90,,Harmony Blast,,,266,700
+LLYFBRKR23,LLY,FBRK,R23,Lily,NMIXX,Fe3O4 Break,Regular,,92,35,57,68,96,,Harmony Blast,,,266,1000
+LLYFBRKR31,LLY,FBRK,R31,Lily,NMIXX,Fe3O4 Break,Regular,,65,27,57,41,80,Catch-up Mode,,,,266,400
+LLYFBRKR32,LLY,FBRK,R32,Lily,NMIXX,Fe3O4 Break,Regular,,73,34,68,47,86,Catch-up Mode,,,,266,700
+LLYFBRKR33,LLY,FBRK,R33,Lily,NMIXX,Fe3O4 Break,Regular,,84,40,77,53,92,Catch-up Mode,,,,266,1000
+LLYFBRKSPC,LLY,FBRK,SPC,Lily,NMIXX,Fe3O4 Break,Special,,89,47,70,56,96,Catch-up Mode,Harmony Blast,,,266,2500
+LLYFBRKLMT,LLY,FBRK,LMT,Lily,NMIXX,Fe3O4 Break,Limited,,85,26,64,69,92,Last Push,,,Radiant Finale,266,2000
+LLYFBRKFCR,LLY,FBRK,FCR,Lily,NMIXX,Fe3O4 Break,FCR,,77,54,67,65,94,Distracted,High Note,,Last Breath,266,1800
+LLYFBRKPOB,LLY,FBRK,POB,Lily,NMIXX,Fe3O4 Break,POB,,79,32,57,61,102,Vocal Boost,Main Vocal,Inspiration,,266,2500
+OHWFBRKR11,OHW,FBRK,R11,Haewon,NMIXX,Fe3O4 Break,Regular,,59,39,56,34,84,,Signature Move,,,266,400
+OHWFBRKR12,OHW,FBRK,R12,Haewon,NMIXX,Fe3O4 Break,Regular,,68,49,64,39,90,,Signature Move,,,266,700
+OHWFBRKR13,OHW,FBRK,R13,Haewon,NMIXX,Fe3O4 Break,Regular,,77,56,73,45,98,,Signature Move,,,266,1000
+OHWFBRKR21,OHW,FBRK,R21,Haewon,NMIXX,Fe3O4 Break,Regular,,67,24,50,47,84,,,Fanchant Boost,,266,400
+OHWFBRKR22,OHW,FBRK,R22,Haewon,NMIXX,Fe3O4 Break,Regular,,76,31,57,56,90,,,Fanchant Boost,,266,700
+OHWFBRKR23,OHW,FBRK,R23,Haewon,NMIXX,Fe3O4 Break,Regular,,88,37,61,66,96,,,Fanchant Boost,,266,1000
+OHWFBRKR31,OHW,FBRK,R31,Haewon,NMIXX,Fe3O4 Break,Regular,,61,29,61,39,80,,,Echo Boost,,266,400
+OHWFBRKR32,OHW,FBRK,R32,Haewon,NMIXX,Fe3O4 Break,Regular,,69,36,72,45,86,,,Echo Boost,,266,700
+OHWFBRKR33,OHW,FBRK,R33,Haewon,NMIXX,Fe3O4 Break,Regular,,80,42,81,51,92,,,Echo Boost,,266,1000
+OHWFBRKSPC,OHW,FBRK,SPC,Haewon,NMIXX,Fe3O4 Break,Special,,85,49,74,54,96,,Signature Move,Echo Boost,,266,2500
+OHWFBRKLMT,OHW,FBRK,LMT,Haewon,NMIXX,Fe3O4 Break,Limited,,81,28,68,67,92,Growing Cheers,,,Final Statement,266,2000
+OHWFBRKFCR,OHW,FBRK,FCR,Haewon,NMIXX,Fe3O4 Break,FCR,,73,56,71,63,94,Chaotic Vibe,Center Vibes,,Solo Glory,266,1800
+OHWFBRKPOB,OHW,FBRK,POB,Haewon,NMIXX,Fe3O4 Break,POB,,75,34,61,59,102,Early Push,Steady Lead,Morale Charge,,266,2500
+SLYFBRKR11,SLY,FBRK,R11,Sullyoon,NMIXX,Fe3O4 Break,Regular,,57,42,50,39,84,,Sharp Switch,,,266,400
+SLYFBRKR12,SLY,FBRK,R12,Sullyoon,NMIXX,Fe3O4 Break,Regular,,66,52,58,44,90,,Sharp Switch,,,266,700
+SLYFBRKR13,SLY,FBRK,R13,Sullyoon,NMIXX,Fe3O4 Break,Regular,,75,59,67,50,98,,Sharp Switch,,,266,1000
+SLYFBRKR21,SLY,FBRK,R21,Sullyoon,NMIXX,Fe3O4 Break,Regular,,65,27,44,52,84,,Art Flow,,,266,400
+SLYFBRKR22,SLY,FBRK,R22,Sullyoon,NMIXX,Fe3O4 Break,Regular,,74,34,51,61,90,,Art Flow,,,266,700
+SLYFBRKR23,SLY,FBRK,R23,Sullyoon,NMIXX,Fe3O4 Break,Regular,,86,40,55,71,96,,Art Flow,,,266,1000
+SLYFBRKR31,SLY,FBRK,R31,Sullyoon,NMIXX,Fe3O4 Break,Regular,,59,32,55,44,80,,Aggressive Stance,,,266,400
+SLYFBRKR32,SLY,FBRK,R32,Sullyoon,NMIXX,Fe3O4 Break,Regular,,67,39,66,50,86,,Aggressive Stance,,,266,700
+SLYFBRKR33,SLY,FBRK,R33,Sullyoon,NMIXX,Fe3O4 Break,Regular,,78,45,75,56,92,,Aggressive Stance,,,266,1000
+SLYFBRKSPC,SLY,FBRK,SPC,Sullyoon,NMIXX,Fe3O4 Break,Special,,83,52,68,59,96,Well Paced,Art Flow,,,266,2500
+SLYFBRKLMT,SLY,FBRK,LMT,Sullyoon,NMIXX,Fe3O4 Break,Limited,,79,31,62,72,92,,Backup Impact,,Full Bloom,266,2000
+SLYFBRKFCR,SLY,FBRK,FCR,Sullyoon,NMIXX,Fe3O4 Break,FCR,,71,59,65,68,94,Sluggish Mood,Stage Flare,,Adaptive Blast,266,1800
+SLYFBRKPOB,SLY,FBRK,POB,Sullyoon,NMIXX,Fe3O4 Break,POB,,73,37,55,64,102,Stage Comfort,Energy Bloom,Long Set Strategy,,266,2500
+CHWAA25R11,CHW,AA25,R11,Chaewon,tripleS,Assemble25,Regular,,54,25,59,50,84,Underdog Spirit,,,,141,400
+CHWAA25R12,CHW,AA25,R12,Chaewon,tripleS,Assemble25,Regular,,63,30,68,59,90,Underdog Spirit,,,,141,700
+CHWAA25R13,CHW,AA25,R13,Chaewon,tripleS,Assemble25,Regular,,73,35,78,69,90,Underdog Spirit,,,,141,1000
+GYBAA25R11,GYB,AA25,R11,Yubin,tripleS,Assemble25,Regular,,55,34,59,40,84,,,Extended Momentum,,141,400
+GYBAA25R12,GYB,AA25,R12,Yubin,tripleS,Assemble25,Regular,,64,39,68,49,90,,,Extended Momentum,,141,700
+GYBAA25R13,GYB,AA25,R13,Yubin,tripleS,Assemble25,Regular,,74,44,78,59,90,,,Extended Momentum,,141,1000
+HAYAA25R11,HAY,AA25,R11,Hayeon,tripleS,Assemble25,Regular,,55,29,52,52,84,,Art Flow,,,141,400
+HAYAA25R12,HAY,AA25,R12,Hayeon,tripleS,Assemble25,Regular,,64,34,61,61,90,,Art Flow,,,141,700
+HAYAA25R13,HAY,AA25,R13,Hayeon,tripleS,Assemble25,Regular,,74,39,71,71,90,,Art Flow,,,141,1000
+JHRAA25R11,JHR,AA25,R11,Hyerin,tripleS,Assemble25,Regular,,56,25,67,40,84,,Over_Push,,,141,400
+JHRAA25R12,JHR,AA25,R12,Hyerin,tripleS,Assemble25,Regular,,65,30,76,49,90,,Over_Push,,,141,700
+JHRAA25R13,JHR,AA25,R13,Hyerin,tripleS,Assemble25,Regular,,75,35,86,59,90,,Over_Push,,,141,1000
+JIYAA25R11,JIY,AA25,R11,Jiyeon,tripleS,Assemble25,Regular,,52,26,61,49,84,Backup Star,,,,141,400
+JIYAA25R12,JIY,AA25,R12,Jiyeon,tripleS,Assemble25,Regular,,61,31,70,58,90,Backup Star,,,,141,700
+JIYAA25R13,JIY,AA25,R13,Jiyeon,tripleS,Assemble25,Regular,,71,36,80,68,90,Backup Star,,,,141,1000
+JOOAA25R11,JOO,AA25,R11,Joobin,tripleS,Assemble25,Regular,,56,26,55,51,84,Dazzling Smile,,,,141,400
+JOOAA25R12,JOO,AA25,R12,Joobin,tripleS,Assemble25,Regular,,65,31,64,60,90,Dazzling Smile,,,,141,700
+JOOAA25R13,JOO,AA25,R13,Joobin,tripleS,Assemble25,Regular,,75,36,74,70,90,Dazzling Smile,,,,141,1000
+KAEAA25R11,KAE,AA25,R11,Kaede,tripleS,Assemble25,Regular,,59,19,69,41,84,,Sharp Switch,,,141,400
+KAEAA25R12,KAE,AA25,R12,Kaede,tripleS,Assemble25,Regular,,68,24,78,50,90,,Sharp Switch,,,141,700
+KAEAA25R13,KAE,AA25,R13,Kaede,tripleS,Assemble25,Regular,,78,29,88,60,90,,Sharp Switch,,,141,1000
+KCYAA25R11,KCY,AA25,R11,Chaeyeon,tripleS,Assemble25,Regular,,60,24,53,51,84,,,,,141,400
+KCYAA25R12,KCY,AA25,R12,Chaeyeon,tripleS,Assemble25,Regular,,69,29,62,60,90,,,,,141,700
+KCYAA25R13,KCY,AA25,R13,Chaeyeon,tripleS,Assemble25,Regular,,79,34,72,70,90,Clutch Performer,,,,141,1000
+KOTAA25R11,KOT,AA25,R11,Kotone,tripleS,Assemble25,Regular,,48,44,63,33,84,,Aggressive Stance,,,141,400
+KOTAA25R12,KOT,AA25,R12,Kotone,tripleS,Assemble25,Regular,,57,49,72,42,90,,Aggressive Stance,,,141,700
+KOTAA25R13,KOT,AA25,R13,Kotone,tripleS,Assemble25,Regular,,67,54,82,52,90,,Aggressive Stance,,,141,1000
+KSMAA25R11,KSM,AA25,R11,Soomin,tripleS,Assemble25,Regular,,53,27,57,51,84,Peak Turn,,,,141,400
+KSMAA25R12,KSM,AA25,R12,Soomin,tripleS,Assemble25,Regular,,62,32,66,60,90,Peak Turn,,,,141,700
+KSMAA25R13,KSM,AA25,R13,Soomin,tripleS,Assemble25,Regular,,72,37,76,70,90,Peak Turn,,,,141,1000
+KYJAA25R11,KYJ,AA25,R11,Yeonji,tripleS,Assemble25,Regular,,46,30,65,47,84,Rhythm Focus,,,,141,400
+KYJAA25R12,KYJ,AA25,R12,Yeonji,tripleS,Assemble25,Regular,,55,35,74,56,90,Rhythm Focus,,,,141,700
+KYJAA25R13,KYJ,AA25,R13,Yeonji,tripleS,Assemble25,Regular,,65,40,84,66,90,Rhythm Focus,,,,141,1000
+KYYAA25R11,KYY,AA25,R11,Yooyeon,tripleS,Assemble25,Regular,,51,30,55,52,84,,,All Around Boost,,141,400
+KYYAA25R12,KYY,AA25,R12,Yooyeon,tripleS,Assemble25,Regular,,60,35,64,61,90,,,All Around Boost,,141,700
+KYYAA25R13,KYY,AA25,R13,Yooyeon,tripleS,Assemble25,Regular,,70,40,74,71,90,,,All Around Boost,,141,1000
+LJWAA25R11,LJW,AA25,R11,Jiwoo,tripleS,Assemble25,Regular,,59,26,56,47,84,,,Focused Light,,141,700
+LJWAA25R12,LJW,AA25,R12,Jiwoo,tripleS,Assemble25,Regular,,68,31,65,56,90,,,Focused Light,,141,400
+LJWAA25R13,LJW,AA25,R13,Jiwoo,tripleS,Assemble25,Regular,,78,36,75,66,90,,,Focused Light,,141,1000
+LYNAA25R11,LYN,AA25,R11,Lynn,tripleS,Assemble25,Regular,,46,36,65,41,84,Stage Pulse,,,,141,400
+LYNAA25R12,LYN,AA25,R12,Lynn,tripleS,Assemble25,Regular,,55,41,74,50,90,Stage Pulse,,,,141,700
+LYNAA25R13,LYN,AA25,R13,Lynn,tripleS,Assemble25,Regular,,65,46,84,60,90,Stage Pulse,,,,141,1000
+MAYAA25R11,MAY,AA25,R11,Mayu,tripleS,Assemble25,Regular,,57,26,56,49,84,Support Drive,,,,141,400
+MAYAA25R12,MAY,AA25,R12,Mayu,tripleS,Assemble25,Regular,,66,31,65,58,90,Support Drive,,,,141,700
+MAYAA25R13,MAY,AA25,R13,Mayu,tripleS,Assemble25,Regular,,76,36,75,68,90,Support Drive,,,,141,1000
+NAKAA25R11,NAK,AA25,R11,Nakyoung,tripleS,Assemble25,Regular,,56,35,61,36,84,,Power Step,,,141,400
+NAKAA25R12,NAK,AA25,R12,Nakyoung,tripleS,Assemble25,Regular,,65,40,70,45,90,,Power Step,,,141,700
+NAKAA25R13,NAK,AA25,R13,Nakyoung,tripleS,Assemble25,Regular,,75,45,80,55,90,,Power Step,,,141,1000
+NIEAA25R11,NIE,AA25,R11,Nien,tripleS,Assemble25,Regular,,59,32,59,38,84,Catch-up Mode,,,,141,400
+NIEAA25R12,NIE,AA25,R12,Nien,tripleS,Assemble25,Regular,,68,37,68,47,90,Catch-up Mode,,,,141,700
+NIEAA25R13,NIE,AA25,R13,Nien,tripleS,Assemble25,Regular,,78,42,78,57,90,Catch-up Mode,,,,141,1000
+PSHAA25R11,PSH,AA25,R11,Sohyun,tripleS,Assemble25,Regular,,54,34,59,41,84,On Beat,,,,141,400
+PSHAA25R12,PSH,AA25,R12,Sohyun,tripleS,Assemble25,Regular,,63,39,68,50,90,On Beat,,,,141,700
+PSHAA25R13,PSH,AA25,R13,Sohyun,tripleS,Assemble25,Regular,,73,44,78,60,90,On Beat,,,,141,1000
+PSOAA25R11,PSO,AA25,R11,Shion,tripleS,Assemble25,Regular,,63,24,59,42,84,,Full Impact,,,141,400
+PSOAA25R12,PSO,AA25,R12,Shion,tripleS,Assemble25,Regular,,72,29,68,51,90,,Full Impact,,,141,700
+PSOAA25R13,PSO,AA25,R13,Shion,tripleS,Assemble25,Regular,,82,34,78,61,90,,Full Impact,,,141,1000
+SDHAA25R11,SDH,AA25,R11,Dahyun,tripleS,Assemble25,Regular,,69,20,58,41,84,Harmony Instinct,,,,141,400
+SDHAA25R12,SDH,AA25,R12,Dahyun,tripleS,Assemble25,Regular,,78,25,67,50,90,Harmony Instinct,,,,141,700
+SDHAA25R13,SDH,AA25,R13,Dahyun,tripleS,Assemble25,Regular,,88,30,77,60,90,Harmony Instinct,,,,141,1000
+SLLAA25R11,SLL,AA25,R11,Sullin,tripleS,Assemble25,Regular,,52,28,55,53,84,Swift Lead,,,,141,400
+SLLAA25R12,SLL,AA25,R12,Sullin,tripleS,Assemble25,Regular,,61,33,64,62,90,Swift Lead,,,,141,700
+SLLAA25R13,SLL,AA25,R13,Sullin,tripleS,Assemble25,Regular,,71,38,74,72,90,Swift Lead,,,,141,1000
+SOAAA25R11,SOA,AA25,R11,Seoah,tripleS,Assemble25,Regular,,56,29,55,48,84,Swift Lead,,,,141,400
+SOAAA25R12,SOA,AA25,R12,Seoah,tripleS,Assemble25,Regular,,65,34,64,57,90,Swift Lead,,,,141,700
+SOAAA25R13,SOA,AA25,R13,Seoah,tripleS,Assemble25,Regular,,75,39,74,67,90,Swift Lead,,,,141,1000
+XNYAA25R11,XNY,AA25,R11,Xinyu,tripleS,Assemble25,Regular,,53,30,56,49,84,,,Power Sync,,141,400
+XNYAA25R12,XNY,AA25,R12,Xinyu,tripleS,Assemble25,Regular,,62,35,65,58,90,,,Power Sync,,141,700
+XNYAA25R13,XNY,AA25,R13,Xinyu,tripleS,Assemble25,Regular,,72,40,75,68,90,,,Power Sync,,141,1000
+YSYAA25R11,YSY,AA25,R11,Seoyeon,tripleS,Assemble25,Regular,,54,24,57,53,84,,Center Vibes,,,141,400
+YSYAA25R12,YSY,AA25,R12,Seoyeon,tripleS,Assemble25,Regular,,63,29,66,62,90,,Center Vibes,,,141,700
+YSYAA25R13,YSY,AA25,R13,Seoyeon,tripleS,Assemble25,Regular,,73,34,76,72,90,,Center Vibes,,,141,1000
 BNAUNNAR11,BNA,UNNA,R11,Bona,WJSN,Unnatural,Regular,,58,23,57,50,84,Stylish Execution,,,,200,400
-DAYUNNAR11,DAY,UNNA,R11,Dayoung,WJSN,Unnatural,Regular,,67,25,62,34,84,Composed Presence,,,,200,400
-DWNUNNAR11,DWN,UNNA,R11,Dawon,WJSN,Unnatural,Regular,,73,14,54,47,84,Vocal Boost,,,,200,400
-EUNUNNAR11,EUN,UNNA,R11,Eunseo,WJSN,Unnatural,Regular,,55,28,58,47,84,Stylish Execution,,,,200,400
-EXYUNNAR11,EXY,UNNA,R11,Exy,WJSN,Unnatural,Regular,,55,49,50,34,84,Technical Flow,,,,200,400
-LLDUNNAR11,LLD,UNNA,R11,Luda,WJSN,Unnatural,Regular,,57,30,53,48,84,Stylish Execution,,,,200,400
-LYRUNNAR11,LYR,UNNA,R11,Yeoreum,WJSN,Unnatural,Regular,,54,29,67,38,84,Sharp Moves,,,,200,400
-PSBUNNAR11,PSB,UNNA,R11,Soobin,WJSN,Unnatural,Regular,,72,15,54,47,84,Vocal Boost,,,,200,400
-SLAUNNAR11,SLA,UNNA,R11,Seola,WJSN,Unnatural,Regular,,69,16,50,53,84,Vocal Boost,,,,200,400
-YYJUNNAR11,YYJ,UNNA,R11,Yeonjung,WJSN,Unnatural,Regular,,74,15,53,46,84,Vocal Boost,,,,200,400
-BNAUNNAR21,BNA,UNNA,R21,Bona,WJSN,Unnatural,Regular,,59,28,45,56,84,,Main Visual,,,200,400
-DAYUNNAR21,DAY,UNNA,R21,Dayoung,WJSN,Unnatural,Regular,,68,30,50,40,84,,Max Effort,,,200,400
-DWNUNNAR21,DWN,UNNA,R21,Dawon,WJSN,Unnatural,Regular,,74,19,42,53,84,,Main Vocal,,,200,400
-EUNUNNAR21,EUN,UNNA,R21,Eunseo,WJSN,Unnatural,Regular,,56,33,46,53,84,,Main Visual,,,200,400
-EXYUNNAR21,EXY,UNNA,R21,Exy,WJSN,Unnatural,Regular,,56,54,38,40,84,,Main Rapper,,,200,400
-LLDUNNAR21,LLD,UNNA,R21,Luda,WJSN,Unnatural,Regular,,58,35,41,54,84,,Main Visual,,,200,400
-LYRUNNAR21,LYR,UNNA,R21,Yeoreum,WJSN,Unnatural,Regular,,55,34,55,44,84,,Main Dancer,,,200,400
-PSBUNNAR21,PSB,UNNA,R21,Soobin,WJSN,Unnatural,Regular,,73,20,42,53,84,,Main Vocal,,,200,400
-SLAUNNAR21,SLA,UNNA,R21,Seola,WJSN,Unnatural,Regular,,70,21,38,59,84,,Main Vocal,,,200,400
-YYJUNNAR21,YYJ,UNNA,R21,Yeonjung,WJSN,Unnatural,Regular,,75,20,41,52,84,,High Note,,,200,400
-BNAUNNAR31,BNA,UNNA,R31,Bona,WJSN,Unnatural,Regular,,63,23,38,66,80,,,Spotlight Focus,,200,400
-DAYUNNAR31,DAY,UNNA,R31,Dayoung,WJSN,Unnatural,Regular,,72,25,43,50,80,,,Total Reinforcement,,200,400
-DWNUNNAR31,DWN,UNNA,R31,Dawon,WJSN,Unnatural,Regular,,78,14,35,63,80,,,Echo Effect,,200,400
-EUNUNNAR31,EUN,UNNA,R31,Eunseo,WJSN,Unnatural,Regular,,60,28,39,63,80,,,Spotlight Focus,,200,400
-EXYUNNAR31,EXY,UNNA,R31,Exy,WJSN,Unnatural,Regular,,60,49,31,50,80,,,Hyper Rhythm,,200,400
-LLDUNNAR31,LLD,UNNA,R31,Luda,WJSN,Unnatural,Regular,,62,30,34,64,80,,,Spotlight Focus,,200,400
-LYRUNNAR31,LYR,UNNA,R31,Yeoreum,WJSN,Unnatural,Regular,,59,29,48,54,80,,,Power Sync,,200,400
-PSBUNNAR31,PSB,UNNA,R31,Soobin,WJSN,Unnatural,Regular,,77,15,35,63,80,,,Echo Effect,,200,400
-SLAUNNAR31,SLA,UNNA,R31,Seola,WJSN,Unnatural,Regular,,74,16,31,69,80,,,Echo Effect,,200,400
-YYJUNNAR31,YYJ,UNNA,R31,Yeonjung,WJSN,Unnatural,Regular,,79,15,34,62,80,,,Echo Effect,,200,400
 BNAUNNAR12,BNA,UNNA,R12,Bona,WJSN,Unnatural,Regular,,67,27,66,59,92,Stylish Execution,,,,200,700
-DAYUNNAR12,DAY,UNNA,R12,Dayoung,WJSN,Unnatural,Regular,,76,29,71,43,92,Composed Presence,,,,200,700
-DWNUNNAR12,DWN,UNNA,R12,Dawon,WJSN,Unnatural,Regular,,82,18,63,56,92,Vocal Boost,,,,200,700
-EUNUNNAR12,EUN,UNNA,R12,Eunseo,WJSN,Unnatural,Regular,,64,32,67,56,92,Stylish Execution,,,,200,700
-EXYUNNAR12,EXY,UNNA,R12,Exy,WJSN,Unnatural,Regular,,64,53,59,43,92,Technical Flow,,,,200,700
-LLDUNNAR12,LLD,UNNA,R12,Luda,WJSN,Unnatural,Regular,,66,34,62,57,92,Stylish Execution,,,,200,700
-LYRUNNAR12,LYR,UNNA,R12,Yeoreum,WJSN,Unnatural,Regular,,63,33,76,47,92,Sharp Moves,,,,200,700
-PSBUNNAR12,PSB,UNNA,R12,Soobin,WJSN,Unnatural,Regular,,81,19,63,56,92,Vocal Boost,,,,200,700
-SLAUNNAR12,SLA,UNNA,R12,Seola,WJSN,Unnatural,Regular,,78,20,59,62,92,Vocal Boost,,,,200,700
-YYJUNNAR12,YYJ,UNNA,R12,Yeonjung,WJSN,Unnatural,Regular,,83,19,62,55,92,Vocal Boost,,,,200,700
-BNAUNNAR22,BNA,UNNA,R22,Bona,WJSN,Unnatural,Regular,,69,34,51,65,92,,Main Visual,,,200,700
-DAYUNNAR22,DAY,UNNA,R22,Dayoung,WJSN,Unnatural,Regular,,78,36,56,49,92,,Max Effort,,,200,700
-DWNUNNAR22,DWN,UNNA,R22,Dawon,WJSN,Unnatural,Regular,,84,25,48,62,92,,Main Vocal,,,200,700
-EUNUNNAR22,EUN,UNNA,R22,Eunseo,WJSN,Unnatural,Regular,,66,39,52,62,92,,Main Visual,,,200,700
-EXYUNNAR22,EXY,UNNA,R22,Exy,WJSN,Unnatural,Regular,,66,60,44,49,92,,Main Rapper,,,200,700
-LLDUNNAR22,LLD,UNNA,R22,Luda,WJSN,Unnatural,Regular,,68,41,47,63,92,,Main Visual,,,200,700
-LYRUNNAR22,LYR,UNNA,R22,Yeoreum,WJSN,Unnatural,Regular,,65,40,61,53,92,,Main Dancer,,,200,700
-PSBUNNAR22,PSB,UNNA,R22,Soobin,WJSN,Unnatural,Regular,,83,26,48,62,92,,Main Vocal,,,200,700
-SLAUNNAR22,SLA,UNNA,R22,Seola,WJSN,Unnatural,Regular,,80,27,44,68,92,,Main Vocal,,,200,700
-YYJUNNAR22,YYJ,UNNA,R22,Yeonjung,WJSN,Unnatural,Regular,,85,26,47,61,92,,High Note,,,200,700
-BNAUNNAR32,BNA,UNNA,R32,Bona,WJSN,Unnatural,Regular,,74,28,43,77,86,,,Spotlight Focus,,200,700
-DAYUNNAR32,DAY,UNNA,R32,Dayoung,WJSN,Unnatural,Regular,,83,30,48,61,86,,,Total Reinforcement,,200,700
-DWNUNNAR32,DWN,UNNA,R32,Dawon,WJSN,Unnatural,Regular,,89,19,40,74,86,,,Echo Effect,,200,700
-EUNUNNAR32,EUN,UNNA,R32,Eunseo,WJSN,Unnatural,Regular,,71,33,44,74,86,,,Spotlight Focus,,200,700
-EXYUNNAR32,EXY,UNNA,R32,Exy,WJSN,Unnatural,Regular,,71,54,36,61,86,,,Hyper Rhythm,,200,700
-LLDUNNAR32,LLD,UNNA,R32,Luda,WJSN,Unnatural,Regular,,73,35,39,75,86,,,Spotlight Focus,,200,700
-LYRUNNAR32,LYR,UNNA,R32,Yeoreum,WJSN,Unnatural,Regular,,70,34,53,65,86,,,Power Sync,,200,700
-PSBUNNAR32,PSB,UNNA,R32,Soobin,WJSN,Unnatural,Regular,,88,20,40,74,86,,,Echo Effect,,200,700
-SLAUNNAR32,SLA,UNNA,R32,Seola,WJSN,Unnatural,Regular,,85,21,36,80,86,,,Echo Effect,,200,700
-YYJUNNAR32,YYJ,UNNA,R32,Yeonjung,WJSN,Unnatural,Regular,,90,20,39,73,86,,,Echo Effect,,200,700
 BNAUNNAR13,BNA,UNNA,R13,Bona,WJSN,Unnatural,Regular,,73,35,76,66,100,Stylish Execution,,,,200,1000
-DAYUNNAR13,DAY,UNNA,R13,Dayoung,WJSN,Unnatural,Regular,,82,37,81,50,100,Composed Presence,,,,200,1000
-DWNUNNAR13,DWN,UNNA,R13,Dawon,WJSN,Unnatural,Regular,,88,26,73,63,100,Vocal Boost,,,,200,1000
-EUNUNNAR13,EUN,UNNA,R13,Eunseo,WJSN,Unnatural,Regular,,70,40,77,63,100,Stylish Execution,,,,200,1000
-EXYUNNAR13,EXY,UNNA,R13,Exy,WJSN,Unnatural,Regular,,70,61,69,50,100,Technical Flow,,,,200,1000
-LLDUNNAR13,LLD,UNNA,R13,Luda,WJSN,Unnatural,Regular,,72,42,72,64,100,Stylish Execution,,,,200,1000
-LYRUNNAR13,LYR,UNNA,R13,Yeoreum,WJSN,Unnatural,Regular,,69,41,86,54,100,Sharp Moves,,,,200,1000
-PSBUNNAR13,PSB,UNNA,R13,Soobin,WJSN,Unnatural,Regular,,87,27,73,63,100,Vocal Boost,,,,200,1000
-SLAUNNAR13,SLA,UNNA,R13,Seola,WJSN,Unnatural,Regular,,84,28,69,69,100,Vocal Boost,,,,200,1000
-YYJUNNAR13,YYJ,UNNA,R13,Yeonjung,WJSN,Unnatural,Regular,,89,27,72,62,100,Vocal Boost,,,,200,1000
-BNAUNNAR23,BNA,UNNA,R23,Bona,WJSN,Unnatural,Regular,,79,39,56,75,102,,Main Visual,,,200,1000
-DAYUNNAR23,DAY,UNNA,R23,Dayoung,WJSN,Unnatural,Regular,,88,41,61,59,102,,Max Effort,,,200,1000
-DWNUNNAR23,DWN,UNNA,R23,Dawon,WJSN,Unnatural,Regular,,94,30,53,72,102,,Main Vocal,,,200,1000
-EUNUNNAR23,EUN,UNNA,R23,Eunseo,WJSN,Unnatural,Regular,,76,44,57,72,102,,Main Visual,,,200,1000
-EXYUNNAR23,EXY,UNNA,R23,Exy,WJSN,Unnatural,Regular,,76,65,49,59,102,,Main Rapper,,,200,1000
-LLDUNNAR23,LLD,UNNA,R23,Luda,WJSN,Unnatural,Regular,,78,46,52,73,102,,Main Visual,,,200,1000
-LYRUNNAR23,LYR,UNNA,R23,Yeoreum,WJSN,Unnatural,Regular,,75,45,66,63,102,,Main Dancer,,,200,1000
-PSBUNNAR23,PSB,UNNA,R23,Soobin,WJSN,Unnatural,Regular,,93,31,53,72,102,,Main Vocal,,,200,1000
-SLAUNNAR23,SLA,UNNA,R23,Seola,WJSN,Unnatural,Regular,,90,32,49,78,102,,Main Vocal,,,200,1000
-YYJUNNAR23,YYJ,UNNA,R23,Yeonjung,WJSN,Unnatural,Regular,,95,31,52,71,102,,High Note,,,200,1000
-BNAUNNAR33,BNA,UNNA,R33,Bona,WJSN,Unnatural,Regular,,82,32,47,92,94,,,Spotlight Focus,,200,1000
-DAYUNNAR33,DAY,UNNA,R33,Dayoung,WJSN,Unnatural,Regular,,91,34,52,76,94,,,Total Reinforcement,,200,1000
-DWNUNNAR33,DWN,UNNA,R33,Dawon,WJSN,Unnatural,Regular,,97,23,44,89,94,,,Echo Effect,,200,1000
-EUNUNNAR33,EUN,UNNA,R33,Eunseo,WJSN,Unnatural,Regular,,79,37,48,89,94,,,Spotlight Focus,,200,1000
-EXYUNNAR33,EXY,UNNA,R33,Exy,WJSN,Unnatural,Regular,,79,58,40,76,94,,,Hyper Rhythm,,200,1000
-LLDUNNAR33,LLD,UNNA,R33,Luda,WJSN,Unnatural,Regular,,81,39,43,90,94,,,Spotlight Focus,,200,1000
-LYRUNNAR33,LYR,UNNA,R33,Yeoreum,WJSN,Unnatural,Regular,,78,38,57,80,94,,,Power Sync,,200,1000
-PSBUNNAR33,PSB,UNNA,R33,Soobin,WJSN,Unnatural,Regular,,96,24,44,89,94,,,Echo Effect,,200,1000
-SLAUNNAR33,SLA,UNNA,R33,Seola,WJSN,Unnatural,Regular,,93,25,40,95,94,,,Echo Effect,,200,1000
-YYJUNNAR33,YYJ,UNNA,R33,Yeonjung,WJSN,Unnatural,Regular,,98,24,43,88,94,,,Echo Effect,,200,1000
+BNAUNNAR21,BNA,UNNA,R21,Bona,WJSN,Unnatural,Regular,,59,28,45,56,84,,,All Around Boost,,200,400
+BNAUNNAR22,BNA,UNNA,R22,Bona,WJSN,Unnatural,Regular,,69,34,51,65,92,,,All Around Boost,,200,700
+BNAUNNAR23,BNA,UNNA,R23,Bona,WJSN,Unnatural,Regular,,79,39,56,75,102,,,All Around Boost,,200,1000
+BNAUNNAR31,BNA,UNNA,R31,Bona,WJSN,Unnatural,Regular,,63,23,38,66,80,,Energy Bloom,,,200,400
+BNAUNNAR32,BNA,UNNA,R32,Bona,WJSN,Unnatural,Regular,,74,28,43,77,86,,Energy Bloom,,,200,700
+BNAUNNAR33,BNA,UNNA,R33,Bona,WJSN,Unnatural,Regular,,82,32,47,92,94,,Energy Bloom,,,200,1000
+BNAUNNASPC,BNA,UNNA,SPC,Bona,WJSN,Unnatural,Special,,77,41,65,78,98,Stylish Execution,Energy Bloom,,,200,2500
+BNAUNNALMT,BNA,UNNA,LMT,Bona,WJSN,Unnatural,Limited,,65,41,65,71,96,,Sweet Voice,,All Eyes On Me,200,2000
+DAYUNNAR11,DAY,UNNA,R11,Dayoung,WJSN,Unnatural,Regular,,67,25,62,34,84,,Adrenaline Spike,,,200,400
+DAYUNNAR12,DAY,UNNA,R12,Dayoung,WJSN,Unnatural,Regular,,76,29,71,43,92,,Adrenaline Spike,,,200,700
+DAYUNNAR13,DAY,UNNA,R13,Dayoung,WJSN,Unnatural,Regular,,82,37,81,50,100,,Adrenaline Spike,,,200,1000
+DAYUNNAR21,DAY,UNNA,R21,Dayoung,WJSN,Unnatural,Regular,,68,30,50,40,84,Flow Mastery,,,,200,400
+DAYUNNAR22,DAY,UNNA,R22,Dayoung,WJSN,Unnatural,Regular,,78,36,56,49,92,Flow Mastery,,,,200,700
+DAYUNNAR23,DAY,UNNA,R23,Dayoung,WJSN,Unnatural,Regular,,88,41,61,59,102,Flow Mastery,,,,200,1000
+DAYUNNAR31,DAY,UNNA,R31,Dayoung,WJSN,Unnatural,Regular,,72,25,43,50,80,,High Note,,,200,400
+DAYUNNAR32,DAY,UNNA,R32,Dayoung,WJSN,Unnatural,Regular,,83,30,48,61,86,,High Note,,,200,700
+DAYUNNAR33,DAY,UNNA,R33,Dayoung,WJSN,Unnatural,Regular,,91,34,52,76,94,,High Note,,,200,1000
+DAYUNNASPC,DAY,UNNA,SPC,Dayoung,WJSN,Unnatural,Special,,86,43,70,62,98,Flow Mastery,Adrenaline Spike,,,200,2500
+DAYUNNALMT,DAY,UNNA,LMT,Dayoung,WJSN,Unnatural,Limited,,74,43,70,55,96,,Momentum Flow,,Final Statement,200,2000
+DWNUNNAR11,DWN,UNNA,R11,Dawon,WJSN,Unnatural,Regular,,73,14,54,47,84,,,Energy Sync,,200,400
+DWNUNNAR12,DWN,UNNA,R12,Dawon,WJSN,Unnatural,Regular,,82,18,63,56,92,,,Energy Sync,,200,700
+DWNUNNAR13,DWN,UNNA,R13,Dawon,WJSN,Unnatural,Regular,,88,26,73,63,100,,,Energy Sync,,200,1000
+DWNUNNAR21,DWN,UNNA,R21,Dawon,WJSN,Unnatural,Regular,,74,19,42,53,84,Peak Turn,,,,200,400
+DWNUNNAR22,DWN,UNNA,R22,Dawon,WJSN,Unnatural,Regular,,84,25,48,62,92,Peak Turn,,,,200,700
+DWNUNNAR23,DWN,UNNA,R23,Dawon,WJSN,Unnatural,Regular,,94,30,53,72,102,Peak Turn,,,,200,1000
+DWNUNNAR31,DWN,UNNA,R31,Dawon,WJSN,Unnatural,Regular,,78,14,35,63,80,Stable Core,,,,200,400
+DWNUNNAR32,DWN,UNNA,R32,Dawon,WJSN,Unnatural,Regular,,89,19,40,74,86,Stable Core,,,,200,700
+DWNUNNAR33,DWN,UNNA,R33,Dawon,WJSN,Unnatural,Regular,,97,23,44,89,94,Stable Core,,,,200,1000
+DWNUNNASPC,DWN,UNNA,SPC,Dawon,WJSN,Unnatural,Special,,92,32,62,75,98,Stable Core,,Energy Sync,,200,2500
+DWNUNNALMT,DWN,UNNA,LMT,Dawon,WJSN,Unnatural,Limited,,80,32,62,68,96,,Quick Drive,,Hidden Charm,200,2000
+EUNUNNAR11,EUN,UNNA,R11,Eunseo,WJSN,Unnatural,Regular,,55,28,58,47,84,,,Long Set Strategy,,200,400
+EUNUNNAR12,EUN,UNNA,R12,Eunseo,WJSN,Unnatural,Regular,,64,32,67,56,92,,,Long Set Strategy,,200,700
+EUNUNNAR13,EUN,UNNA,R13,Eunseo,WJSN,Unnatural,Regular,,70,40,77,63,100,,,Long Set Strategy,,200,1000
+EUNUNNAR21,EUN,UNNA,R21,Eunseo,WJSN,Unnatural,Regular,,56,33,46,53,84,Crowd Inspiration,,,,200,400
+EUNUNNAR22,EUN,UNNA,R22,Eunseo,WJSN,Unnatural,Regular,,66,39,52,62,92,Crowd Inspiration,,,,200,700
+EUNUNNAR23,EUN,UNNA,R23,Eunseo,WJSN,Unnatural,Regular,,76,44,57,72,102,Crowd Inspiration,,,,200,1000
+EUNUNNAR31,EUN,UNNA,R31,Eunseo,WJSN,Unnatural,Regular,,60,28,39,63,80,,Steady Lead,,,200,400
+EUNUNNAR32,EUN,UNNA,R32,Eunseo,WJSN,Unnatural,Regular,,71,33,44,74,86,,Steady Lead,,,200,700
+EUNUNNAR33,EUN,UNNA,R33,Eunseo,WJSN,Unnatural,Regular,,79,37,48,89,94,,Steady Lead,,,200,1000
+EUNUNNASPC,EUN,UNNA,SPC,Eunseo,WJSN,Unnatural,Special,,74,46,66,75,98,Crowd Inspiration,Steady Lead,,,200,2500
+EUNUNNALMT,EUN,UNNA,LMT,Eunseo,WJSN,Unnatural,Limited,,62,46,66,68,96,,Backup Impact,,Audience Bond,200,2000
+EXYUNNAR11,EXY,UNNA,R11,Exy,WJSN,Unnatural,Regular,,55,49,50,34,84,Balanced Rhythm,,,,200,400
+EXYUNNAR12,EXY,UNNA,R12,Exy,WJSN,Unnatural,Regular,,64,53,59,43,92,Balanced Rhythm,,,,200,700
+EXYUNNAR13,EXY,UNNA,R13,Exy,WJSN,Unnatural,Regular,,70,61,69,50,100,Balanced Rhythm,,,,200,1000
+EXYUNNAR21,EXY,UNNA,R21,Exy,WJSN,Unnatural,Regular,,56,54,38,40,84,,Backup Boost,,,200,400
+EXYUNNAR22,EXY,UNNA,R22,Exy,WJSN,Unnatural,Regular,,66,60,44,49,92,,Backup Boost,,,200,700
+EXYUNNAR23,EXY,UNNA,R23,Exy,WJSN,Unnatural,Regular,,76,65,49,59,102,,Backup Boost,,,200,1000
+EXYUNNAR31,EXY,UNNA,R31,Exy,WJSN,Unnatural,Regular,,60,49,31,50,80,,Beat Pulse,,,200,400
+EXYUNNAR32,EXY,UNNA,R32,Exy,WJSN,Unnatural,Regular,,71,54,36,61,86,,Beat Pulse,,,200,700
+EXYUNNAR33,EXY,UNNA,R33,Exy,WJSN,Unnatural,Regular,,79,58,40,76,94,,Beat Pulse,,,200,1000
+EXYUNNASPC,EXY,UNNA,SPC,Exy,WJSN,Unnatural,Special,,74,67,58,62,98,Balanced Rhythm,Beat Pulse,,,200,2500
+EXYUNNALMT,EXY,UNNA,LMT,Exy,WJSN,Unnatural,Limited,,62,67,58,55,96,,Backup Boost,,Mic Drop,200,2000
+LLDUNNAR11,LLD,UNNA,R11,Luda,WJSN,Unnatural,Regular,,57,30,53,48,84,Clutch Performer,,,,200,400
+LLDUNNAR12,LLD,UNNA,R12,Luda,WJSN,Unnatural,Regular,,66,34,62,57,92,Clutch Performer,,,,200,700
+LLDUNNAR13,LLD,UNNA,R13,Luda,WJSN,Unnatural,Regular,,72,42,72,64,100,Clutch Performer,,,,200,1000
+LLDUNNAR21,LLD,UNNA,R21,Luda,WJSN,Unnatural,Regular,,58,35,41,54,84,,Risky Play,,,200,400
+LLDUNNAR22,LLD,UNNA,R22,Luda,WJSN,Unnatural,Regular,,68,41,47,63,92,,Risky Play,,,200,700
+LLDUNNAR23,LLD,UNNA,R23,Luda,WJSN,Unnatural,Regular,,78,46,52,73,102,,Risky Play,,,200,1000
+LLDUNNAR31,LLD,UNNA,R31,Luda,WJSN,Unnatural,Regular,,62,30,34,64,80,Long Set Focus,,,,200,400
+LLDUNNAR32,LLD,UNNA,R32,Luda,WJSN,Unnatural,Regular,,73,35,39,75,86,Long Set Focus,,,,200,700
+LLDUNNAR33,LLD,UNNA,R33,Luda,WJSN,Unnatural,Regular,,81,39,43,90,94,Long Set Focus,,,,200,1000
+LLDUNNASPC,LLD,UNNA,SPC,Luda,WJSN,Unnatural,Special,,76,48,61,76,98,Clutch Performer,Risky Play,,,200,2500
+LLDUNNALMT,LLD,UNNA,LMT,Luda,WJSN,Unnatural,Limited,,64,48,61,69,96,,Balanced Stage,,Hype Overflow,200,2000
+LYRUNNAR11,LYR,UNNA,R11,Yeoreum,WJSN,Unnatural,Regular,,54,29,67,38,84,,,Stage Coordination,,200,400
+LYRUNNAR12,LYR,UNNA,R12,Yeoreum,WJSN,Unnatural,Regular,,63,33,76,47,92,,,Stage Coordination,,200,700
+LYRUNNAR13,LYR,UNNA,R13,Yeoreum,WJSN,Unnatural,Regular,,69,41,86,54,100,,,Stage Coordination,,200,1000
+LYRUNNAR21,LYR,UNNA,R21,Yeoreum,WJSN,Unnatural,Regular,,55,34,55,44,84,,Beat Pulse,,,200,400
+LYRUNNAR22,LYR,UNNA,R22,Yeoreum,WJSN,Unnatural,Regular,,65,40,61,53,92,,Beat Pulse,,,200,700
+LYRUNNAR23,LYR,UNNA,R23,Yeoreum,WJSN,Unnatural,Regular,,75,45,66,63,102,,Beat Pulse,,,200,1000
+LYRUNNAR31,LYR,UNNA,R31,Yeoreum,WJSN,Unnatural,Regular,,59,29,48,54,80,Early Push,,,,200,400
+LYRUNNAR32,LYR,UNNA,R32,Yeoreum,WJSN,Unnatural,Regular,,70,34,53,65,86,Early Push,,,,200,700
+LYRUNNAR33,LYR,UNNA,R33,Yeoreum,WJSN,Unnatural,Regular,,78,38,57,80,94,Early Push,,,,200,1000
+LYRUNNASPC,LYR,UNNA,SPC,Yeoreum,WJSN,Unnatural,Special,,73,47,75,66,98,Early Push,Beat Pulse,,,200,2500
+LYRUNNALMT,LYR,UNNA,LMT,Yeoreum,WJSN,Unnatural,Limited,,61,47,75,59,96,,Deep Dive,,Hidden Charm,200,2000
+PSBUNNAR11,PSB,UNNA,R11,Soobin,WJSN,Unnatural,Regular,,72,15,54,47,84,Harmony Instinct,,,,200,400
+PSBUNNAR12,PSB,UNNA,R12,Soobin,WJSN,Unnatural,Regular,,81,19,63,56,92,Harmony Instinct,,,,200,700
+PSBUNNAR13,PSB,UNNA,R13,Soobin,WJSN,Unnatural,Regular,,87,27,73,63,100,Harmony Instinct,,,,200,1000
+PSBUNNAR21,PSB,UNNA,R21,Soobin,WJSN,Unnatural,Regular,,73,20,42,53,84,,Quick Drive,,,200,400
+PSBUNNAR22,PSB,UNNA,R22,Soobin,WJSN,Unnatural,Regular,,83,26,48,62,92,,Quick Drive,,,200,700
+PSBUNNAR23,PSB,UNNA,R23,Soobin,WJSN,Unnatural,Regular,,93,31,53,72,102,,Quick Drive,,,200,1000
+PSBUNNAR31,PSB,UNNA,R31,Soobin,WJSN,Unnatural,Regular,,77,15,35,63,80,Peak Confidence,,,,200,400
+PSBUNNAR32,PSB,UNNA,R32,Soobin,WJSN,Unnatural,Regular,,88,20,40,74,86,Peak Confidence,,,,200,700
+PSBUNNAR33,PSB,UNNA,R33,Soobin,WJSN,Unnatural,Regular,,96,24,44,89,94,Peak Confidence,,,,200,1000
+PSBUNNASPC,PSB,UNNA,SPC,Soobin,WJSN,Unnatural,Special,,91,33,62,75,98,Peak Confidence,Quick Drive,,,200,2500
+PSBUNNALMT,PSB,UNNA,LMT,Soobin,WJSN,Unnatural,Limited,,79,33,62,68,96,,Full Impact,,One More Time,200,2000
+SLAUNNAR11,SLA,UNNA,R11,Seola,WJSN,Unnatural,Regular,,69,16,50,53,84,Performance Leader,,,,200,400
+SLAUNNAR12,SLA,UNNA,R12,Seola,WJSN,Unnatural,Regular,,78,20,59,62,92,Performance Leader,,,,200,700
+SLAUNNAR13,SLA,UNNA,R13,Seola,WJSN,Unnatural,Regular,,84,28,69,69,100,Performance Leader,,,,200,1000
+SLAUNNAR21,SLA,UNNA,R21,Seola,WJSN,Unnatural,Regular,,70,21,38,59,84,,,Snap Focus,,200,400
+SLAUNNAR22,SLA,UNNA,R22,Seola,WJSN,Unnatural,Regular,,80,27,44,68,92,,,Snap Focus,,200,700
+SLAUNNAR23,SLA,UNNA,R23,Seola,WJSN,Unnatural,Regular,,90,32,49,78,102,,,Snap Focus,,200,1000
+SLAUNNAR31,SLA,UNNA,R31,Seola,WJSN,Unnatural,Regular,,74,16,31,69,80,,Sweet Voice,,,200,400
+SLAUNNAR32,SLA,UNNA,R32,Seola,WJSN,Unnatural,Regular,,85,21,36,80,86,,Sweet Voice,,,200,700
+SLAUNNAR33,SLA,UNNA,R33,Seola,WJSN,Unnatural,Regular,,93,25,40,95,94,,Sweet Voice,,,200,1000
+SLAUNNASPC,SLA,UNNA,SPC,Seola,WJSN,Unnatural,Special,,88,34,58,81,98,Performance Leader,Sweet Voice,,,200,2500
+SLAUNNALMT,SLA,UNNA,LMT,Seola,WJSN,Unnatural,Limited,,76,34,58,74,96,,Stage Flare,,Inverse Vitality,200,2000
+YYJUNNAR11,YYJ,UNNA,R11,Yeonjung,WJSN,Unnatural,Regular,,74,15,53,46,84,,Over_Push,,,200,400
+YYJUNNAR12,YYJ,UNNA,R12,Yeonjung,WJSN,Unnatural,Regular,,83,19,62,55,92,,Over_Push,,,200,700
+YYJUNNAR13,YYJ,UNNA,R13,Yeonjung,WJSN,Unnatural,Regular,,89,27,72,62,100,,Over_Push,,,200,1000
+YYJUNNAR21,YYJ,UNNA,R21,Yeonjung,WJSN,Unnatural,Regular,,75,20,41,52,84,Harmony Instinct,,,,200,400
+YYJUNNAR22,YYJ,UNNA,R22,Yeonjung,WJSN,Unnatural,Regular,,85,26,47,61,92,Harmony Instinct,,,,200,700
+YYJUNNAR23,YYJ,UNNA,R23,Yeonjung,WJSN,Unnatural,Regular,,95,31,52,71,102,Harmony Instinct,,,,200,1000
+YYJUNNAR31,YYJ,UNNA,R31,Yeonjung,WJSN,Unnatural,Regular,,79,15,34,62,80,,High Note,,,200,400
+YYJUNNAR32,YYJ,UNNA,R32,Yeonjung,WJSN,Unnatural,Regular,,90,20,39,73,86,,High Note,,,200,700
+YYJUNNAR33,YYJ,UNNA,R33,Yeonjung,WJSN,Unnatural,Regular,,98,24,43,88,94,,High Note,,,200,1000
+YYJUNNASPC,YYJ,UNNA,SPC,Yeonjung,WJSN,Unnatural,Special,,93,33,61,74,98,Harmony Instinct,High Note,,,200,2500
+YYJUNNALMT,YYJ,UNNA,LMT,Yeonjung,WJSN,Unnatural,Limited,,81,33,61,67,96,,Sharp Switch,,Hyper Rest,200,2000
