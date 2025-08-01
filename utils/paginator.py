@@ -58,7 +58,7 @@ class Paginator:
 
 class PreviousButton(discord.ui.Button):
     def __init__(self, paginator):
-        super().__init__(label="⬅️", style=discord.ButtonStyle.secondary)
+        super().__init__(label="⬅️", style=discord.ButtonStyle.secondary, row=2)
         self.paginator = paginator
 
     async def callback(self, interaction: discord.Interaction):
@@ -68,7 +68,7 @@ class PreviousButton(discord.ui.Button):
 
 class NextButton(discord.ui.Button):
     def __init__(self, paginator):
-        super().__init__(label="➡️", style=discord.ButtonStyle.secondary)
+        super().__init__(label="➡️", style=discord.ButtonStyle.secondary, row=2)
         self.paginator = paginator
 
     async def callback(self, interaction: discord.Interaction):

@@ -99,7 +99,7 @@ class RedeemGroup(app_commands.Group):
                         "effect": ar["effect"]
                     })
 
-        image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{card_id}.webp"
+        image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{card_id}.webp{version}"
 
         embed = discord.Embed(
             title="🎁 Canjear carta",
@@ -167,10 +167,104 @@ class RedeemableButton(discord.ui.Button):
                     if not exists:
                         break
                 card = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", self.card_id)
+                
+                p_skill = a_skill = s_skill = u_skill = None
+                # Asignar habilidades dependiendo rareza
+                if card["rarity"] == "Regular":
+                    tipo_habilidad = random.choice(["passive", "active", "support"])
+
+                    skill_row = await conn.fetchrow("""
+                        SELECT skill_name FROM skills WHERE skill_type = $1 ORDER BY RANDOM() LIMIT 1
+                    """, tipo_habilidad)
+
+                    if skill_row:
+                        if tipo_habilidad == "passive":
+                            p_skill = skill_row["skill_name"]
+                        elif tipo_habilidad == "active":
+                            a_skill = skill_row["skill_name"]
+                        elif tipo_habilidad == "support":
+                            s_skill = skill_row["skill_name"]
+                            
+                elif card["rarity"] == "Special":
+                    available_types = ["passive", "active", "support"]
+                    chosen_types = random.sample(available_types, 2)
+
+                    for skill_type in chosen_types:
+                        skill_row = await conn.fetchrow("""
+                            SELECT skill_name FROM skills WHERE skill_type = $1 ORDER BY RANDOM() LIMIT 1
+                        """, skill_type)
+
+                        if skill_row:
+                            if skill_type == "passive":
+                                p_skill = skill_row["skill_name"]
+                            elif skill_type == "active":
+                                a_skill = skill_row["skill_name"]
+                            elif skill_type == "support":
+                                s_skill = skill_row["skill_name"]
+                            elif skill_type == "ultimate":
+                                u_skill = skill_row["skill_name"]
+                
+                elif card["rarity"] == "Limited":
+                    skill_row = await conn.fetchrow("""
+                        SELECT skill_name FROM skills WHERE skill_type = 'ultimate' ORDER BY RANDOM() LIMIT 1
+                    """)
+                    if skill_row:
+                        u_skill = skill_row["skill_name"]
+
+                    extra_type = random.choice(["passive", "active", "support"])
+                    skill_row = await conn.fetchrow("""
+                        SELECT skill_name FROM skills WHERE skill_type = $1 ORDER BY RANDOM() LIMIT 1
+                    """, extra_type)
+                    if skill_row:
+                        if extra_type == "passive":
+                            p_skill = skill_row["skill_name"]
+                        elif extra_type == "active":
+                            a_skill = skill_row["skill_name"]
+                        elif extra_type == "support":
+                            s_skill = skill_row["skill_name"]
+                            
+                elif card["rarity"] == "FCR":
+                    skill_row = await conn.fetchrow("""
+                        SELECT skill_name FROM skills WHERE skill_type = 'support' ORDER BY RANDOM() LIMIT 1
+                    """)
+                    if skill_row:
+                        s_skill = skill_row["skill_name"]
+
+                    extra_type = random.choice(["passive", "active", "ultimate"])
+                    skill_row = await conn.fetchrow("""
+                        SELECT skill_name FROM skills WHERE skill_type = $1 ORDER BY RANDOM() LIMIT 1
+                    """, extra_type)
+                    if skill_row:
+                        if extra_type == "passive":
+                            p_skill = skill_row["skill_name"]
+                        elif extra_type == "active":
+                            a_skill = skill_row["skill_name"]
+                        elif extra_type == "ultimate":
+                            u_skill = skill_row["skill_name"]
+                
+                elif card["rarity"] == "POB":
+                    available_types = ["passive", "active", "support", "ultimate"]
+                    chosen_types = random.sample(available_types, 3)
+
+                    for skill_type in chosen_types:
+                        skill_row = await conn.fetchrow("""
+                            SELECT skill_name FROM skills WHERE skill_type = $1 ORDER BY RANDOM() LIMIT 1
+                        """, skill_type)
+
+                        if skill_row:
+                            if skill_type == "passive":
+                                p_skill = skill_row["skill_name"]
+                            elif skill_type == "active":
+                                a_skill = skill_row["skill_name"]
+                            elif skill_type == "support":
+                                s_skill = skill_row["skill_name"]
+                            elif skill_type == "ultimate":
+                                u_skill = skill_row["skill_name"]
+                
                 await conn.execute("""
-                    INSERT INTO user_idol_cards (unique_id, user_id, card_id, idol_id, set_id, rarity_id)
-                        VALUES ($1, $2, $3, $4, $5, $6)
-                    """, new_id, user_id, card["card_id"], card["idol_id"], card["set_id"], card["rarity_id"])
+                    INSERT INTO user_idol_cards (unique_id, user_id, card_id, idol_id, set_id, rarity_id, p_skill, a_skill, s_skill, u_skill)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                    """, new_id, user_id, card["card_id"], card["idol_id"], card["set_id"], card["rarity_id"], p_skill, a_skill, s_skill, u_skill)
             else:
                 while True:
                     new_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=5))

@@ -7,7 +7,7 @@ from utils.localization import get_translation
 from utils.language import get_user_language
 from asyncpg import Pool
 
-version = "?v=252"
+version = "?v=249"
 
 class StartView(discord.ui.View):
     def __init__(self, interaction: discord.Interaction):
@@ -198,7 +198,7 @@ class SponsorCommand(commands.Cog):
             
             influence = extra_influence + user["influence_temp"]
             
-            sponsor = 150 + 600*(influence/(influence+200000))
+            sponsor = 180 + 700*(influence/(influence+200000))
             
             credits_p_minute = sponsor / 60
             

@@ -968,8 +968,8 @@ async def show_current_section_view(interaction: discord.Interaction, presentati
                 
         
         # Obtener y mostrar habilidades activas, pasivas y ultimate del idol activo
-        if active_idol and active_idol["card_id"]:
-            card = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", active_idol["card_id"])
+        if active_idol and active_idol["unique_id"]:
+            card = await conn.fetchrow("SELECT * FROM user_idol_cards WHERE unique_id = $1", active_idol["unique_id"])
             Er = active_idol['max_energy']-active_idol['used_energy']
                                 
             energy_left = round(active_idol["max_energy"] - active_idol["used_energy"], 1)
@@ -1052,8 +1052,8 @@ async def show_current_section_view(interaction: discord.Interaction, presentati
     disabled_support = True
     disabled_ult = True
     async with pool.acquire() as conn:
-        if active_idol and active_idol["card_id"]:
-            card = await conn.fetchrow("SELECT a_skill, u_skill, s_skill FROM cards_idol WHERE card_id = $1", active_idol["card_id"])
+        if active_idol and active_idol["unique_id"]:
+            card = await conn.fetchrow("SELECT a_skill, u_skill, s_skill FROM user_idol_cards WHERE unique_id = $1", active_idol["unique_id"])
             if card and card["a_skill"]:
                 disabled_active = False
 
@@ -1141,9 +1141,9 @@ class IdolSwitchPaginator:
 
             idol_desc = f"🧑‍🎤 Idol: {idol_data['name']} ({idol['idol_id']}) "
             
-            if idol['card_id']:
+            if idol['unique_id']:
                 async with pool.acquire() as conn:
-                    card = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", idol['card_id'])
+                    card = await conn.fetchrow("SELECT * FROM user_idol_cards WHERE unique_id = $1", idol['unique_id'])
                     if card['p_skill']:
                         idol_desc += "🟢"
                     if card['a_skill']:
@@ -1266,13 +1266,19 @@ class SelectIdolToSwitchButton(discord.ui.Button):
             color=discord.Color.yellow()
         )
         
-        if self.idol['card_id']:
+        if self.idol['unique_id']:
             async with pool.acquire() as conn:
-                card = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", self.idol['card_id'])
+                card = await conn.fetchrow("SELECT * FROM user_idol_cards WHERE unique_id = $1", self.idol['unique_id'])
                 if card['p_skill']:
                     skill_data = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1", card['p_skill'])
                     condition_values = json.loads(skill_data['condition_values'])
                     condition_params = json.loads(skill_data['condition_params'])
+                    
+                    pcond_score=condition_params.get('score')
+                    pcond_score = int((pcond_score-1)*100) if pcond_score else None
+                    pcond_hype=condition_params.get('hype')
+                    pcond_hype = int((pcond_hype-1)*100) if pcond_hype else None
+                    
                     embed.add_field(name=f"**🟢 {skill_data['skill_name']}**",
                                     value=get_translation(language,
                                                           f"skills.{skill_data['skill_name']}",
@@ -1288,8 +1294,8 @@ class SelectIdolToSwitchButton(discord.ui.Button):
                                                           pcond_rap = condition_params.get("rap"),
                                                           pcond_dance = condition_params.get("dance"),
                                                           pcond_visual = condition_params.get("visual"),
-                                                          pcond_hype = condition_params.get("hype"),
-                                                          pcond_score = condition_params.get("score"),
+                                                          pcond_hype = pcond_hype,
+                                                          pcond_score = pcond_score,
                                                           pcond_extra_cost = condition_params.get("energy"),
                                                           pcond_value = condition_params.get("value")
                                                           ))
@@ -1301,6 +1307,20 @@ class SelectIdolToSwitchButton(discord.ui.Button):
                     eff = skill_data['effect']
                     cost_type = skill_data['cost_type']
                     lower = higher = relative_cost = extra_cost = ""
+                    
+                    pcond_energy = condition_params.get("energy")
+                    pcond_energy *= -1 if pcond_energy else None
+                    
+                    score=eff_params.get('score')
+                    score = int((score-1)*100) if score else None
+                    hype=eff_params.get('hype')
+                    hype = int((hype-1)*100) if hype else None
+                    
+                    pcond_score=condition_params.get('score')
+                    pcond_score = int((pcond_score-1)*100) if pcond_score else None
+                    pcond_hype=condition_params.get('hype')
+                    pcond_hype = int((pcond_hype-1)*100) if pcond_hype else None
+                    
                     if cost_type == "relative":
                         relative_cost = skill_data['energy_cost']
                         relative_cost = int((relative_cost)*100)
@@ -1325,8 +1345,9 @@ class SelectIdolToSwitchButton(discord.ui.Button):
                                                           pcond_rap = condition_params.get("rap"),
                                                           pcond_dance = condition_params.get("dance"),
                                                           pcond_visual = condition_params.get("visual"),
-                                                          pcond_hype = condition_params.get("hype"),
-                                                          pcond_score = condition_params.get("score"),
+                                                          pcond_energy = pcond_energy,
+                                                          pcond_hype = pcond_hype,
+                                                          pcond_score = pcond_score,
                                                           pcond_extra_cost = condition_params.get("energy"),
                                                           pcond_value = condition_params.get("value"),
                                                           higher=higher, lower=lower,
@@ -1334,8 +1355,8 @@ class SelectIdolToSwitchButton(discord.ui.Button):
                                                           rap=eff_params.get("rap"),
                                                           dance=eff_params.get('dance'),
                                                           visual=eff_params.get('visual'),
-                                                          score=eff_params.get('score'),
-                                                          hype=eff_params.get('hype'),
+                                                          score=score,
+                                                          hype=hype,
                                                           relative_cost=relative_cost,
                                                           extra_cost=extra_cost,
                                                           ))
@@ -1368,6 +1389,12 @@ class SelectIdolToSwitchButton(discord.ui.Button):
                         relative_cost = int((relative_cost)*100)
                     if cost_type == "fixed":
                         extra_cost = skill_data['energy_cost']
+                        
+                    score=eff_params.get('score')
+                    score = int((score-1)*100) if score else None
+                    hype=eff_params.get('hype')
+                    hype = (int((hype-1)*100)) if hype else None
+                    
                     embed.add_field(name=f"**🔴 {skill_data['skill_name']}**",
                                     value=get_translation(language,
                                                           f"skills.{skill_data['skill_name']}",
@@ -1376,8 +1403,8 @@ class SelectIdolToSwitchButton(discord.ui.Button):
                                                           rap=eff_params.get("rap"),
                                                           dance=eff_params.get('dance'),
                                                           visual=eff_params.get('visual'),
-                                                          score=eff_params.get('score'),
-                                                          hype=eff_params.get('hype'),
+                                                          score=score,
+                                                          hype=hype,
                                                           value=eff_params.get('value'),
                                                           relative_cost=relative_cost,
                                                           extra_cost=extra_cost,
@@ -2478,6 +2505,8 @@ async def perform_section_action(conn, presentation_id: str, idol_row, song_sect
     avg = await conn.fetchval("SELECT average_score FROM song_sections WHERE song_id = $1 AND section_number = $2", song_id, current_section)
     base_hype = avg * (1 + 0.001 * n_members * ((n_members + 1) / 2))
     Hg = round((1 - base_hype / base_score) * 5 * skill_bonus.get("hype", 1), 2)
+    if effect: Hg *= effect["hype_mod"]
+    if s_effect: Hg *= s_effect["hype_mod"]
 
     await conn.execute("UPDATE presentations SET total_hype = LEAST(100, GREATEST(0, total_hype + $1)) WHERE presentation_id = $2", Hg, presentation_id)
     await conn.execute("UPDATE presentation_sections SET hype_got = $1 WHERE presentation_id = $2 AND section = $3", Hg, presentation_id, current_section)
@@ -2529,12 +2558,12 @@ async def perform_section_action(conn, presentation_id: str, idol_row, song_sect
 
 # - ultimate skill
 async def apply_ultimate_skill_if_applicable(conn, idol_row, section_row, presentation_row):
-    card_id = idol_row["card_id"]
+    card_id = idol_row["unique_id"]
     if not card_id:
         return {}
 
     # Obtener habilidad ultimate
-    card = await conn.fetchrow("SELECT u_skill FROM cards_idol WHERE card_id = $1", card_id)
+    card = await conn.fetchrow("SELECT u_skill FROM user_idol_cards WHERE unique_id = $1", card_id)
     if not card or not card["u_skill"]:
         return {}
 
@@ -2621,7 +2650,7 @@ class UltimateSkillPreviewButton(discord.ui.Button):
             if not idol or not idol["card_id"]:
                 return await interaction.response.send_message("❌ Idol activo sin carta.", ephemeral=True)
 
-            card = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", idol["card_id"])
+            card = await conn.fetchrow("SELECT * FROM user_idol_cards WHERE unique_id = $1", idol["unique_id"])
             if not card or not card["u_skill"]:
                 return await interaction.response.send_message("❌ Esta carta no tiene habilidad ultimate.", ephemeral=True)
 
@@ -2631,8 +2660,8 @@ class UltimateSkillPreviewButton(discord.ui.Button):
 
             desc = f"no-description"
 
-            if idol['card_id']:
-                card = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", idol['card_id'])
+            if idol['unique_id']:
+                card = await conn.fetchrow("SELECT * FROM user_idol_cards WHERE unique_id = $1", idol['unique_id'])
                 
                 if card['u_skill']:
                     skill_data = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1", card['u_skill'])
@@ -2644,6 +2673,12 @@ class UltimateSkillPreviewButton(discord.ui.Button):
                         relative_cost = int((relative_cost)*100)
                     if cost_type == "fixed":
                         extra_cost = skill_data['energy_cost']
+                        
+                    score=eff_params.get('score')
+                    score = int((score-1)*100) if score else None
+                    hype=eff_params.get('hype')
+                    hype = (int((hype-1)*100)) if hype else None
+                    
                     desc = f"**🔴 {skill_data['skill_name']}**\n{get_translation(language,
                                                           f"skills.{skill_data['skill_name']}",
                                                           higher=higher, lower=lower,
@@ -2651,8 +2686,8 @@ class UltimateSkillPreviewButton(discord.ui.Button):
                                                           rap=eff_params.get("rap"),
                                                           dance=eff_params.get('dance'),
                                                           visual=eff_params.get('visual'),
-                                                          score=eff_params.get('score'),
-                                                          hype=eff_params.get('hype'),
+                                                          score=score,
+                                                          hype=hype,
                                                           value=eff_params.get('value'),
                                                           relative_cost=relative_cost,
                                                           extra_cost=extra_cost,
@@ -2748,7 +2783,7 @@ class SupportSkillPreviewButton(discord.ui.Button):
             if not idol or not idol["card_id"]:
                 return await interaction.response.send_message("❌ Idol activo sin carta.", ephemeral=True)
 
-            card = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", idol["card_id"])
+            card = await conn.fetchrow("SELECT * FROM user_idol_cards WHERE unique_id = $1", idol["unique_id"])
             if not card or not card["s_skill"]:
                 return await interaction.response.send_message("❌ Esta carta no tiene habilidad de soporte.", ephemeral=True)
 
@@ -2767,8 +2802,8 @@ class SupportSkillPreviewButton(discord.ui.Button):
 
             desc = f"no-description"
             
-            if idol['card_id']:
-                card = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", idol['card_id'])
+            if idol['unique_id']:
+                card = await conn.fetchrow("SELECT * FROM user_idol_cards WHERE unique_id = $1", idol['unique_id'])
                 
                 if card['s_skill']:
                     skill_data = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1", card['s_skill'])
@@ -2914,7 +2949,7 @@ class ActiveSkillPreviewButton(discord.ui.Button):
             if not idol or not idol["card_id"]:
                 return await interaction.response.send_message("❌ Idol activo sin carta.", ephemeral=True)
 
-            card = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", idol["card_id"])
+            card = await conn.fetchrow("SELECT * FROM user_idol_cards WHERE unique_id = $1", idol["unique_id"])
             if not card or not card["a_skill"]:
                 return await interaction.response.send_message("❌ Esta carta no tiene habilidad activa.", ephemeral=True)
 
@@ -2924,8 +2959,8 @@ class ActiveSkillPreviewButton(discord.ui.Button):
 
             desc = f"**{skill['skill_name']}**\n{parse_effect_description(skill)}"
             
-            if idol['card_id']:
-                card = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", idol['card_id'])
+            if idol['unique_id']:
+                card = await conn.fetchrow("SELECT * FROM user_idol_cards WHERE unique_id = $1", idol['unique_id'])
                 if card['a_skill']:
                     skill_data = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1", card['a_skill'])
                     condition_values = json.loads(skill_data['condition_values'])
@@ -2943,6 +2978,17 @@ class ActiveSkillPreviewButton(discord.ui.Button):
                         lower = eff_params.get("value")
                     if eff == "boost_higher_stat":
                         higher = eff_params.get("value")
+                    
+                    score=eff_params.get('score')
+                    score = int((score-1)*100) if score else None
+                    hype=eff_params.get('hype')
+                    hype = int((hype-1)*100) if hype else None
+                    
+                    pcond_score=condition_params.get('score')
+                    pcond_score = int((pcond_score-1)*100) if pcond_score else None
+                    pcond_hype=condition_params.get('hype')
+                    pcond_hype = int((pcond_hype-1)*100) if pcond_hype else None
+                    
                     desc = f"**🔵 {skill_data['skill_name']}**\n{get_translation(language,
                                                           f"skills.{skill_data['skill_name']}",
                                                           cond_vocal = condition_values.get("vocal"),
@@ -2957,8 +3003,8 @@ class ActiveSkillPreviewButton(discord.ui.Button):
                                                           pcond_rap = condition_params.get("rap"),
                                                           pcond_dance = condition_params.get("dance"),
                                                           pcond_visual = condition_params.get("visual"),
-                                                          pcond_hype = condition_params.get("hype"),
-                                                          pcond_score = condition_params.get("score"),
+                                                          pcond_hype = pcond_hype,
+                                                          pcond_score = pcond_score,
                                                           pcond_extra_cost = condition_params.get("energy"),
                                                           pcond_value = condition_params.get("value"),
                                                           higher=higher, lower=lower,
@@ -2966,8 +3012,8 @@ class ActiveSkillPreviewButton(discord.ui.Button):
                                                           rap=eff_params.get("rap"),
                                                           dance=eff_params.get('dance'),
                                                           visual=eff_params.get('visual'),
-                                                          score=eff_params.get('score'),
-                                                          hype=eff_params.get('hype'),
+                                                          score=score,
+                                                          hype=hype,
                                                           relative_cost=relative_cost,
                                                           extra_cost=extra_cost,
                                                           )}"
@@ -3041,12 +3087,12 @@ class ActiveSkillUseButton(discord.ui.Button):
             await interaction.response.edit_message(embed=embed, view=ScoreSummaryView(self.presentation_id))
 
 async def apply_active_skill_if_applicable(conn, idol_row, section_row, presentation_row):
-    card_id = idol_row["card_id"]
+    card_id = idol_row["unique_id"]
     if not card_id:
         return {}
 
     # Obtener habilidad activa
-    card = await conn.fetchrow("SELECT a_skill FROM cards_idol WHERE card_id = $1", card_id)
+    card = await conn.fetchrow("SELECT a_skill FROM user_idol_cards WHERE unique_id = $1", card_id)
     if not card or not card["a_skill"]:
         return {}
 
@@ -3430,12 +3476,12 @@ async def apply_boost_lower_stat(effect_values, conn, presentation_row, idol_row
 
 # MAIN WRAPPER
 async def apply_passive_skill_if_applicable(conn, idol_row, section_row, presentation_row, check_only=False):
-    card_id = idol_row["card_id"]
+    card_id = idol_row["unique_id"]
     if not card_id:
         print("no carta")
         return {}
 
-    card = await conn.fetchrow("SELECT p_skill FROM cards_idol WHERE card_id = $1", card_id)
+    card = await conn.fetchrow("SELECT p_skill FROM user_idol_cards WHERE unique_id = $1", card_id)
     if not card or not card["p_skill"]:
         print("no skill")
         return {}
@@ -3654,7 +3700,7 @@ async def finalize_presentation(conn, presentation: dict) -> str:
             presentation_id
         )
         return (
-            f"## ✅ Práctica finalizada.\n**Puntuación total:** {format(total_score,',')}\n> -(no se ha recibido popularidad ni XP)-"
+            f"## ✅ Práctica finalizada.\n**Puntuación total:** {format(total_score,',')}\n> _(no se ha recibido popularidad ni XP)_"
         )
 
 async def setup(bot):

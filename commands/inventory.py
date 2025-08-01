@@ -5,6 +5,7 @@ import csv
 import os
 from utils.localization import get_translation
 from utils.language import get_user_language
+from utils.emojis import get_emoji
 from db.connection import get_pool
 from datetime import datetime
 from utils.paginator import Paginator, NextButton, PreviousButton
@@ -173,7 +174,7 @@ class InventoryGroup(app_commands.Group):
             return
 
         card_counts = Counter([row['card_id'] for row in rows])
-        embeds = await generate_idol_card_embeds(rows, pool)
+        embeds = await generate_idol_card_embeds(rows, pool, interaction.guild)
 
         paginator = InventoryEmbedPaginator(embeds, rows, interaction, base_query, params, embeds_per_page=3)
         await paginator.start()
@@ -1200,7 +1201,7 @@ class ConfirmItemRefundView(discord.ui.View):
 
 
 # - idol_cards
-async def generate_idol_card_embeds(rows: list, pool) -> list[discord.Embed]:
+async def generate_idol_card_embeds(rows: list, pool, guild: discord.Guild) -> list[discord.Embed]:
     """Genera una lista de embeds para cartas de idols."""
     card_counts = Counter([row['card_id'] for row in rows])
     embeds = []
@@ -1209,7 +1210,8 @@ async def generate_idol_card_embeds(rows: list, pool) -> list[discord.Embed]:
         async with pool.acquire() as conn:
             idol_row = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", row["card_id"])
             idol_base_row = await conn.fetchrow("SELECT * FROM idol_base WHERE idol_id = $1", row["idol_id"])
-
+            user_card_row = await conn.fetchrow("SELECT * FROM user_idol_cards WHERE unique_id = $1", row['unique_id'])
+            
         name = idol_row['idol_name']
         card_set = idol_row['set_name']
         rarity = idol_row['rarity']
@@ -1250,18 +1252,18 @@ async def generate_idol_card_embeds(rows: list, pool) -> list[discord.Embed]:
             color=embed_color
         )
 
-        image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{row['card_id']}.webp"
+        image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{row['card_id']}.webp{version}"
         embed.set_thumbnail(url=image_url)
 
         skills = ""
-        if idol_row['p_skill']:
-            skills += "🟢"
-        if idol_row['a_skill']:
-            skills += "🔵"
-        if idol_row['s_skill']:
-            skills += "🟡"
-        if idol_row['u_skill']:
-            skills += "🔴"
+        if user_card_row['p_skill']:
+            skills += get_emoji(guild, "PassiveSkill")
+        if user_card_row['a_skill']:
+            skills += get_emoji(guild, "ActiveSkill")
+        if user_card_row['s_skill']:
+            skills += get_emoji(guild, "SupportSkill")
+        if user_card_row['u_skill']:
+            skills += get_emoji(guild, "UltimateSkill")
 
         vocal = idol_row['vocal'] - idol_base_row['vocal']
         rap = idol_row['rap'] - idol_base_row['rap']
@@ -1333,7 +1335,7 @@ class BackToInventoryButton(discord.ui.Button):
             )
             return
 
-        embeds = await generate_idol_card_embeds(rows, pool)
+        embeds = await generate_idol_card_embeds(rows, pool, interaction.guild)
         new_paginator = InventoryEmbedPaginator(
             embeds,
             rows,
@@ -1520,7 +1522,7 @@ class ConfirmEquipIdolButton(discord.ui.Button):
                 *self.parent.paginator.query_params
             )
 
-        embeds = await generate_idol_card_embeds(rows, pool)
+        embeds = await generate_idol_card_embeds(rows, pool, interaction.guild)
 
         new_paginator = InventoryEmbedPaginator(
             embeds=embeds,
@@ -1614,7 +1616,7 @@ class ConfirmUnequipButton(discord.ui.Button):
                                     *self.parent.paginator.query_params)
 
         # 4) Regenerar embeds
-        embeds = await generate_idol_card_embeds(rows, pool)
+        embeds = await generate_idol_card_embeds(rows, pool, interaction.guild)
         new_pag = InventoryEmbedPaginator(
             embeds=embeds,
             rows=rows,
@@ -1638,7 +1640,7 @@ class CancelUnequipButton(discord.ui.Button):
         async with pool.acquire() as conn:
             rows = await conn.fetch(self.paginator.base_query,
                                     *self.paginator.query_params)
-        embeds = await generate_idol_card_embeds(rows, pool)
+        embeds = await generate_idol_card_embeds(rows, pool, interaction.guild)
         new_pag = InventoryEmbedPaginator(
             embeds=embeds,
             rows=rows,
@@ -2085,7 +2087,7 @@ class CardGroup(app_commands.Group):
         nuevo_card_id = f"{row_1['idol_id']}{row_1['set_id']}{nuevo_rarity_id}"
 
         stars = "⭐" * nuevo_nivel
-        cost = 1000 * nivel_actual
+        cost = 1500 * nivel_actual
         # Mostrar preview
         preview_embed = discord.Embed(
             title=f"{stars} Confirmar mejora!",
@@ -2219,7 +2221,7 @@ class CardGroup(app_commands.Group):
         
         preview = discord.Embed(
             title="✨ Confirmar fusión",
-            description=f"### Fusionarás 3 cartas regulares para obtener una carta **Special**.\n> Costo: 5,000 💵\nProbabilidad de éxito: {success}%",
+            description=f"### Fusionarás 3 cartas regulares para obtener una carta **Special**.\n> Costo: 7,000 💵\nProbabilidad de éxito: {success}%",
             color=discord.Color.purple()
         )
         preview.set_thumbnail(url=f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{card_id}.webp{version}")
@@ -2346,7 +2348,7 @@ class ConfirmFusionView(discord.ui.View):
         self.idol_id = idol_id
         self.set_id = set_id
         self.rarity_id = rarity_id
-        self.cost = 5000
+        self.cost = 7000
 
     @discord.ui.button(label="✅ Confirmar", style=discord.ButtonStyle.success)
     async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -2428,11 +2430,56 @@ class ConfirmFusionView(discord.ui.View):
                 UPDATE users SET credits = credits - $1, xp = xp + $2 WHERE user_id = $3
             """, self.cost, xp, self.user_id)
 
+            skill_map = {"p_skill": "passive", "a_skill": "active", "s_skill": "support"}
+            found_skills = []
+            
+            for row in rows:
+                for column, skill_type in skill_map.items():
+                    skill_name = row.get(column)
+                    if skill_name:
+                        found_skills.append((skill_type, skill_name))
+                        break
+            
+            grouped = {}
+            for skill_type, skill_name in found_skills:
+                if skill_type not in grouped:
+                    grouped[skill_type] = []
+                grouped[skill_type].append(skill_name)
+            
+            chosen_types = list(grouped.keys())
+            
+            if len(chosen_types) >= 2:
+                final_types = random.sample(chosen_types, 2)
+                final_skills = {
+                    "passive": random.choice(grouped["passive"]) if "passive" in final_types else None,
+                    "active": random.choice(grouped["active"]) if "active" in final_types else None,
+                    "support": random.choice(grouped["support"]) if "support" in final_types else None,
+                }
+                
+            else:
+                only_type = chosen_types[0]
+                available_new = [t for t in ["passive", "active", "support"] if t != only_type]
+                second_type = random.choice(available_new)
+                
+                final_skills = {
+                    "passive": random.choice(grouped["passive"]) if only_type == "passive" else None,
+                    "active": random.choice(grouped["active"]) if only_type == "active" else None,
+                    "support": random.choice(grouped["support"]) if only_type == "support" else None,
+                }
+                
+                skill_row = await conn.fetchrow("""
+                    SELECT skill_name FROM skills WHERE skill_type = $1 ORDER BY RANDOM() LIMIT 1
+                """, second_type)
+
+                if skill_row:
+                    final_skills[second_type] = skill_row["skill_name"]
+                
+            
             new_uid = ''.join(random.choices(string.ascii_lowercase + string.digits, k=5))
             await conn.execute("""
-                INSERT INTO user_idol_cards (unique_id, user_id, card_id, idol_id, set_id, rarity_id)
-                VALUES ($1, $2, $3, $4, $5, $6)
-            """, new_uid, self.user_id, self.new_card_id, self.idol_id, self.set_id, self.rarity_id)
+                INSERT INTO user_idol_cards (unique_id, user_id, card_id, idol_id, set_id, rarity_id, p_skill, a_skill, s_skill)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            """, new_uid, self.user_id, self.new_card_id, self.idol_id, self.set_id, self.rarity_id, final_skills["passive"], final_skills["active"], final_skills["support"])
             
             idol_name = await conn.fetchval("SELECT name FROM idol_base WHERE idol_id = $1", self.idol_id)
             set_name = await conn.fetchval("SELECT set_name FROM cards_idol WHERE set_id = $1", self.set_id)
@@ -2515,7 +2562,32 @@ class ConfirmLevelUpView(discord.ui.View):
                     embed=None,
                     view=None
                 )
+                
+            card_1 = rows[0]
+            card_2 = rows[1]
+            
+            def get_skill(card):
+                for skill_type in ["p_skill", "a_skill", "s_skill"]:
+                    if card[skill_type] is not None:
+                        return skill_type, card[skill_type]
+                return None, None
 
+            skill1_type, skill1_value = get_skill(card_1)
+            skill2_type, skill2_value = get_skill(card_2)
+            
+            if random.random() < 0.5:
+                chosen_type, chosen_value = skill1_type, skill1_value
+            else:
+                chosen_type, chosen_value = skill2_type, skill2_value
+                
+            p_skill = a_skill = s_skill = None
+            if chosen_type == "p_skill":
+                p_skill = chosen_value
+            elif chosen_type == "a_skill":
+                a_skill = chosen_value
+            elif chosen_type == "s_skill":
+                s_skill = chosen_value
+            
             # Eliminar las cartas originales
             await conn.execute("""
                 DELETE FROM user_idol_cards
@@ -2532,9 +2604,9 @@ class ConfirmLevelUpView(discord.ui.View):
             # Insertar nueva carta
             new_unique_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=5))
             await conn.execute("""
-                INSERT INTO user_idol_cards (unique_id, user_id, card_id, idol_id, set_id, rarity_id)
-                VALUES ($1, $2, $3, $4, $5, $6)
-            """, new_unique_id, self.user_id, self.nuevo_card_id, self.idol_id, self.set_id, self.rarity_id)
+                INSERT INTO user_idol_cards (unique_id, user_id, card_id, idol_id, set_id, rarity_id, p_skill, a_skill, s_skill)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            """, new_unique_id, self.user_id, self.nuevo_card_id, self.idol_id, self.set_id, self.rarity_id, p_skill, a_skill, s_skill)
 
         # Mostrar resultado final
         final_embed = discord.Embed(

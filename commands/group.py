@@ -672,6 +672,7 @@ class EquippedCardsPaginator:
                     consumable_id, uc = row['consumable_id'].split(".")
                 card_data = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", card_id)
                 idol_data = await conn.fetchrow("SELECT * FROM idol_base WHERE idol_id = $1", row['idol_id'])
+                user_card_data = await conn.fetchrow("SELECT * FROM user_idol_cards WHERE unique_id = $1", u_c)
                 
                 mic_durability=outfit_durability=accessory_durability=consumable_durability=""
                 mic_name=outfit_name=accessory_name=consumale_name="n/a"
@@ -735,13 +736,13 @@ class EquippedCardsPaginator:
                 visual += card_data['visual']
                 energy += card_data['energy']
                 
-                if card_data['p_skill']:
+                if user_card_data['p_skill']:
                     skills += f"{discord.utils.get(self.guild.emojis, name="PassiveSkill")} "
-                if card_data['a_skill']:
+                if user_card_data['a_skill']:
                     skills += f"{discord.utils.get(self.guild.emojis, name="ActiveSkill")} "
-                if card_data['s_skill']:
+                if user_card_data['s_skill']:
                     skills += f"{discord.utils.get(self.guild.emojis, name="SupportSkill")} "
-                if card_data['u_skill']:
+                if user_card_data['u_skill']:
                     skills += f"{discord.utils.get(self.guild.emojis, name="UltimateSkill")} "
             else:
                 vocal += idol_data['vocal']

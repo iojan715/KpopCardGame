@@ -1,121 +1,121 @@
 section_id,song_id,section_number,section_type,duration,lyrics,vocal,rap,dance,visual,change_rule,type_plus,plus_vocal,plus_rap,plus_dance,plus_visual,average_score
-0001,001,1,intro,12,*Da-da-da da-da-da-da*\n*Da-da-da-da-da da-da da-da*\n*Da-da-da-da da-da-da-da*\n*Da-da-da-da-da da-da*,20,0,10,70,optional,,,,,,50726
-0002,001,2,verse,10,*I could go somewhere*\n*Maybe anywhere*\n*nae jikgameun neul majeunikkan Just feel it*,50,0,40,10,optional,group_dance,,,15,,49248
-0003,001,3,verse,10,*sonkkeuten nabi*\n*That's my living ring*\n*nae geokjeong no nan nadapge deo binnajyeo*,50,0,30,20,optional,backup_dance,,,10,,47607
-0004,001,4,pre_chorus,8,*Feel the breeze naman deullineun sori*,60,0,0,40,forced,pose_sync,5,,,10,39070
-0005,001,5,pre_chorus,2,*I can tell myself that*,45,0,25,30,optional,,,,,,8290
-0006,001,6,chorus,10,*I do me I do me right*\n*geunyang I do me I do my way*\n*dareun geurimdeureun upside-down*\n*gyeolguk naega ganeun giriya*,40,0,50,10,forced,group_dance,,,20,,51711
-0007,001,7,chorus,5,*nam nunchis why do you care?*\n*I'm just dallil geoya meotdaero*,50,0,20,30,optional,,,,,,21956
-0008,001,8,chorus,5,*Still pinky noeulbit nalgaereul dalgo*,50,0,35,15,optional,group_dance,,,20,,25855
-0009,001,9,verse,10,*igeol haeya dwae*\n*geogil gaya dwae*\n*sanggwaneopjyo nan naega doel geoeyo*,50,0,40,10,forced,group_dance,,,15,,49248
-0010,001,10,verse,10,*kong mudangbeolle*\n*That's my piercing*\n*I'm screaming: Yeah nan nadapge deo jalhaeyo*,40,0,50,10,optional,cheering,5,5,5,5,52121
-0011,001,11,pre_chorus,8,*Feel the breeze naman deullineun sori*,55,0,0,45,forced,pose_sync,5,,,10,39399
-0012,001,12,pre_chorus,2,*I can tell myself that*,30,0,30,40,optional,,,,,,8372
-0013,001,13,chorus,10,*I do me I do me right*\n*geunyang I do me I do my way*\n*dareun geurimdeureun upside-down*\n*gyeolguk naega ganeun giriya (giriya)*,40,0,40,10,forced,group_dance,,,20,,48017
-0014,001,14,chorus,5,*nam nunchis why do you care?*\n*I'm just dallil geoya meotdaero*,40,0,40,20,optional,,,,,,22162
-0015,001,15,chorus,5,*Still pinky noeulbit nalgaereul dalgo*\n*(I run in the air)*,40,0,45,15,forced,high_note,10,,5,,25445
-0016,001,16,bridge,10,*jam mot deuneun bam na dalbit bomyeo*\n*Maybe I'm byeollan ai (oh)*\n*Maybe nae kkum uisim deul ttaedo*\n*Keep it in your soul*,35,10,50,5,forced,group_dance,,,20,,52121
-0017,001,17,bridge,10,*nae sangsangboda (boda)*\n*deo keun nayeosseo (oh-oh)geop eomneun my face*\n*no need to chase*,35,0,40,25,optional,,,,,,43503
-0018,001,18,bridge,5,*Eyes closed and deullyeo whispering*\n*I do me I do it my way*,30,0,55,15,optional,group_dance,,,20,,25650
-0019,001,19,chorus,10,*I do me I do me right (oh)*\n*geunyang I do me I do my way*\n*dareun geurimdeureun upside-down (upside-down)*\n*gyeolguk naega ganeun giriya*,45,0,45,10,forced,high_note,15,,10,,54584
-0020,001,20,chorus,5,*nam nunchis why do you care?*\n*I'm just dallil geoya meotdaero*,45,0,30,25,forced,,,,,,22367
-0021,001,21,chorus,5,*Still pinky noeulbit nalgaereul dalgo*\n*(I run in the air)*,40,0,40,20,forced,high_note,20,,10,,28728
-0022,001,22,ending,10,*My way my way (oh)*\n*I do my way I do my way oh*,15,0,50,35,optional,group_dance,,,15,5,53353
-0023,001,23,ending,10,*I'm just dallil geoya meotdaero (yeah mm)*,15,0,40,45,optional,adlib,10,,5,5,52942
-0024,001,24,ending,13,*I know I know my way*\n*Ooh-ooh ooh*,15,0,15,70,optional,pose_sync,,,,15,65624
-0025,002,1,intro,9,*Dash I wanna dash I wanna run it (run it) x2*\n*Dash I wanna dash I wanna (run it run it dash)*\n*(Mm ah) run it*,10,45,15,30,optional,adlib,15,,,,45296
-0026,002,2,verse,6,*You can call me reckless (zigzag)*\n*geop eopsi deonjin road map (zigzag)*,40,0,35,25,forced,backup_rap,,15,5,,31455
-0027,002,3,verse,5,*Nal magaseon barricade (Nah uh)*\n*Sappunhi jeuryeobalgo ga (We ride we ride)*,35,0,35,30,optional,backup_rap,,15,10,,27261
-0028,002,4,verse,5,*Kkamppakyeo red light in the dark*\n*Igeon meomchuran gyeonggoilji molla*,35,5,35,25,optional,group_dance,,,15,,25164
-0029,002,5,verse,6,*But I don't wanna stop it (Mm)*\n*Gomin ttawin crash it (Oh yeah)*,30,10,35,25,optional,adlib,10,,5,,30197
-0030,002,6,pre_chorus,11,*Tteollineun stars nan dallyeoga*\n*Jeo meolli pyeolchyeojin geochin road*\n*Gabon jeok eomneun gireul balba (Oh-oh yeah yeah)*,40,0,30,30,forced,backup_dance,,,10,,52593
-0031,002,7,pre_chorus,5,*Kkeureoollyeo muhandaero*\n*Bal danneun gosi runway*,40,0,25,35,optional,group_dance,,,15,,24954
-0032,002,8,pre_chorus,3,*Sesangi wonhan gilgwa jeongbandaеro ride*,10,50,25,15,forced,,,,,,12959
-0033,002,9,pre_chorus,3,*We go zero to a hunnid (Uh)*,45,0,20,35,optional,,,,,,12833
-0034,002,10,chorus,4,*I wanna dash I wanna dash*\n*I wanna run it (Run it)*,0,40,60,0,forced,group_dance,,,20,,20970
-0035,002,11,chorus,10,*Dash I wanna dash I wanna run it (Run it)*\n*Dash I wanna dash I wanna (Run it run it dash)*\n*Mm uh (Run it) I wanna run it (Run it)*\n*Dash I wanna dash I wanna (Run it run it dash)*,0,45,50,5,locked,adlib,10,,10,,53264
-0036,002,12,chorus,8,*Ooh-ooh-ooh speed up to thе max*\n*Ooh-ooh-ooh simjangeun beating fast (Oh yeah)*\n*Ooh-ooh-ooh kkumkkwowatdeon way*,50,0,35,15,optional,group_dance,,,10,,38921
-0037,002,13,chorus,5,*Dash I wanna dash I wanna run it (Run it)*\n*NMIXX!~*,0,40,30,30,optional,pose_sync,,,5,10,25374
-0038,002,14,verse,5,*Eonjena yeopjarineun biwonwa*\n*Nugudeun wonhandamyeon ollata*,40,10,25,25,forced,,,,,,21809
-0039,002,15,verse,2,*Jinagan jarie namgyeobwa skid mark (Oh skid mark)*,35,10,30,25,forced,,,,,,8723
-0040,002,16,verse,3,*Apeul mangneun geon mojori da bump*,30,10,20,40,optional,,,,,,13085
-0041,002,17,pre_chorus,6,*Kkeureoollyeo muhandaero*\n*Bal danneun geugosi runway*,45,0,25,30,forced,,,,,,26422
-0042,002,18,pre_chorus,2,*Sijakae revolution for evolution (Oh-oh)*,0,50,40,10,optional,group_dance,,,15,,10149
-0043,002,19,pre_chorus,3,*We go zero to a hunnid (Hunnid yeah)*,40,0,35,25,optional,high_note,15,,5,,15979
-0044,002,20,chorus,4,*I wanna dash I wanna dash*\n*I wanna run it*,0,30,50,20,forced,group_dance,,,20,,21138
-0045,002,21,chorus,10,*Dash I wanna dash I wanna run it (Run it)*\n*Dash I wanna dash I wanna (Run it run it dash)*\n*Mm uh (Run it) I wanna run it (Run it)*\n*Dash I wanna dash I wanna (Run it run it dash)*,0,45,40,15,locked,adlib,10,,10,,53684
-0046,002,22,chorus,5,*Tto dasi hanbeon breathe*\n*Never stop never stop never stop*\n*Geochin bakdongeun danger*,55,0,30,15,forced,adlib,10,,5,,25583
-0047,002,23,chorus,5,*But take it to the max*\n*Hold me tight hold me tight hold me tight*\n*Geomnael geot eopsi come in*,60,0,25,15,optional,group_dance,,,10,,24745
-0048,002,24,bridge,1,*NMIXX! change up*,30,30,10,30,forced,,,,,,4236
-0049,002,25,bridge,11,*Adeuki jeo meolli*\n*Pyeolchyeojineun days*\n*Yeah we get it (Yah) we face it (Yah)*\n*I hanghaeui kireul jaba (Oh-oh oh-oh)*,45,0,25,30,forced,harmony,10,,5,,55361
-0050,002,26,bridge,5,*Sesange sinhotaneul ssoa ollyeo bang*\n*Ttwineun simjang soril ttaraomyeon dwae*,35,10,40,15,optional,group_dance,,,15,,25374
-0051,002,27,bridge,6,*Meomchujineun ma mangseoriji ma no matter*\n*(Matter matter matter matter)*,60,0,30,10,optional,adlib,25,,,,33468
-0052,002,28,bridge,3,*Mm I just wanna continue my pace*,0,40,20,40,forced,,,,,,12708
-0053,002,29,chorus,10,*Dash I wanna dash I wanna run it (Run it)*\n*Dash I wanna dash I wanna (Run it run it dash)*\n*Mm uh (Run it) I wanna run some more*\n*Yeah make a dash hey I wanna (Run it run it)*,0,45,40,15,forced,cheering,10,,5,10,55361
-0054,002,30,ending,4,*Dash I wanna dash*\n*I wanna run it (Run it)*,0,45,30,25,forced,,,,,,16944
-0055,008,1,intro,10,*.*,0,0,10,90,optional,pose_sync,,,,15,46270
-0056,008,2,intro,8,*.*,0,0,75,25,optional,group_dance,,,15,,37016
-0057,008,3,intro,10,*.*,0,0,75,25,optional,group_dance,,,15,,46270
-0058,008,4,verse,8,*.*,40,0,35,25,forced,,,,,,32389
-0059,008,5,verse,10,*.*,40,0,40,20,optional,,,,,,40486
-0060,008,6,verse,8,*.*,40,0,35,25,optional,backup_dance,,,10,,35473
-0061,008,7,verse,9,*.*,35,0,40,25,optional,,,,,,36437
-0062,008,8,pre_chorus,9,*.*,35,10,30,25,forced,,,,,,37131
-0063,008,9,pre_chorus,8,*.*,40,10,35,15,forced,pose_sync,,,,15,38250
-0064,008,10,chorus,9,*.*,40,0,45,15,forced,group_dance,,,15,,43378
-0065,008,11,chorus,9,*.*,45,0,40,15,optional,,,,,,38172
-0066,008,12,chorus,9,*.*,40,0,45,15,optional,group_dance,,,17,,44072
-0067,008,13,chorus,9,*.*,40,0,40,20,optional,,,,,,38519
-0068,008,14,break,9,*.*,0,0,90,10,forced,,,,,,35049
-0069,008,15,verse,9,*.*,40,0,35,25,forced,,,,,,36784
-0070,008,16,verse,9,*.*,40,0,40,20,optional,,,,,,36784
-0071,008,17,pre_chorus,9,*.*,40,0,25,35,forced,,,,,,36437
-0072,008,18,pre_chorus,4,*.*,40,0,30,30,optional,,,,,,16503
-0073,008,19,pre_chorus,4,*.*,45,0,35,20,optional,pose_sync,,,,15,19125
-0074,008,20,chorus,9,*.*,40,0,45,15,forced,group_dance,,,15,,43725
-0075,008,21,chorus,9,*.*,45,0,40,15,optional,,,,,,38519
-0076,008,22,chorus,9,*.*,40,0,45,15,optional,group_dance,,,17,,44419
-0077,008,23,chorus,11,*.*,40,0,40,20,optional,,,,,,47504
-0078,008,24,bridge,4,*.*,35,0,30,35,forced,pose_sync,5,,10,15,21284
-0079,008,25,bridge,4,*.*,35,0,25,40,optional,backup_dance,,,15,5,20050
-0080,008,26,bridge,12,*.*,60,0,30,10,optional,group_dance,,,20,5,63390
-0081,008,27,chorus,5,*.*,45,0,40,15,forced,high_note,15,,5,,25448
-0082,008,28,chorus,4,*.*,50,0,40,10,locked,harmony,15,,10,,21130
-0083,008,29,chorus,5,*.*,45,0,40,15,optional,high_note,20,,5,,26605
-0084,008,30,chorus,3,*.*,45,0,45,10,locked,harmony,20,,10,,16657
-0085,008,31,chorus,5,*.*,45,0,45,10,optional,adlib,20,,,10,27376
-0086,008,32,chorus,5,*.*,45,0,40,15,locked,high_note,25,,5,5,28533
-0087,008,33,chorus,5,*.*,45,0,40,15,optional,harmony,20,,5,,26412
-0088,008,34,chorus,6,*.*,45,0,35,20,locked,,,,,,25448
-0089,008,35,ending,9,*.*,0,0,20,80,optional,pose_sync,,,,,36437
-0090,003,1,intro,9,*.*,0,0,10,90,optional,pose_sync,,,,15,43547
-0091,003,2,verse,4,*.*,40,10,30,20,forced,,,,,,17058
-0092,003,3,verse,4,*.*,40,10,30,20,optional,backup_dance,,,15,,19518
-0093,003,4,verse,4,*.*,35,10,40,15,forced,,,,,,17058
-0094,003,5,verse,4,*.*,40,10,25,25,optional,,,,,,17058
-0095,003,6,pre_chorus,8,*.*,40,10,35,15,forced,group_dance,,,10,,37725
-0096,003,7,chorus,9,*.*,50,0,30,20,forced,group_dance,,,15,10,48345
-0097,003,8,chorus,8,*.*,55,0,25,20,optional,pose_sync,,,10,15,42973
-0098,003,9,chorus,8,*.*,50,0,30,20,forced,backup_dance,,,15,5,41661
-0099,003,10,chorus,5,*.*,45,0,35,20,optional,,,,,,21937
-0100,003,11,chorus,3,*.*,55,0,20,25,optional,,,,,,13039
-0101,003,12,verse,9,*.*,0,55,35,10,forced,backup_dance,,,15,5,46869
-0102,003,13,verse,4,*.*,40,10,20,30,forced,,,,,,17386
-0103,003,14,verse,4,*.*,40,10,25,25,optional,,,,,,17386
-0104,003,15,pre_chorus,4,*.*,45,0,30,25,forced,pose_sync,,,5,10,20010
-0105,003,16,pre_chorus,4,*.*,45,0,25,30,optional,,,,,,17550
-0106,003,17,chorus,9,*.*,50,0,35,15,forced,group_dance,,,15,10,49083
-0107,003,18,chorus,8,*.*,50,0,30,20,optional,pose_sync,,,10,15,43629
-0108,003,19,chorus,8,*.*,45,0,35,20,forced,backup_dance,,,15,5,42317
-0109,003,20,chorus,6,*.*,45,0,35,20,optional,,,,,,26817
-0110,003,21,chorus,3,*.*,55,0,15,30,optional,,,,,,13285
-0111,003,22,bridge,8,*.*,0,55,25,20,forced,,,,,,35100
-0112,003,23,bridge,5,*.*,45,0,40,15,forced,,,,,,21732
-0113,003,24,bridge,5,*.*,60,0,20,20,optional,,,,,,21937
-0114,003,25,chorus,6,*.*,50,0,30,20,forced,high_note,15,,10,5,33952
-0115,003,26,chorus,8,*.*,45,0,45,10,forced,adlib,15,,10,,43957
-0116,003,27,chorus,9,*.*,45,0,35,20,forced,pose_sync,5,,5,15,49821
-0117,003,28,chorus,5,*.*,45,0,40,15,forced,group_dance,5,,15,5,27678
-0118,003,29,chorus,3,*.*,50,0,30,20,optional,,,,,,13408
-0119,003,30,ending,8,*.*,0,40,30,30,forced,group_dance,,,15,5,41661
-0120,003,31,ending,9,*.*,0,40,20,40,optional,,,,,,38750
+0001,001,1,intro,12,*Da-da-da da-da-da-da*\n*Da-da-da-da-da da-da da-da*\n*Da-da-da-da da-da-da-da*\n*Da-da-da-da-da da-da*,20,0,10,70,optional,,,,,,53700
+0002,001,2,verse,10,*I could go somewhere*\n*Maybe anywhere*\n*nae jikgameun neul majeunikkan Just feel it*,50,0,40,10,optional,group_dance,,,15,,52100
+0003,001,3,verse,10,*sonkkeuten nabi*\n*That's my living ring*\n*nae geokjeong no nan nadapge deo binnajyeo*,50,0,30,20,optional,backup_dance,,,10,,50400
+0004,001,4,pre_chorus,8,*Feel the breeze naman deullineun sori*,60,0,0,40,forced,pose_sync,5,,,10,41300
+0005,001,5,pre_chorus,2,*I can tell myself that*,45,0,25,30,optional,,,,,,8700
+0006,001,6,chorus,10,*I do me I do me right*\n*geunyang I do me I do my way*\n*dareun geurimdeureun upside-down*\n*gyeolguk naega ganeun giriya*,40,0,50,10,forced,group_dance,,,20,,54700
+0007,001,7,chorus,5,*nam nunchis why do you care?*\n*I'm just dallil geoya meotdaero*,50,0,20,30,optional,,,,,,23200
+0008,001,8,chorus,5,*Still pinky noeulbit nalgaereul dalgo*,50,0,35,15,optional,group_dance,,,20,,27300
+0009,001,9,verse,10,*igeol haeya dwae*\n*geogil gaya dwae*\n*sanggwaneopjyo nan naega doel geoeyo*,50,0,40,10,forced,group_dance,,,15,,52100
+0010,001,10,verse,10,*kong mudangbeolle*\n*That's my piercing*\n*I'm screaming: Yeah nan nadapge deo jalhaeyo*,40,0,50,10,optional,cheering,5,5,5,5,55100
+0011,001,11,pre_chorus,8,*Feel the breeze naman deullineun sori*,55,0,0,45,forced,pose_sync,5,,,10,41700
+0012,001,12,pre_chorus,2,*I can tell myself that*,30,0,30,40,optional,,,,,,8800
+0013,001,13,chorus,10,*I do me I do me right*\n*geunyang I do me I do my way*\n*dareun geurimdeureun upside-down*\n*gyeolguk naega ganeun giriya (giriya)*,40,0,40,10,forced,group_dance,,,20,,50800
+0014,001,14,chorus,5,*nam nunchis why do you care?*\n*I'm just dallil geoya meotdaero*,40,0,40,20,optional,,,,,,23400
+0015,001,15,chorus,5,*Still pinky noeulbit nalgaereul dalgo*\n*(I run in the air)*,40,0,45,15,forced,high_note,10,,5,,26900
+0016,001,16,bridge,10,*jam mot deuneun bam na dalbit bomyeo*\n*Maybe I'm byeollan ai (oh)*\n*Maybe nae kkum uisim deul ttaedo*\n*Keep it in your soul*,35,10,50,5,forced,group_dance,,,20,,55100
+0017,001,17,bridge,10,*nae sangsangboda (boda)*\n*deo keun nayeosseo (oh-oh)geop eomneun my face*\n*no need to chase*,35,0,40,25,optional,,,,,,46000
+0018,001,18,bridge,5,*Eyes closed and deullyeo whispering*\n*I do me I do it my way*,30,0,55,15,optional,group_dance,,,20,,27100
+0019,001,19,chorus,10,*I do me I do me right (oh)*\n*geunyang I do me I do my way*\n*dareun geurimdeureun upside-down (upside-down)*\n*gyeolguk naega ganeun giriya*,45,0,45,10,forced,high_note,15,,10,,57700
+0020,001,20,chorus,5,*nam nunchis why do you care?*\n*I'm just dallil geoya meotdaero*,45,0,30,25,forced,,,,,,23600
+0021,001,21,chorus,5,*Still pinky noeulbit nalgaereul dalgo*\n*(I run in the air)*,40,0,40,20,forced,high_note,20,,10,,30400
+0022,001,22,ending,10,*My way my way (oh)*\n*I do my way I do my way oh*,15,0,50,35,optional,group_dance,,,15,5,56400
+0023,001,23,ending,10,*I'm just dallil geoya meotdaero (yeah mm)*,15,0,40,45,optional,adlib,10,,5,5,56000
+0024,001,24,ending,13,*I know I know my way*\n*Ooh-ooh ooh*,15,0,15,70,optional,pose_sync,,,,15,69400
+0025,002,1,intro,9,*Dash I wanna dash I wanna run it (run it) x2*\n*Dash I wanna dash I wanna (run it run it dash)*\n*(Mm ah) run it*,10,45,15,30,optional,adlib,15,,,,47900
+0026,002,2,verse,6,*You can call me reckless (zigzag)*\n*geop eopsi deonjin road map (zigzag)*,40,0,35,25,forced,backup_rap,,15,5,,33300
+0027,002,3,verse,5,*Nal magaseon barricade (Nah uh)*\n*Sappunhi jeuryeobalgo ga (We ride we ride)*,35,0,35,30,optional,backup_rap,,15,10,,28800
+0028,002,4,verse,5,*Kkamppakyeo red light in the dark*\n*Igeon meomchuran gyeonggoilji molla*,35,5,35,25,optional,group_dance,,,15,,26600
+0029,002,5,verse,6,*But I don't wanna stop it (Mm)*\n*Gomin ttawin crash it (Oh yeah)*,30,10,35,25,optional,adlib,10,,5,,31900
+0030,002,6,pre_chorus,11,*Tteollineun stars nan dallyeoga*\n*Jeo meolli pyeolchyeojin geochin road*\n*Gabon jeok eomneun gireul balba (Oh-oh yeah yeah)*,40,0,30,30,forced,backup_dance,,,10,,55600
+0031,002,7,pre_chorus,5,*Kkeureoollyeo muhandaero*\n*Bal danneun gosi runway*,40,0,25,35,optional,group_dance,,,15,,26400
+0032,002,8,pre_chorus,3,*Sesangi wonhan gilgwa jeongbandaеro ride*,10,50,25,15,forced,,,,,,13700
+0033,002,9,pre_chorus,3,*We go zero to a hunnid (Uh)*,45,0,20,35,optional,,,,,,13500
+0034,002,10,chorus,4,*I wanna dash I wanna dash*\n*I wanna run it (Run it)*,0,40,60,0,forced,group_dance,,,20,,22200
+0035,002,11,chorus,10,*Dash I wanna dash I wanna run it (Run it)*\n*Dash I wanna dash I wanna (Run it run it dash)*\n*Mm uh (Run it) I wanna run it (Run it)*\n*Dash I wanna dash I wanna (Run it run it dash)*,0,45,50,5,locked,adlib,10,,10,,56300
+0036,002,12,chorus,8,*Ooh-ooh-ooh speed up to thе max*\n*Ooh-ooh-ooh simjangeun beating fast (Oh yeah)*\n*Ooh-ooh-ooh kkumkkwowatdeon way*,50,0,35,15,optional,group_dance,,,10,,41200
+0037,002,13,chorus,5,*Dash I wanna dash I wanna run it (Run it)*\n*NMIXX!~*,0,40,30,30,optional,pose_sync,,,5,10,26800
+0038,002,14,verse,5,*Eonjena yeopjarineun biwonwa*\n*Nugudeun wonhandamyeon ollata*,40,10,25,25,forced,,,,,,23000
+0039,002,15,verse,2,*Jinagan jarie namgyeobwa skid mark (Oh skid mark)*,35,10,30,25,forced,,,,,,9200
+0040,002,16,verse,3,*Apeul mangneun geon mojori da bump*,30,10,20,40,optional,,,,,,13800
+0041,002,17,pre_chorus,6,*Kkeureoollyeo muhandaero*\n*Bal danneun geugosi runway*,45,0,25,30,forced,,,,,,27900
+0042,002,18,pre_chorus,2,*Sijakae revolution for evolution (Oh-oh)*,0,50,40,10,optional,group_dance,,,15,,10700
+0043,002,19,pre_chorus,3,*We go zero to a hunnid (Hunnid yeah)*,40,0,35,25,optional,high_note,15,,5,,16900
+0044,002,20,chorus,4,*I wanna dash I wanna dash*\n*I wanna run it*,0,30,50,20,forced,group_dance,,,20,,22300
+0045,002,21,chorus,10,*Dash I wanna dash I wanna run it (Run it)*\n*Dash I wanna dash I wanna (Run it run it dash)*\n*Mm uh (Run it) I wanna run it (Run it)*\n*Dash I wanna dash I wanna (Run it run it dash)*,0,45,40,15,locked,adlib,10,,10,,56800
+0046,002,22,chorus,5,*Tto dasi hanbeon breathe*\n*Never stop never stop never stop*\n*Geochin bakdongeun danger*,55,0,30,15,forced,adlib,10,,5,,27000
+0047,002,23,chorus,5,*But take it to the max*\n*Hold me tight hold me tight hold me tight*\n*Geomnael geot eopsi come in*,60,0,25,15,optional,group_dance,,,10,,26200
+0048,002,24,bridge,1,*NMIXX! change up*,30,30,10,30,forced,,,,,,4400
+0049,002,25,bridge,11,*Adeuki jeo meolli*\n*Pyeolchyeojineun days*\n*Yeah we get it (Yah) we face it (Yah)*\n*I hanghaeui kireul jaba (Oh-oh oh-oh)*,45,0,25,30,forced,harmony,10,,5,,58600
+0050,002,26,bridge,5,*Sesange sinhotaneul ssoa ollyeo bang*\n*Ttwineun simjang soril ttaraomyeon dwae*,35,10,40,15,optional,group_dance,,,15,,26800
+0051,002,27,bridge,6,*Meomchujineun ma mangseoriji ma no matter*\n*(Matter matter matter matter)*,60,0,30,10,optional,adlib,25,,,,35400
+0052,002,28,bridge,3,*Mm I just wanna continue my pace*,0,40,20,40,forced,,,,,,13400
+0053,002,29,chorus,10,*Dash I wanna dash I wanna run it (Run it)*\n*Dash I wanna dash I wanna (Run it run it dash)*\n*Mm uh (Run it) I wanna run some more*\n*Yeah make a dash hey I wanna (Run it run it)*,0,45,40,15,forced,cheering,10,,5,10,58600
+0054,002,30,ending,4,*Dash I wanna dash*\n*I wanna run it (Run it)*,0,45,30,25,forced,,,,,,17900
+0055,008,1,intro,10,*.*,0,0,10,90,optional,pose_sync,,,,15,48900
+0056,008,2,intro,8,*.*,0,0,75,25,optional,group_dance,,,15,,39100
+0057,008,3,intro,10,*.*,0,0,75,25,optional,group_dance,,,15,,48900
+0058,008,4,verse,8,*.*,40,0,35,25,forced,,,,,,34200
+0059,008,5,verse,10,*.*,40,0,40,20,optional,,,,,,42800
+0060,008,6,verse,8,*.*,40,0,35,25,optional,backup_dance,,,10,,37500
+0061,008,7,verse,9,*.*,35,0,40,25,optional,,,,,,38500
+0062,008,8,pre_chorus,9,*.*,35,10,30,25,forced,,,,,,39300
+0063,008,9,pre_chorus,8,*.*,40,10,35,15,forced,pose_sync,,,,15,40500
+0064,008,10,chorus,9,*.*,40,0,45,15,forced,group_dance,,,15,,45900
+0065,008,11,chorus,9,*.*,45,0,40,15,optional,,,,,,40400
+0066,008,12,chorus,9,*.*,40,0,45,15,optional,group_dance,,,17,,46600
+0067,008,13,chorus,9,*.*,40,0,40,20,optional,,,,,,40700
+0068,008,14,break,9,*.*,0,0,90,10,forced,,,,,,37100
+0069,008,15,verse,9,*.*,40,0,35,25,forced,,,,,,38900
+0070,008,16,verse,9,*.*,40,0,40,20,optional,,,,,,38900
+0071,008,17,pre_chorus,9,*.*,40,0,25,35,forced,,,,,,38500
+0072,008,18,pre_chorus,4,*.*,40,0,30,30,optional,,,,,,17400
+0073,008,19,pre_chorus,4,*.*,45,0,35,20,optional,pose_sync,,,,15,20200
+0074,008,20,chorus,9,*.*,40,0,45,15,forced,group_dance,,,15,,46200
+0075,008,21,chorus,9,*.*,45,0,40,15,optional,,,,,,40700
+0076,008,22,chorus,9,*.*,40,0,45,15,optional,group_dance,,,17,,47000
+0077,008,23,chorus,11,*.*,40,0,40,20,optional,,,,,,50200
+0078,008,24,bridge,4,*.*,35,0,30,35,forced,pose_sync,5,,10,15,22500
+0079,008,25,bridge,4,*.*,35,0,25,40,optional,backup_dance,,,15,5,21200
+0080,008,26,bridge,12,*.*,60,0,30,10,optional,group_dance,,,20,5,67100
+0081,008,27,chorus,5,*.*,45,0,40,15,forced,high_note,15,,5,,26900
+0082,008,28,chorus,4,*.*,50,0,40,10,locked,harmony,15,,10,,22300
+0083,008,29,chorus,5,*.*,45,0,40,15,optional,high_note,20,,5,,28100
+0084,008,30,chorus,3,*.*,45,0,45,10,locked,harmony,20,,10,,17600
+0085,008,31,chorus,5,*.*,45,0,45,10,optional,adlib,20,,,10,28900
+0086,008,32,chorus,5,*.*,45,0,40,15,locked,high_note,25,,5,5,30200
+0087,008,33,chorus,5,*.*,45,0,40,15,optional,harmony,20,,5,,27900
+0088,008,34,chorus,6,*.*,45,0,35,20,locked,,,,,,26900
+0089,008,35,ending,9,*.*,0,0,20,80,optional,pose_sync,,,,,38500
+0090,003,1,intro,9,*.*,0,0,10,90,optional,pose_sync,,,,15,46100
+0091,003,2,verse,4,*.*,40,10,30,20,forced,,,,,,18000
+0092,003,3,verse,4,*.*,40,10,30,20,optional,backup_dance,,,15,,20600
+0093,003,4,verse,4,*.*,35,10,40,15,forced,,,,,,18000
+0094,003,5,verse,4,*.*,40,10,25,25,optional,,,,,,18000
+0095,003,6,pre_chorus,8,*.*,40,10,35,15,forced,group_dance,,,10,,39900
+0096,003,7,chorus,9,*.*,50,0,30,20,forced,group_dance,,,15,10,51100
+0097,003,8,chorus,8,*.*,55,0,25,20,optional,pose_sync,,,10,15,45500
+0098,003,9,chorus,8,*.*,50,0,30,20,forced,backup_dance,,,15,5,44100
+0099,003,10,chorus,5,*.*,45,0,35,20,optional,,,,,,23200
+0100,003,11,chorus,3,*.*,55,0,20,25,optional,,,,,,13800
+0101,003,12,verse,9,*.*,0,55,35,10,forced,backup_dance,,,15,5,49600
+0102,003,13,verse,4,*.*,40,10,20,30,forced,,,,,,18400
+0103,003,14,verse,4,*.*,40,10,25,25,optional,,,,,,18400
+0104,003,15,pre_chorus,4,*.*,45,0,30,25,forced,pose_sync,,,5,10,21100
+0105,003,16,pre_chorus,4,*.*,45,0,25,30,optional,,,,,,18500
+0106,003,17,chorus,9,*.*,50,0,35,15,forced,group_dance,,,15,10,51900
+0107,003,18,chorus,8,*.*,50,0,30,20,optional,pose_sync,,,10,15,46100
+0108,003,19,chorus,8,*.*,45,0,35,20,forced,backup_dance,,,15,5,44800
+0109,003,20,chorus,6,*.*,45,0,35,20,optional,,,,,,28300
+0110,003,21,chorus,3,*.*,55,0,15,30,optional,,,,,,14000
+0111,003,22,bridge,8,*.*,0,55,25,20,forced,,,,,,37100
+0112,003,23,bridge,5,*.*,45,0,40,15,forced,,,,,,23000
+0113,003,24,bridge,5,*.*,60,0,20,20,optional,,,,,,23200
+0114,003,25,chorus,6,*.*,50,0,30,20,forced,high_note,15,,10,5,35900
+0115,003,26,chorus,8,*.*,45,0,45,10,forced,adlib,15,,10,,46500
+0116,003,27,chorus,9,*.*,45,0,35,20,forced,pose_sync,5,,5,15,52700
+0117,003,28,chorus,5,*.*,45,0,40,15,forced,group_dance,5,,15,5,29300
+0118,003,29,chorus,3,*.*,50,0,30,20,optional,,,,,,14100
+0119,003,30,ending,8,*.*,0,40,30,30,forced,group_dance,,,15,5,44100
+0120,003,31,ending,9,*.*,0,40,20,40,optional,,,,,,41000
