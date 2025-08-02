@@ -138,10 +138,11 @@ async def create_redeemables_table():
                 redeemable_id TEXT PRIMARY KEY,
                 name TEXT NOT NULL,
                 type TEXT NOT NULL,
+                effect TEXT,
                 weight INTEGER DEFAULT 0
             );
         """)
-        
+
 async def create_badges_table():
     pool = get_pool()
     async with pool.acquire() as conn:
@@ -209,6 +210,10 @@ async def create_inventory_idol_cards_table():
                 idol_id TEXT,
                 set_id TEXT,
                 rarity_id TEXT,
+                p_skill TEXT,
+                a_skill TEXT,
+                s_skill TEXT,
+                u_skill TEXT,
                 status TEXT DEFAULT 'available',
                 is_locked BOOLEAN DEFAULT FALSE,
                 date_obtained TIMESTAMPTZ DEFAULT now()
@@ -398,7 +403,7 @@ async def create_song_sections_table():
 ALTER TABLE song_sections
 ADD COLUMN lyrics TEXT NOT NULL DEFAULT '';
 """
-
+"help.{topic}_{page}"
 
 async def create_effects_table():
     pool = get_pool()
@@ -477,6 +482,8 @@ async def create_presentation_members_table():
                 individual_score INTEGER DEFAULT 0
             );
         """)
+# SELECT setval('presentation_members_id_seq', (SELECT MAX(id) FROM presentation_members));
+
 
 async def create_presentation_sections_table():
     pool = get_pool()
@@ -535,6 +542,7 @@ async def create_loop_events_table():
             ('change_limited_set','mensual', None, 1),
             ('cancel_presentation','frecuente', None, None),
             ('increase_payment','semanal', 0, None),
+            ('remove_roles','frecuente', None, None),
         ]
 
         for event_name, tipo, dia_semana, dia_mes in eventos:

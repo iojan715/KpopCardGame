@@ -552,6 +552,20 @@ class GroupDetailButton(discord.ui.Button):
                 WHERE gm.group_id = $1
                 ORDER BY ib.name
             """, self.group_id)
+            
+            # Payment
+            unpaid_weeks_n = await conn.fetchval("SELECT unpaid_weeks FROM groups WHERE group_id = $1", self.group_id)
+            disabled_payment = unpaid_weeks_n <= 0
+            
+            members_payment = await conn.fetch("SELECT weekly_payment FROM groups_members WHERE group_id = $1", self.group_id)
+            group_payment = await conn.fetchval("SELECT weekly_payment FROM groups WHERE group_id = $1", self.group_id)
+            
+            total_payment = 0
+            if group_payment and members_payment:
+                total_payment = int(group_payment)
+                for m in members_payment:
+                    total_payment += m['weekly_payment']
+                total_payment = int(total_payment*unpaid_weeks_n*(1.02**(unpaid_weeks_n-1)))
 
         user = await interaction.client.fetch_user(group["user_id"])
         popularity = str(group["popularity"])
@@ -599,13 +613,13 @@ class GroupDetailButton(discord.ui.Button):
         if group["user_id"] == interaction.user.id:
             view.add_item(AddMemberButton(self.group_id))
             view.add_item(RemoveMemberButton(self.group_id))
-            view.add_item(PayGroupButton(self.group_id))
-            view.add_item(StatusButton(self.group_id))
-            view.add_item(RenameGroupButton(self.group_id))
+            view.add_item(PayGroupButton(self.group_id, disabled=disabled_payment, payment=total_payment))
+            #view.add_item(StatusButton(self.group_id))
+            #view.add_item(RenameGroupButton(self.group_id))
         
         await interaction.response.edit_message(embed=embed, view=view, attachments=[])
 
-
+# - Add member
 class AddMemberButton(discord.ui.Button):
     def __init__(self, group_id: str):
         super().__init__(label="➕👤", style=discord.ButtonStyle.success, row=1)
@@ -695,7 +709,6 @@ class AddMemberNextButton(discord.ui.Button):
         self.paginator.current_page = (self.paginator.current_page + 1) % self.paginator.total_pages
         await self.paginator.update(interaction)
 
-
 class AddMemberGroupSelectButton(discord.ui.Button):
     def __init__(self, group_name: str, paginator: AddMemberGroupPaginator):
         super().__init__(label=group_name, style=discord.ButtonStyle.primary, row=0)
@@ -710,7 +723,7 @@ class AddMemberGroupSelectButton(discord.ui.Button):
                 self.paginator.group_id
             )
             idols = await conn.fetch(
-                "SELECT idol_id, idol_name FROM idol_group WHERE group_name = $1 ORDER BY idol_name",
+                "SELECT idol_id, idol_name FROM idol_group WHERE group_name = $1 ORDER BY idol_id",
                 self.group_name
             )
         language = await get_user_language(user_id)
@@ -719,7 +732,7 @@ class AddMemberGroupSelectButton(discord.ui.Button):
         for idol in idols:
             group_id = self.paginator.group_id
             async with pool.acquire() as conn:
-                members = await conn.fetch("SELECT idol_id FROM groups_members WHERE group_id = $1", group_id)
+                members = await conn.fetch("SELECT idol_id FROM groups_members WHERE group_id = $1 ORDER BY idol_id", group_id)
             
             disabled = False
             for m in members:
@@ -849,16 +862,119 @@ class ConfirmAddIdolButton(discord.ui.Button):
         await button.callback(interaction)
 
 
-# - 
+# - Remove member
 class RemoveMemberButton(discord.ui.Button):
     def __init__(self, group_id: str):
         super().__init__(label="➖👤", style=discord.ButtonStyle.danger, row=1)
         self.group_id = group_id
         
     async def callback(self, interaction):
-        await interaction.response.send_message("⚙️ Quitar integrante (pendiente)", ephemeral=True)
+        user_id = interaction.user.id
+        language = await get_user_language(user_id)
+
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            group_members = await conn.fetch(
+                "SELECT idol_id FROM groups_members WHERE group_id = $1 ORDER BY idol_id",
+                self.group_id
+            )
+        
+        view = discord.ui.View(timeout=60)
+        for idol in group_members:
+            async with pool.acquire() as conn:
+                idol_name = await conn.fetchval("SELECT name FROM idol_base WHERE idol_id = $1", idol['idol_id'])
+            
+            view.add_item(SelectMemberToRemoveButton(
+                self.group_id, idol['idol_id'], idol_name
+            ))
+            
+        view.add_item(BackToDetailsButton(self.group_id, language))
+
+        await interaction.response.edit_message(
+            content=get_translation(language, "group_manage.select_idol_remove"),
+            view=view,
+            embed=None
+        )
+
+class SelectMemberToRemoveButton(discord.ui.Button):
+    def __init__(self, group_id: str, idol_id, idol_name):
+        super().__init__(label=f"{idol_name} ({idol_id})", style=discord.ButtonStyle.danger)
+        self.group_id = group_id
+        self.idol_id = idol_id
+        self.idol_name = idol_name
+        
+    async def callback(self, interaction):
+        language = await get_user_language(interaction.user.id)
+        idol = f"{self.idol_name} ({self.idol_id})"
+        
+        view = discord.ui.View(timeout=60)
+        view.add_item(ConfirmRemoveIdolButton(
+            self.group_id, self.idol_id
+        ))
+        view.add_item(BackToDetailsButton(self.group_id, language))
+        
+
+        await interaction.response.edit_message(
+            content=get_translation(language, "group_manage.confirm_remove_idol", idol=idol),
+            view=view,
+            embed=None
+        )
+
+class ConfirmRemoveIdolButton(discord.ui.Button):
+    def __init__(self, group_id, idol_id):
+        super().__init__(label="✅ Confirmar", style=discord.ButtonStyle.danger)
+        self.group_id = group_id
+        self.idol_id = idol_id
+
+    async def callback(self, interaction: discord.Interaction):
+        pool = get_pool()
+        user_id = interaction.user.id
+        language = await get_user_language(user_id)
+        
+        async with pool.acquire() as conn:
+            member_items = await conn.fetchrow("""
+                SELECT mic_id, outfit_id, accessory_id, consumable_id
+                FROM groups_members WHERE group_id = $1 AND idol_id = $2""",
+                self.group_id, self.idol_id)
+
+            for mi in member_items:
+                if mi:
+                    id, u_id = mi.split(".")
+                    await conn.execute("UPDATE user_item_cards SET status = 'available' WHERE unique_id = $1", u_id)
+
+            member_card = await conn.fetchrow("SELECT card_id FROM groups_members WHERE group_id = $1 AND idol_id = $2",
+                                              self.group_id, self.idol_id)
+            if member_card:
+                card_id, unique_id = member_card['card_id'].split(".")
+                await conn.execute("UPDATE user_idol_cards SET status = 'available' WHERE unique_id = $1", unique_id)
+            
+            await conn.execute("""
+                DELETE FROM groups_members WHERE group_id = $1 AND idol_id = $2
+            """, self.group_id, self.idol_id)
+            
+            await conn.execute("UPDATE groups SET permanent_popularity = 0 WHERE group_id = $1", self.group_id)
 
 
+            rows = await conn.fetch("""
+                SELECT group_id, name, popularity, permanent_popularity, status, unpaid_weeks, user_id,
+                    (SELECT COUNT(*) FROM groups_members WHERE group_id = g.group_id) AS member_count
+                FROM groups g
+                WHERE user_id = $1
+                ORDER BY creation_date DESC
+            """, user_id)
+
+        button = GroupDetailButton(
+            group_id=self.group_id,
+            user_id=user_id,
+            group_name="",
+            paginator=GroupPaginator(rows, interaction=interaction, language=language),
+            language=language
+        )
+        await button.callback(interaction)
+
+            
+
+# - Change Status
 class StatusButton(discord.ui.Button):
     def __init__(self, group_id: str):
         super().__init__(label="Estado", style=discord.ButtonStyle.secondary, row=1)
@@ -867,6 +983,7 @@ class StatusButton(discord.ui.Button):
     async def callback(self, interaction):
         await interaction.response.send_message("⚙️ Cambiar estado (pendiente)", ephemeral=True)
 
+# - Rename
 class RenameGroupButton(discord.ui.Button):
     def __init__(self, group_id: str):
         super().__init__(label="📝", style=discord.ButtonStyle.secondary, row=1)
@@ -875,15 +992,114 @@ class RenameGroupButton(discord.ui.Button):
     async def callback(self, interaction):
         await interaction.response.send_message("⚙️ Renombrar grupo (pendiente)", ephemeral=True)
 
+# - Pay group
 class PayGroupButton(discord.ui.Button):
-    def __init__(self, group_id: str):
-        super().__init__(label="", emoji="💸", style=discord.ButtonStyle.success, row=1)
+    def __init__(self, group_id: str, disabled, payment):
+        super().__init__(label=f"${payment}", emoji="💸", style=discord.ButtonStyle.success, disabled=disabled, row=1)
         self.group_id = group_id
 
-    async def callback(self, interaction):
-        await interaction.response.send_message("⚙️ Pagar grupo (pendiente)", ephemeral=True)
+    async def callback(self, interaction: discord.Interaction):
+        pool = get_pool()
+        language = await get_user_language(interaction.user.id)
+        
+        async with pool.acquire() as conn:
+            unpaid_weeks = await conn.fetchval("SELECT unpaid_weeks FROM groups WHERE group_id = $1", self.group_id)
+        # Protección adicional en caso de que logren presionarlo igual
+        if unpaid_weeks == 0:
+            embed = discord.Embed(
+                description="✅ Este grupo ya está al corriente en sus pagos.",
+                color=discord.Color.green()
+            )
+            view = BackToDetailsButton(self.group_id, language)
+            await interaction.response.edit_message(embed=embed, view=view)
+            return
+
+        await interaction.response.send_modal(PayWeeksModal(self.group_id, unpaid_weeks))
+
+class PayWeeksModal(discord.ui.Modal, title="Weekly payments"):
+    def __init__(self, group_id, unpaid_weeks):
+        super().__init__()
+        self.group_id = group_id
+        self.unpaid_weeks = unpaid_weeks
+        self.input = discord.ui.TextInput(label="¿Cuántas semanas quieres pagar?", placeholder=f"Max. {unpaid_weeks}", min_length=1, max_length=2)
+        self.add_item(self.input)
+
+    async def on_submit(self, interaction: discord.Interaction):
+        pool = get_pool()
+        user_id = interaction.user.id
+        language = await get_user_language(user_id)
+        view = discord.ui.View()
+        try:
+            weeks_to_pay = int(self.input.value)
+        except ValueError:
+            view.add_item(BackToDetailsButton(self.group_id, language))
+            await interaction.response.edit_message(content="❌ Entrada inválida. Usa solo números.", view=view, embed=None)
+            return
+
+        unpaid_weeks = self.unpaid_weeks
+        if weeks_to_pay > unpaid_weeks or weeks_to_pay <= 0:
+            view.add_item(BackToDetailsButton(self.group_id, language))
+            await interaction.response.edit_message(content="⚠️ Número de semanas no válido.", view=view, embed=None)
+            return
+        
+        async with pool.acquire() as conn:
+            members_payment = await conn.fetch("SELECT weekly_payment FROM groups_members WHERE group_id = $1", self.group_id)
+            group_payment = await conn.fetchval("SELECT weekly_payment FROM groups WHERE group_id = $1", self.group_id)
+            
+            weekly_total = 0
+            if group_payment and members_payment:
+                weekly_total = int(group_payment)
+                for m in members_payment:
+                    weekly_total += m['weekly_payment']
+        cost = int(weekly_total*unpaid_weeks*(1.02**(unpaid_weeks-1))-weekly_total*(unpaid_weeks-weeks_to_pay)*(1.02**((unpaid_weeks-weeks_to_pay)-1)))
+
+        confirm_view = discord.ui.View()
+        confirm_view.add_item(ConfirmPayWeeksButton(self.group_id, cost, weeks_to_pay))
+        confirm_view.add_item(BackToDetailsButton(self.group_id, language))
+        await interaction.response.edit_message(
+            embed=discord.Embed(
+                description=f"¿Confirmas pagar **{weeks_to_pay} semanas** por **💵 {cost}**?",
+                color=discord.Color.orange()
+            ),
+            view=confirm_view
+        )
+        
+class ConfirmPayWeeksButton(discord.ui.Button):
+    def __init__(self, group_id, cost, weeks_to_pay):
+        super().__init__(label=f"", emoji="✅", style=discord.ButtonStyle.primary)
+        self.group_id = group_id
+        self.cost = cost
+        self.weeks_to_pay = weeks_to_pay
+    
+    async def callback(self, interaction:discord.Interaction):
+        pool = get_pool()
+        language = await get_user_language(interaction.user.id)
+        user_id = interaction.user.id
+        
+        async with pool.acquire() as conn:
+            await conn.execute("UPDATE users SET credits = credits - $1 WHERE user_id = $2", self.cost, user_id)
+            
+            await conn.execute("UPDATE groups SET unpaid_weeks = unpaid_weeks - $1 WHERE group_id = $2", self.weeks_to_pay, self.group_id)
+            
+            rows = await conn.fetch("""
+                SELECT group_id, name, popularity, permanent_popularity, status, unpaid_weeks, user_id,
+                    (SELECT COUNT(*) FROM groups_members WHERE group_id = g.group_id) AS member_count
+                FROM groups g
+                WHERE user_id = $1
+                ORDER BY creation_date DESC
+            """, user_id)
+        # Simula un clic en el botón de detalles
+        button = GroupDetailButton(
+            group_id=self.group_id,
+            user_id=user_id,
+            group_name="",
+            paginator=GroupPaginator(rows, interaction=interaction, language=language),
+            language=language
+        )
+        await button.callback(interaction)
 
 
+# -- Back to list
 class BackToListButton(discord.ui.Button):
     def __init__(self, paginator, label):
         super().__init__(label=label, style=discord.ButtonStyle.secondary)
@@ -1013,22 +1229,23 @@ class EquippedCardsPaginator:
             embeds.append(embed)
             vocal=rap=dance=visual=energy=plus_vocal=plus_rap=plus_dance=plus_visual=plus_energy=0
             p_vocal=p_rap=p_dance=p_visual=p_energy=""
-            skills = ""
+            skills = "n/a"
             if card_data:
                 vocal += card_data['vocal']
                 rap += card_data['rap']
                 dance += card_data['dance']
                 visual += card_data['visual']
                 energy += card_data['energy']
-                
-                if user_card_data['p_skill']:
-                    skills += f"{discord.utils.get(self.guild.emojis, name="PassiveSkill")} "
-                if user_card_data['a_skill']:
-                    skills += f"{discord.utils.get(self.guild.emojis, name="ActiveSkill")} "
-                if user_card_data['s_skill']:
-                    skills += f"{discord.utils.get(self.guild.emojis, name="SupportSkill")} "
-                if user_card_data['u_skill']:
-                    skills += f"{discord.utils.get(self.guild.emojis, name="UltimateSkill")} "
+                if user_card_data:
+                    skills = ""
+                    if user_card_data['p_skill']:
+                        skills += f"{discord.utils.get(self.guild.emojis, name="PassiveSkill")} "
+                    if user_card_data['a_skill']:
+                        skills += f"{discord.utils.get(self.guild.emojis, name="ActiveSkill")} "
+                    if user_card_data['s_skill']:
+                        skills += f"{discord.utils.get(self.guild.emojis, name="SupportSkill")} "
+                    if user_card_data['u_skill']:
+                        skills += f"{discord.utils.get(self.guild.emojis, name="UltimateSkill")} "
             else:
                 vocal += idol_data['vocal']
                 rap += idol_data['rap']
@@ -1288,12 +1505,6 @@ class GroupManageView(discord.ui.View):
         self.language = language
         self.paginator = paginator
 
-        self.add_item(ChangeStatusButton(group, paginator=paginator))
-        self.add_item(ChangeNameButton(group, paginator=paginator))
-        self.add_item(PayWeeksButton(group, members, paginator=paginator))
-        self.add_item(ViewMembersButton(group, paginator=paginator))
-        self.add_item(AddIdolButtonManage(group, paginator=paginator))
-        self.add_item(RemoveIdolButtonManage(group, paginator=paginator))
         if paginator:
             self.add_item(BackToManageListButton(paginator))
 
@@ -1433,60 +1644,6 @@ class CancelButtonName(discord.ui.Button):
         await regenerate_group_view(interaction, self.parent.group["group_id"], language)
 
 # -
-class PayWeeksButton(discord.ui.Button):
-    def __init__(self, group, members, paginator):
-        disabled = group["unpaid_weeks"] == 0  # Desactiva si no hay semanas que pagar
-        super().__init__(label="💸", style=discord.ButtonStyle.success, disabled=disabled)
-        self.group = group
-        self.members = members
-        self.paginator = paginator
-
-    async def callback(self, interaction: discord.Interaction):
-        # Protección adicional en caso de que logren presionarlo igual
-        if self.group["unpaid_weeks"] == 0:
-            embed = discord.Embed(
-                description="✅ Este grupo ya está al corriente en sus pagos.",
-                color=discord.Color.green()
-            )
-            view = ReturnToManageView(self.group["group_id"])
-            await interaction.response.edit_message(embed=embed, view=view)
-            return
-
-        await interaction.response.send_modal(PayWeeksModal(self.group, self.members, self.paginator))
-
-class PayWeeksModal(discord.ui.Modal, title="Weekly payments"):
-    def __init__(self, group, members, paginator):
-        super().__init__()
-        self.group = group
-        self.members = members
-        self.paginator = paginator
-        self.input = discord.ui.TextInput(label="¿Cuántas semanas quieres pagar?", placeholder="Ej: 2", min_length=1, max_length=2)
-        self.add_item(self.input)
-
-    async def on_submit(self, interaction: discord.Interaction):
-        try:
-            weeks_to_pay = int(self.input.value)
-        except ValueError:
-            await interaction.response.edit_message(content="❌ Entrada inválida. Usa solo números.", view=None)
-            return
-
-        unpaid_weeks = self.group["unpaid_weeks"]
-        if weeks_to_pay > unpaid_weeks or weeks_to_pay <= 0:
-            await interaction.response.edit_message(content="⚠️ Número de semanas no válido.", view=None)
-            return
-
-        weekly_total = self.group["weekly_payment"] + sum(m["weekly_payment"] for m in self.members)
-        cost = int(weekly_total*unpaid_weeks*(1.02**(unpaid_weeks-1))-weekly_total*(unpaid_weeks-weeks_to_pay)*(1.02**((unpaid_weeks-weeks_to_pay)-1)))
-
-        confirm_view = ConfirmPayWeeksView(self.group, weeks_to_pay, cost, self.paginator)
-        await interaction.response.edit_message(
-            embed=discord.Embed(
-                description=f"¿Confirmas pagar **{weeks_to_pay} semanas** por **{cost} créditos**?",
-                color=discord.Color.orange()
-            ),
-            view=confirm_view
-        )
-
 class ConfirmPayWeeksView(discord.ui.View):
     def __init__(self, group, weeks_to_pay, cost, paginator):
         super().__init__(timeout=60)
@@ -1593,179 +1750,6 @@ class ReturnButtonMembers(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
         language = await get_user_language(user_id=self.group["user_id"])
         await regenerate_group_view(interaction, self.group["group_id"], language, self.paginator)
-
-
-# -
-class AddIdolButtonManage(discord.ui.Button):
-    def __init__(self, group, paginator):
-        super().__init__(label="➕👤", style=discord.ButtonStyle.success)
-        self.group = group
-        self.paginator = paginator
-
-    async def callback(self, interaction: discord.Interaction):
-        pool = get_pool()
-        async with pool.acquire() as conn:
-            # Obtener lista de grupos únicos de idols
-            records = await conn.fetch("SELECT DISTINCT group_name FROM idol_group ORDER BY group_name")
-            options = [discord.SelectOption(label=r["group_name"]) for r in records]
-
-        view = discord.ui.View(timeout=120)
-        view.add_item(IdolGroupSelectorManage(self.group["group_id"], self.group["user_id"], options, self.paginator))
-        language = await get_user_language(interaction.user.id)
-        await interaction.response.edit_message(
-            content=get_translation(language, "group_manage.select_group_to_add"),
-            embed=None,
-            view=view
-        )
-        
-class IdolGroupSelectorManage(discord.ui.Select):
-    def __init__(self, group_id, user_id, options, paginator):
-        super().__init__(placeholder="Selecciona un grupo de idols", options=options)
-        self.group_id = group_id
-        self.user_id = user_id
-        self.paginator = paginator
-
-    async def callback(self, interaction: discord.Interaction):
-        selected_group = self.values[0]
-        pool = get_pool()
-        async with pool.acquire() as conn:
-            idols = await conn.fetch("SELECT * FROM idol_group WHERE group_name = $1", selected_group)
-            added_ids = await conn.fetch("SELECT idol_id FROM groups_members WHERE group_id = $1", self.group_id)
-            added_ids = [r["idol_id"] for r in added_ids]
-
-        view = discord.ui.View(timeout=120)
-        for idol in idols:
-            label = f"{idol['idol_name']} ({idol['idol_id']})"
-            disabled = idol["idol_id"] in added_ids
-            view.add_item(SelectIdolButtonManage(self.group_id, self.user_id, idol["idol_id"], label, self.paginator, disabled))
-
-        language = await get_user_language(interaction.user.id)
-        await interaction.response.edit_message(
-            content=get_translation(language, "group_manage.select_idol", selected_group=selected_group),
-            view=view
-        )
-
-class SelectIdolButtonManage(discord.ui.Button):
-    def __init__(self, group_id, user_id, idol_id, label, paginator, disabled=False):
-        super().__init__(label=label, style=discord.ButtonStyle.secondary, disabled=disabled)
-        self.group_id = group_id
-        self.user_id = user_id
-        self.idol_id = idol_id
-        self.label_text = label
-        self.paginator = paginator
-
-    async def callback(self, interaction: discord.Interaction):
-        language = await get_user_language(self.user_id)
-        confirm_view = discord.ui.View(timeout=60)
-        confirm_view.add_item(ConfirmAddIdolButton(
-            self.group_id, self.user_id, self.idol_id, self.label_text, self.paginator
-        ))
-        confirm_view.add_item(CancelManageActionButton(
-            self.group_id, self.user_id, self.paginator
-        ))
-
-        await interaction.response.edit_message(
-            content=get_translation(language, "group_manage.confirm_add_idol", idol=self.label_text),
-            view=confirm_view,
-            embed=None
-        )
-
-
-
-class RemoveIdolButtonManage(discord.ui.Button):
-    def __init__(self, group, paginator):
-        super().__init__(label="➖👤", style=discord.ButtonStyle.danger)
-        self.group = group
-        self.paginator = paginator
-
-    async def callback(self, interaction: discord.Interaction):
-        pool = get_pool()
-        async with pool.acquire() as conn:
-            members = await conn.fetch("""
-                SELECT gm.idol_id, ig.idol_name
-                FROM groups_members gm
-                JOIN idol_group ig ON gm.idol_id = ig.idol_id
-                WHERE gm.group_id = $1
-            """, self.group["group_id"])
-
-        if len(members) <= 1:
-            await interaction.response.edit_message(content="⚠️ No puedes quitar el único integrante del grupo. Agrega otro primero.", view=None)
-            return
-
-        view = discord.ui.View(timeout=120)
-        for member in members:
-            label = f"{member['idol_name']} ({member['idol_id']})"
-            view.add_item(RemoveIdolConfirmButton(self.group["group_id"], self.group["user_id"], member["idol_id"], label, self.paginator))
-
-        language = await get_user_language(interaction.user.id)
-        await interaction.response.edit_message(content=get_translation(language, "group_manage.select_idol_remove"), view=view)
-
-class RemoveIdolConfirmButton(discord.ui.Button):
-    def __init__(self, group_id, user_id, idol_id, label, paginator):
-        super().__init__(label=label, style=discord.ButtonStyle.danger)
-        self.group_id = group_id
-        self.user_id = user_id
-        self.idol_id = idol_id
-        self.label_text = label
-        self.paginator = paginator
-
-    async def callback(self, interaction: discord.Interaction):
-        language = await get_user_language(self.user_id)
-
-        view = discord.ui.View(timeout=60)
-        view.add_item(ConfirmRemoveIdolButton(
-            self.group_id, self.user_id, self.idol_id, self.label_text, self.paginator
-        ))
-        view.add_item(CancelManageActionButton(
-            self.group_id, self.user_id, self.paginator
-        ))
-
-        await interaction.response.edit_message(
-            content=get_translation(language, "group_manage.confirm_remove_idol", idol=self.label_text),
-            view=view,
-            embed=None
-        )
-
-class ConfirmRemoveIdolButton(discord.ui.Button):
-    def __init__(self, group_id, user_id, idol_id, label, paginator):
-        super().__init__(label="✅ Confirmar", style=discord.ButtonStyle.danger)
-        self.group_id = group_id
-        self.user_id = user_id
-        self.idol_id = idol_id
-        self.label_text = label
-        self.paginator = paginator
-
-    async def callback(self, interaction: discord.Interaction):
-        pool = get_pool()
-        async with pool.acquire() as conn:
-            member_items = await conn.fetchrow("""
-                SELECT mic_id, outfit_id, accessory_id, consumable_id
-                FROM groups_members WHERE group_id = $1 AND idol_id = $2""",
-                self.group_id, self.idol_id)
-
-            for mi in member_items:
-                if mi:
-                    id, u_id = mi.split(".")
-                    await conn.execute("UPDATE user_item_cards SET status = 'available' WHERE unique_id = $1", u_id)
-
-            await conn.execute("""
-                DELETE FROM groups_members WHERE group_id = $1 AND idol_id = $2
-            """, self.group_id, self.idol_id)
-            await conn.execute("UPDATE groups SET permanent_popularity = 0 WHERE group_id = $1", self.group_id)
-
-        language = await get_user_language(self.user_id)
-        await regenerate_group_view(interaction, self.group_id, language, self.paginator)
-
-class CancelManageActionButton(discord.ui.Button):
-    def __init__(self, group_id, user_id, paginator):
-        super().__init__(label="🔙 Cancelar", style=discord.ButtonStyle.secondary)
-        self.group_id = group_id
-        self.user_id = user_id
-        self.paginator = paginator
-
-    async def callback(self, interaction: discord.Interaction):
-        language = await get_user_language(self.user_id)
-        await regenerate_group_view(interaction, self.group_id, language, self.paginator)
 
 
 

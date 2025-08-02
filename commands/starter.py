@@ -74,7 +74,7 @@ class NewAgencyModal(discord.ui.Modal, title="Create Your Agency"):
                 if not exists:
                     break
             await conn.execute("""INSERT INTO players_packs (unique_id, user_id, pack_id, buy_date)
-                               VALUES ($1, $2, 'STR', $3)
+                               VALUES ($1, $2, 'MST', $3)
                                """, p_id, user_id, now)
 
         language = self.language

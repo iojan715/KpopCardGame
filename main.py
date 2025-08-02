@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO)
 
 class LudiBot(commands.Bot):
     async def setup_hook(self):
-        asyncio.create_task(events_loop())
+        asyncio.create_task(events_loop(self))
 
 
 intents = discord.Intents.default()

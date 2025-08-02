@@ -5,6 +5,8 @@ from db.connection import get_pool
 EJECUCION_HORA_UTC = 5  # 05:00 UTC
 GRACE_DAYS = 3  # días de tolerancia para ejecución tardía
 
+BOT = None
+
 async def ejecutar_evento_si_corresponde(nombre_evento, funcion_callback):
     pool = get_pool()
     async with pool.acquire() as conn:
@@ -68,18 +70,6 @@ async def ejecutar_evento_si_corresponde(nombre_evento, funcion_callback):
                 UPDATE loop_events SET last_applied = $1 WHERE event = $2;
             """, now, nombre_evento)
 
-async def events_loop():
-    while True:
-        await ejecutar_evento_si_corresponde("reset_fcr", reset_fcr_func)
-        await ejecutar_evento_si_corresponde("reduce_popularity", reducir_popularidad_func)
-        await ejecutar_evento_si_corresponde("reduce_influence", reducir_influencia_func)
-        await ejecutar_evento_si_corresponde("change_limited_set", cambiar_limited_set_func)
-        await ejecutar_evento_si_corresponde("cancel_presentation", cancel_presentation_func)
-        await ejecutar_evento_si_corresponde("increase_payment", increase_payment)
-
-        await asyncio.sleep(300)  # revisa cada 5 minutos
-
-# FUNCIONES CALLBACK
 
 async def reset_fcr_func():
     pool = get_pool()
@@ -128,7 +118,7 @@ async def cancel_presentation_func():
             # Marcar como cancelada
             await conn.execute("""
                 UPDATE presentations
-                SET status = 'cancelled'
+                SET status = 'expired'
                 WHERE presentation_id = $1
             """, presentation_id)
 
@@ -163,3 +153,50 @@ async def increase_payment():
     async with pool.acquire() as conn:
         await conn.execute("UPDATE groups SET unpaid_weeks = unpaid_weeks + 1 WHERE status = 'active'")
     print("Pago semanal de grupos agregado")
+    
+async def remove_roles():
+    guild_ids = [1395514643283443742, 1311186435054764032]
+    for gid in guild_ids:
+        guild = BOT.get_guild(gid)
+        if not guild:
+            print(f"⚠️ Guild {gid} no está cacheada aún.")
+            continue
+
+        # Filtramos los roles que contienen "FanClub"
+        fanclub_roles = [r for r in guild.roles if "FanClub" in r.name]
+        if not fanclub_roles:
+            print(f"✅ No hay roles FanClub en guild {gid}.")
+            continue
+
+        print(f"🔄 Limpiando {len(fanclub_roles)} roles FanClub en {guild.name}")
+        # Recorremos cada miembro
+        for member in guild.members:
+            to_remove = [r for r in member.roles if r in fanclub_roles]
+            if to_remove:
+                try:
+                    await member.remove_roles(*to_remove, reason="Reset semanal de FanClub roles")
+                except Exception as e:
+                    print(f"❌ No pude quitar roles a {member.display_name}: {e}")
+        print(f"✅ Limpieza completada en {guild.name}")
+    pass
+    
+
+async def events_loop(bot):
+    global BOT
+    BOT = bot
+    
+    await BOT.wait_until_ready()
+    
+    while True:
+        await ejecutar_evento_si_corresponde("reset_fcr", reset_fcr_func)
+        await ejecutar_evento_si_corresponde("reduce_popularity", reducir_popularidad_func)
+        await ejecutar_evento_si_corresponde("reduce_influence", reducir_influencia_func)
+        await ejecutar_evento_si_corresponde("change_limited_set", cambiar_limited_set_func)
+        await ejecutar_evento_si_corresponde("cancel_presentation", cancel_presentation_func)
+        await ejecutar_evento_si_corresponde("increase_payment", increase_payment)
+        await ejecutar_evento_si_corresponde("remove_roles", remove_roles)
+
+        await asyncio.sleep(300)  # revisa cada 5 minutos
+
+# FUNCIONES CALLBACK
+
