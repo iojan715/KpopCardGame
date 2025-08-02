@@ -3,7 +3,66 @@ GSL,Giselle,Aespa
 KRN,Karina,Aespa
 NNG,Ningning,Aespa
 WIN,Winter,Aespa
+JHJ,Heejin,Artms
+JHS,Haseul,Artms
+LIP,Kim Lip,Artms
+JJS,Jinsoul,Artms
+CHR,Choerry,Artms
+ASA,Asa,Babymonster
+ROR,Rora,Babymonster
+RAM,Rami,Babymonster
+AHY,Ahyeon,Babymonster
+CHQ,Chiquita,Babymonster
+PHA,Pharita,Babymonster
+RUK,Ruka,Babymonster
+CHU,Chuu,Chuu
+JIU,Jiu,Dreamcatcher
+SUA,Sua,Dreamcatcher
+SYE,Siyeon,Dreamcatcher
+HND,Handong,Dreamcatcher
+YOO,Yoohyeon,Dreamcatcher
+DAM,Dami,Dreamcatcher
+GAH,Gahyeon,Dreamcatcher
+YUJ,Yuju,Gfriend
+SOW,Sowon,Gfriend
+YRN,Yerin,Gfriend
+ENH,Eunha,Gfriend
+SNB,SinB,Gfriend
+UMJ,Umji,Gfriend
 HWY,Hwayeon,ifeye
+KSA,Kasia,ifeye
+MEU,Meu,ifeye
+RHE,Rahee,ifeye
+SSH,Sasha,ifeye
+TAE,Taerin,ifeye
+LCR,Chaeryeong,Itzy
+LIA,Lia,Itzy
+YEJ,Yeji,Itzy
+RYU,Ryujin,Itzy
+YUN,Yuna,Itzy
+GAE,Gaeul,IVE
+LEE,Leeseo,IVE
+LIZ,Liz,IVE
+REI,Rei,IVE
+JWY,Wonyoung,IVE
+AYJ,Yujin,IVE
+MAI,Mai,izna
+JEE,Jeemin,izna
+KKO,Koko,izna
+SAR,Sarang,izna
+JNG,Jungeun,izna
+SAE,Saebi,izna
+JYN,Jiyoon,izna
+HUM,Haum,KiiiKiii
+JYU,Jiyu,KiiiKiii
+KYA,Kya,KiiiKiii
+LSL,Leesol,KiiiKiii
+SUI,Sui,KiiiKiii
+KCW,Chaewon,Le Sserafim
+KZH,Kazuha,Le Sserafim
+SKR,Sakura,Le Sserafim
+HYJ,Yunjin,Le Sserafim
+HEC,Eunchae,Le Sserafim
 JHJ,Heejin,Loona
 KHJ,Hyunjin,Loona
 JHS,Haseul,Loona
@@ -16,22 +75,16 @@ YVS,Yves,Loona
 CHU,Chuu,Loona
 GWN,Gowon,Loona
 HYE,Hyeju,Loona
-KSA,Kasia,ifeye
-MEU,Meu,ifeye
-RHE,Rahee,ifeye
-SSH,Sasha,ifeye
-TAE,Taerin,ifeye
-GAE,Gaeul,IVE
-LEE,Leeseo,IVE
-LIZ,Liz,IVE
-REI,Rei,IVE
-JWY,Wonyoung,IVE
-AYJ,Yujin,IVE
-HUM,Haum,KiiiKiii
-JYU,Jiyu,KiiiKiii
-KYA,Kya,KiiiKiii
-LSL,Leesol,KiiiKiii
-SUI,Sui,KiiiKiii
+KHJ,Hyunjin,Loossemble
+YEO,Yeojin,Loossemble
+VVI,Vivi,Loossemble
+GWN,Gowon,Loossemble
+HYE,Hyeju,Loossemble
+SOO,Sooin,Meovv
+GAW,Gawon,Meovv
+NRN,Narin,Meovv
+ANA,Anna,Meovv
+ELA,Ella,Meovv
 BAE,Bae,Nmixx
 OHW,Haewon,Nmixx
 KJW,Jiwoo,Nmixx
@@ -42,19 +95,20 @@ CHN,Chaein,Purple Kiss
 DOS,Dosie,Purple Kiss
 NGE,Goeun,Purple Kiss
 IRH,Ireh,Purple Kiss
-JIE,Jieun,Purple Kiss
 SWN,Swan,Purple Kiss
 YUK,Yuki,Purple Kiss
+SLA,Seola,Seola
+ISA,Isa,Stayc
+SIE,Sieun,Stayc
+SEE,Seeun,Stayc
+YON,Yoon,Stayc
+SMN,Sumin,Stayc
+JYE,J,Stayc
 CHW,Chaewon,tripleS
 KCY,Chaeyeon,tripleS
 SDH,Dahyun,tripleS
 HAY,Hayeon,tripleS
 JHR,Hyerin,tripleS
-KCW,Chaewon,Le Sserafim
-KZH,Kazuha,Le Sserafim
-SKR,Sakura,Le Sserafim
-HYJ,Yunjin,Le Sserafim
-HEC,Eunchae,Le Sserafim
 LJW,Jiwoo,tripleS
 JIY,Jiyeon,tripleS
 JOO,Joobin,tripleS
@@ -73,75 +127,18 @@ SLL,Sullin,tripleS
 XNY,Xinyu,tripleS
 KYJ,Yeonji,tripleS
 KYY,Yooyeon,tripleS
-ISA,Isa,Stayc
-SIE,Sieun,Stayc
-SEE,Seeun,Stayc
-YON,Yoon,Stayc
-SMN,Sumin,Stayc
-JYE,J,Stayc
 GYB,Yubin,tripleS
 ENH,Eunha,Viviz
 SNB,SinB,Viviz
 UMJ,Umji,Viviz
-YUJ,Yuju,Gfriend
-SOW,Sowon,Gfriend
-YRN,Yerin,Gfriend
-ENH,Eunha,Gfriend
-SNB,SinB,Gfriend
-UMJ,Umji,Gfriend
-ASA,Asa,Babymonster
-ROR,Rora,Babymonster
-RAM,Rami,Babymonster
-AHY,Ahyeon,Babymonster
-CHQ,Chiquita,Babymonster
-PHA,Pharita,Babymonster
-RUK,Ruka,Babymonster
-JHJ,Heejin,Artms
-KHJ,Hyunjin,Loossemble
-JHS,Haseul,Artms
-YEO,Yeojin,Loossemble
-VVI,Vivi,Loossemble
-LIP,Kim Lip,Artms
-JJS,Jinsoul,Artms
-CHR,Choerry,Artms
-YVS,Yves,Solo
-CHU,Chuu,Solo
-GWN,Gowon,Loossemble
-HYE,Hyeju,Loossemble
-SLA,Seola,Solo
 BNA,Bona,WJSN
 DWN,Dawon,WJSN
 DAY,Dayoung,WJSN
 EUN,Eunseo,WJSN
-LCR,Chaeryeong,Itzy
-LIA,Lia,Itzy
-YEJ,Yeji,Itzy
-RYU,Ryujin,Itzy
-YUN,Yuna,Itzy
 EXY,Exy,WJSN
 LLD,Luda,WJSN
 SLA,Seola,WJSN
 PSB,Soobin,WJSN
 YYJ,Yeonjung,WJSN
 LYR,Yeoreum,WJSN
-CHU,Chuu,Chuu
 YVS,Yves,Yves
-MAI,Mai,izna
-JEE,Jeemin,izna
-KKO,Koko,izna
-SAR,Sarang,izna
-JNG,Jungeun,izna
-SAE,Saebi,izna
-JYN,Jiyoon,izna
-SOO,Sooin,Meovv
-GAW,Gawon,Meovv
-NRN,Narin,Meovv
-ANA,Anna,Meovv
-ELA,Ella,Meovv
-JIU,Jiu,Dreamcatcher
-SUA,Sua,Dreamcatcher
-SYE,Siyeon,Dreamcatcher
-HND,Handong,Dreamcatcher
-YOO,Yoohyeon,Dreamcatcher
-DAM,Dami,Dreamcatcher
-GAH,Gahyeon,Dreamcatcher
