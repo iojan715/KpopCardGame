@@ -844,6 +844,24 @@ class ConfirmFCRView(discord.ui.View):
         pool = get_pool()
         unique_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=5))
 
+        guild = interaction.guild
+        
+        role_name = f"{self.group_name} FanClub"
+        role = discord.utils.get(guild.roles, name=role_name)
+        
+        if role:
+            try:
+                await interaction.user.add_roles(role, reason=f"Reclamar FCR Pack de {self.group_name}")
+            except discord.Forbidden:
+                await interaction.response.send_message(
+                    f"⚠️ No se pudo asignar el rol {role_name}.", ephemeral=True)
+                return
+        else:
+            await interaction.response.send_message(
+                f"⚠️ No se encontró el rol **{role_name}** en el servidor.",
+            ephemeral=True)
+            return
+        
         async with pool.acquire() as conn:
             # Verificar que el usuario aún pueda recibirlo
             user_data = await conn.fetchrow("SELECT can_fcr FROM users WHERE user_id = $1", self.user_id)
@@ -862,6 +880,7 @@ class ConfirmFCRView(discord.ui.View):
                 VALUES ($1, $2, $3, NOW(), $4, $5, $6)
             """, unique_id, self.user_id, self.pack_data['pack_id'], self.group_name, self.pack_data['set_id'], self.pack_data['theme'])
 
+        
         await interaction.response.edit_message(content="## ✅ Pack FCR entregado correctamente!",view=None, embed=None)
         await interaction.followup.send(f"🎉 {user_data['agency_name']} ha recibido un **FCR Pack** de **{self.group_name}**", ephemeral=False)
 

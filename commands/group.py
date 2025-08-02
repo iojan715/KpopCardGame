@@ -36,6 +36,45 @@ class Group(app_commands.Group):
         paginator = ManageGroupPaginator(groups=rows, interaction=interaction, language=language)
         await paginator.start()
         
+    @app_commands.command(name="list", description="Show groups")
+    @app_commands.describe(agency="Agency")
+    async def list_groups(self, interaction: discord.Interaction, agency:str = None):
+        user_id = interaction.user.id
+        pool = get_pool()
+        language = await get_user_language(user_id)
+        
+        async with pool.acquire() as conn:
+            if agency:
+                agency_r = await conn.fetchrow("SELECT user_id FROM users WHERE agency_name = $1", agency)
+                user = await interaction.client.fetch_user(agency_r["user_id"])
+                user_id = user.id
+                
+            query = """
+            SELECT group_id, name, popularity, permanent_popularity, status, unpaid_weeks, user_id,
+                (SELECT COUNT(*) FROM groups_members WHERE group_id = g.group_id) AS member_count
+            FROM groups g
+            WHERE user_id = $1
+            ORDER BY creation_date DESC
+            """
+            rows = await conn.fetch(query, user_id)
+
+        if not rows:
+            await interaction.response.send_message(get_translation(language=language, key="group_list.not_created_groups"), ephemeral=True)
+            return
+
+        paginator = GroupPaginator(groups=rows, interaction=interaction, language=language)
+        await paginator.start()
+
+    @list_groups.autocomplete("agency")
+    async def set_autocomplete(self, interaction: discord.Interaction, current: str):
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("SELECT agency_name FROM users")
+        return [
+            app_commands.Choice(name=f"{row["agency_name"]}", value=row["agency_name"])
+            for row in rows if current.lower() in row["agency_name"].lower()
+        ][:25]     
+
     @app_commands.command(name="create", description="Create new group")
     async def create_group(self, interaction: discord.Interaction):
         user_id = interaction.user.id
@@ -55,48 +94,7 @@ class Group(app_commands.Group):
                 await conn.execute("INSERT INTO groups (group_id, user_id, status) VALUES ($1, $2, 'creating')", group_id, user_id)
 
         await send_group_creation_ui(interaction, group_id, user_id, language)
-        
-    @app_commands.command(name="list", description="Show groups")
-    @app_commands.describe(agency="Agency")
-    async def list_groups(self, interaction: discord.Interaction, agency:str = None):
-        user_id = interaction.user.id
-        pool = get_pool()
-        language = await get_user_language(user_id)
-        
-        async with pool.acquire() as conn:
-            if agency:
-                agency_r = await conn.fetchrow("SELECT user_id FROM users WHERE agency_name = $1", agency)
-                user = await interaction.client.fetch_user(agency_r["user_id"])
-                user_id = user.id
-        
-
-
-        
-            rows = await conn.fetch("""
-                SELECT group_id, name, popularity, permanent_popularity, status, unpaid_weeks, user_id,
-                    (SELECT COUNT(*) FROM groups_members WHERE group_id = g.group_id) AS member_count
-                FROM groups g
-                WHERE user_id = $1
-                ORDER BY creation_date DESC
-            """, user_id)
-
-        if not rows:
-            await interaction.response.send_message(get_translation(language=language, key="group_list.not_created_groups"), ephemeral=True)
-            return
-
-        paginator = GroupPaginator(groups=rows, interaction=interaction, language=language)
-        await paginator.start()
-
-    @list_groups.autocomplete("agency")
-    async def set_autocomplete(self, interaction: discord.Interaction, current: str):
-        pool = get_pool()
-        async with pool.acquire() as conn:
-            rows = await conn.fetch("SELECT agency_name FROM users")
-        return [
-            app_commands.Choice(name=f"{row["agency_name"]}", value=row["agency_name"])
-            for row in rows if current.lower() in row["agency_name"].lower()
-        ][:25]     
-
+   
 
 # Classes for `/group create`:
 async def send_group_creation_ui(interaction, group_id: str, user_id: int, language:str, from_callback=False):
@@ -597,7 +595,294 @@ class GroupDetailButton(discord.ui.Button):
         view = discord.ui.View()
         view.add_item(ShowCardsButton(self.group_id, self.language))
         view.add_item(BackToListButton(self.paginator if hasattr(self, 'paginator') else None, label=label_back))
+        
+        if group["user_id"] == interaction.user.id:
+            view.add_item(AddMemberButton(self.group_id))
+            view.add_item(RemoveMemberButton(self.group_id))
+            view.add_item(PayGroupButton(self.group_id))
+            view.add_item(StatusButton(self.group_id))
+            view.add_item(RenameGroupButton(self.group_id))
+        
         await interaction.response.edit_message(embed=embed, view=view, attachments=[])
+
+
+class AddMemberButton(discord.ui.Button):
+    def __init__(self, group_id: str):
+        super().__init__(label="➕👤", style=discord.ButtonStyle.success, row=1)
+        self.group_id = group_id
+
+    async def callback(self, interaction: discord.Interaction):
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            records = await conn.fetch(
+                "SELECT DISTINCT group_name FROM idol_group ORDER BY group_name"
+            )
+        group_names = [r["group_name"] for r in records]
+
+        paginator = AddMemberGroupPaginator(self.group_id, group_names, embeds_per_page=5)
+        await paginator.start(interaction)
+
+class AddMemberGroupPaginator:
+    def __init__(self, group_id: str, group_names: list[str], embeds_per_page: int = 5):
+        self.group_names = group_names
+        self.embeds_per_page = embeds_per_page
+        self.group_id = group_id
+        self.current_page = 0
+        self.total_pages = (len(group_names) + embeds_per_page - 1) // embeds_per_page
+
+    async def get_current_embeds(self) -> list[discord.Embed]:
+        pool = get_pool()
+        start = self.current_page * self.embeds_per_page
+        end = start + self.embeds_per_page
+        embeds = []
+        
+        for name in self.group_names[start:end]:
+            async with pool.acquire() as conn:
+                rows = await conn.fetch("SELECT * FROM idol_group WHERE group_name = $1", name)
+            embed = discord.Embed(
+                title=name,
+                description=f"Integrantes: **{len(rows)}**",
+                color=discord.Color.blue()
+            )
+            embeds.append(embed)
+        footer = discord.Embed(
+            description=f"Página {self.current_page+1} / {self.total_pages}",
+            color=discord.Color.dark_gray()
+        )
+        embeds.append(footer)
+        return embeds
+
+    async def get_view(self) -> discord.ui.View:
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            user_id = await conn.fetchval("SELECT user_id FROM groups WHERE group_id = $1", self.group_id)
+        language = await get_user_language(user_id)
+
+        view = discord.ui.View(timeout=120)
+        start = self.current_page * self.embeds_per_page
+        end = start + self.embeds_per_page
+        for name in self.group_names[start:end]:
+            view.add_item(AddMemberGroupSelectButton(name, self))
+        view.add_item(AddMemberPrevButton(self))
+        view.add_item(AddMemberNextButton(self))
+        view.add_item(BackToDetailsButton(self.group_id, language))
+            
+        return view
+
+    async def start(self, interaction: discord.Interaction):
+        embeds = await self.get_current_embeds()
+        await interaction.response.edit_message(embeds=embeds, view=await self.get_view())
+
+    async def update(self, interaction: discord.Interaction):
+        embeds = await self.get_current_embeds()
+        await interaction.response.edit_message(embeds=embeds, view=await self.get_view())
+
+class AddMemberPrevButton(discord.ui.Button):
+    def __init__(self, paginator: AddMemberGroupPaginator):
+        super().__init__(label="◀️", style=discord.ButtonStyle.secondary, row=1)
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        self.paginator.current_page = (self.paginator.current_page - 1) % self.paginator.total_pages
+        await self.paginator.update(interaction)
+
+class AddMemberNextButton(discord.ui.Button):
+    def __init__(self, paginator: AddMemberGroupPaginator):
+        super().__init__(label="▶️", style=discord.ButtonStyle.secondary, row=1)
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        self.paginator.current_page = (self.paginator.current_page + 1) % self.paginator.total_pages
+        await self.paginator.update(interaction)
+
+
+class AddMemberGroupSelectButton(discord.ui.Button):
+    def __init__(self, group_name: str, paginator: AddMemberGroupPaginator):
+        super().__init__(label=group_name, style=discord.ButtonStyle.primary, row=0)
+        self.group_name = group_name
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            user_id = await conn.fetchval(
+                "SELECT user_id FROM groups WHERE group_id = $1",
+                self.paginator.group_id
+            )
+            idols = await conn.fetch(
+                "SELECT idol_id, idol_name FROM idol_group WHERE group_name = $1 ORDER BY idol_name",
+                self.group_name
+            )
+        language = await get_user_language(user_id)
+        
+        view = discord.ui.View(timeout=120)
+        for idol in idols:
+            group_id = self.paginator.group_id
+            async with pool.acquire() as conn:
+                members = await conn.fetch("SELECT idol_id FROM groups_members WHERE group_id = $1", group_id)
+            
+            disabled = False
+            for m in members:
+                if idol['idol_id'] == m['idol_id']:
+                    disabled = True
+            
+            label = f"{idol['idol_name']} ({idol['idol_id']})"
+            view.add_item(
+                SelectMemberToAddButton(group_id=self.paginator.group_id,
+                    idol_id=idol['idol_id'],
+                    label=label,
+                    paginator=self.paginator,
+                    disabled = disabled))
+            
+        view.add_item(BackToDetailsButton(
+                group_id=self.paginator.group_id,
+                language=language))
+        
+        await interaction.response.edit_message(
+            content=get_translation(language, "group_manage.select_idol", selected_group=self.group_name),
+            embed=None,
+            view=view
+        )
+
+class SelectMemberToAddButton(discord.ui.Button):
+    def __init__(
+        self,
+        group_id: str,
+        idol_id: str,
+        label: str,
+        paginator: AddMemberGroupPaginator,
+        disabled: bool
+    ):
+        super().__init__(label=label, style=discord.ButtonStyle.primary if not disabled else discord.ButtonStyle.danger, disabled=disabled)
+        self.group_id = group_id
+        self.idol_id = idol_id
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            user_id = await conn.fetchval(
+                "SELECT user_id FROM groups WHERE group_id = $1",
+                self.group_id)
+        language = await get_user_language(user_id)
+        
+        view = discord.ui.View(timeout=60)
+        view.add_item(ConfirmAddIdolButton(
+                group_id=self.group_id,
+                idol_id=self.idol_id,
+                label=self.label,
+                paginator=self.paginator))
+        
+        view.add_item(BackToDetailsButton(group_id=self.group_id,
+                language=language))
+
+        await interaction.response.edit_message(
+            content=get_translation(language,
+                "group_manage.confirm_add_idol",
+                idol=self.label),
+            embed=None,
+            view=view)
+
+class ConfirmAddIdolButton(discord.ui.Button):
+    def __init__(self, group_id: str, idol_id: str, label: str, paginator: AddMemberGroupPaginator):
+        super().__init__(label="✅ Confirmar", style=discord.ButtonStyle.success)
+        self.group_id = group_id
+        self.idol_id = idol_id
+        self.label_text = label
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            user_id = await conn.fetchval("SELECT user_id FROM groups WHERE group_id = $1", self.group_id)
+            language = await get_user_language(user_id)
+
+            count = await conn.fetchval(
+                "SELECT COUNT(*) FROM groups_members WHERE group_id = $1",
+                self.group_id
+            )
+            if count >= 24:
+                await interaction.response.send_message(
+                    get_translation(language, "group_manage.error_group_full"),
+                    ephemeral=True
+                )
+                return
+
+            # Verificar si el idol ya está en el grupo
+            already = await conn.fetchval(
+                "SELECT 1 FROM groups_members WHERE group_id = $1 AND idol_id = $2",
+                self.group_id, self.idol_id
+            )
+            idol_name = await conn.fetchval("SELECT name FROM idol_base WHERE idol_id = $1", self.idol_id)
+            if already:
+                await interaction.response.send_message(
+                    get_translation(language, "group_manage.error_idol_already_in_group", idol_Id=self.idol_id, idol_name=idol_name),
+                    ephemeral=True
+                )
+                return
+
+            await conn.execute("UPDATE groups SET permanent_popularity = 0 WHERE group_id = $1", self.group_id)
+            
+            await conn.execute(
+                """
+                INSERT INTO groups_members (group_id, user_id, idol_id)
+                VALUES ($1, $2, $3)
+                """,
+                self.group_id, user_id, self.idol_id
+            )
+            
+            rows = await conn.fetch("""
+                SELECT group_id, name, popularity, permanent_popularity, status, unpaid_weeks, user_id,
+                    (SELECT COUNT(*) FROM groups_members WHERE group_id = g.group_id) AS member_count
+                FROM groups g
+                WHERE user_id = $1
+                ORDER BY creation_date DESC
+            """, user_id)
+
+        button = GroupDetailButton(
+            group_id=self.group_id,
+            user_id=interaction.user.id,
+            group_name="",
+            paginator=GroupPaginator(rows, interaction=interaction, language=language),
+            language=language
+        )
+        await button.callback(interaction)
+
+
+# - 
+class RemoveMemberButton(discord.ui.Button):
+    def __init__(self, group_id: str):
+        super().__init__(label="➖👤", style=discord.ButtonStyle.danger, row=1)
+        self.group_id = group_id
+        
+    async def callback(self, interaction):
+        await interaction.response.send_message("⚙️ Quitar integrante (pendiente)", ephemeral=True)
+
+
+class StatusButton(discord.ui.Button):
+    def __init__(self, group_id: str):
+        super().__init__(label="Estado", style=discord.ButtonStyle.secondary, row=1)
+        self.group_id = group_id
+
+    async def callback(self, interaction):
+        await interaction.response.send_message("⚙️ Cambiar estado (pendiente)", ephemeral=True)
+
+class RenameGroupButton(discord.ui.Button):
+    def __init__(self, group_id: str):
+        super().__init__(label="📝", style=discord.ButtonStyle.secondary, row=1)
+        self.group_id = group_id
+
+    async def callback(self, interaction):
+        await interaction.response.send_message("⚙️ Renombrar grupo (pendiente)", ephemeral=True)
+
+class PayGroupButton(discord.ui.Button):
+    def __init__(self, group_id: str):
+        super().__init__(label="", emoji="💸", style=discord.ButtonStyle.success, row=1)
+        self.group_id = group_id
+
+    async def callback(self, interaction):
+        await interaction.response.send_message("⚙️ Pagar grupo (pendiente)", ephemeral=True)
+
 
 class BackToListButton(discord.ui.Button):
     def __init__(self, paginator, label):
@@ -659,7 +944,7 @@ class EquippedCardsPaginator:
         embeds = []
         for row in page_members:
             async with pool.acquire() as conn:
-                card_id=mic_id=outfit_id=accessory_id=consumable_id=""
+                card_id=u_c=mic_id=outfit_id=accessory_id=consumable_id=""
                 if row['card_id']:
                     card_id, u_c = row['card_id'].split(".")
                 if row['mic_id']:
@@ -810,7 +1095,8 @@ class EquippedCardsPaginator:
     async def update(self, interaction: discord.Interaction):
         embeds = await self.get_current_embeds()
         await interaction.response.edit_message(embeds=embeds, view=self.get_view())
-        
+
+# -         
 class PreviousCardsButton(discord.ui.Button):
     def __init__(self, paginator):
         super().__init__(label="⬅️", style=discord.ButtonStyle.secondary)
@@ -820,7 +1106,6 @@ class PreviousCardsButton(discord.ui.Button):
         self.paginator.current_page = (self.paginator.current_page - 1) % self.paginator.total_pages
         await self.paginator.update(interaction)
 
-# - 
 class NextCardsButton(discord.ui.Button):
     def __init__(self, paginator):
         super().__init__(label="➡️", style=discord.ButtonStyle.secondary)
@@ -839,8 +1124,9 @@ class BackToDetailsButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         pool = get_pool()
-        user_id = interaction.user.id
         async with pool.acquire() as conn:
+            user_id = await conn.fetchval("SELECT user_id FROM groups WHERE group_id = $1", self.group_id)
+            
             rows = await conn.fetch("""
                 SELECT group_id, name, popularity, permanent_popularity, status, unpaid_weeks, user_id,
                     (SELECT COUNT(*) FROM groups_members WHERE group_id = g.group_id) AS member_count
@@ -1384,31 +1670,7 @@ class SelectIdolButtonManage(discord.ui.Button):
             embed=None
         )
 
-class ConfirmAddIdolButton(discord.ui.Button):
-    def __init__(self, group_id, user_id, idol_id, label, paginator):
-        super().__init__(label="✅ Confirmar", style=discord.ButtonStyle.success)
-        self.group_id = group_id
-        self.user_id = user_id
-        self.idol_id = idol_id
-        self.label_text = label
-        self.paginator = paginator
 
-    async def callback(self, interaction: discord.Interaction):
-        pool = get_pool()
-        async with pool.acquire() as conn:
-            members_count = await conn.fetchval("SELECT COUNT(*) FROM groups_members WHERE group_id = $1", self.group_id)
-            if members_count >= 24:
-                await interaction.response.edit_message(content="⚠️ El grupo ya tiene 24 integrantes.", view=None)
-                return
-
-            await conn.execute("""
-                INSERT INTO groups_members (group_id, user_id, idol_id, weekly_payment)
-                VALUES ($1, $2, $3, 50)
-            """, self.group_id, self.user_id, self.idol_id)
-            await conn.execute("UPDATE groups SET permanent_popularity = 0 WHERE group_id = $1", self.group_id)
-
-        language = await get_user_language(self.user_id)
-        await regenerate_group_view(interaction, self.group_id, language, self.paginator)
 
 class RemoveIdolButtonManage(discord.ui.Button):
     def __init__(self, group, paginator):

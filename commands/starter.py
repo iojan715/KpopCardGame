@@ -13,9 +13,9 @@ class StartView(discord.ui.View):
     def __init__(self, interaction: discord.Interaction):
         super().__init__(timeout=None)
         self.interaction = interaction
-        self.language = "en"  # idioma por defecto
+        self.language = "es"  # idioma por defecto
 
-    @discord.ui.button(label="New Agency", style=discord.ButtonStyle.primary, custom_id="start_new_agency")
+    @discord.ui.button(label="Crear Agencia", style=discord.ButtonStyle.primary, custom_id="start_new_agency")
     async def new_agency(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user.id != self.interaction.user.id:
             not_your_button = get_translation("en", "error.not_your_button")
@@ -26,7 +26,7 @@ class StartView(discord.ui.View):
     @discord.ui.button(label="Set Language", style=discord.ButtonStyle.secondary, custom_id="start_set_language")
     async def set_language(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user.id != self.interaction.user.id:
-            not_your_button = get_translation("en", "error.not_your_button")
+            not_your_button = get_translation("es", "error.not_your_button")
             return await interaction.response.send_message(not_your_button, ephemeral=True)
 
         await interaction.response.edit_message(content="Select your language:", view=LanguageView(self))
@@ -80,6 +80,24 @@ class NewAgencyModal(discord.ui.Modal, title="Create Your Agency"):
         language = self.language
         welcome = get_translation(language, "start.welcome", agency=agency, credits=credits)
         await interaction.response.send_message(welcome, ephemeral=True)
+        
+        guild = interaction.guild
+        
+        role_name = f"CEO"
+        role = discord.utils.get(guild.roles, name=role_name)
+        
+        if role:
+            try:
+                await interaction.user.add_roles(role, reason=f"Registro en el juego.")
+            except discord.Forbidden:
+                await interaction.followup.send(
+                    f"⚠️ No se pudo asignar el rol {role_name}., Pide a un administrador que te lo asigne.", ephemeral=True)
+                
+        else:
+            await interaction.followup.send(
+                f"⚠️ No se encontró el rol **{role_name}** en el servidor. Pide a un administrador que te lo asigne.",
+            ephemeral=True)
+            
 
 
 class StartCommand(commands.Cog):
@@ -107,7 +125,7 @@ class StartCommand(commands.Cog):
         else:
             view = StartView(interaction)
             await interaction.response.send_message(
-                "👋 Welcome! Please create your agency to begin:", view=view, ephemeral=True
+                "## 👋 Bienvenido a KCG (K-pop Collectors Game)!\n### Por favor, crea una nueva agencia para comenzar:", view=view, ephemeral=True
             )
 
 
