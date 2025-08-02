@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 from db.connection import get_pool
+import logging
 
 EJECUCION_HORA_UTC = 5  # 05:00 UTC
 GRACE_DAYS = 3  # días de tolerancia para ejecución tardía
@@ -75,24 +76,24 @@ async def reset_fcr_func():
     pool = get_pool()
     async with pool.acquire() as conn:
         await conn.execute("UPDATE users SET can_fcr = True")
-    print("FCR reseteados")
+    logging.info("FCR reseteados")
 
 async def reducir_popularidad_func():
     pool = get_pool()
     async with pool.acquire() as conn:
         await conn.execute("UPDATE groups SET popularity = popularity * 0.9")
-    print("Popularidad reducida")
+    logging.info("Popularidad reducida")
 
 async def reducir_influencia_func():
     pool = get_pool()
     async with pool.acquire() as conn:
         await conn.execute("UPDATE users SET influence_temp = influence_temp * 0.9")
-    print("Influencia reducida")
+    logging.info("Influencia reducida")
 
 async def cambiar_limited_set_func():
     pool = get_pool()
     
-    print("Limited set cambiado")
+    logging.info("Limited set cambiado")
     
 async def cancel_presentation_func():
     pool = get_pool()
@@ -146,13 +147,13 @@ async def cancel_presentation_func():
                         WHERE group_id = $2
                     """, popularity, group_id)
         if presentaciones:
-            print(f"Presentaciones canceladas: {len(presentaciones)}")
+            logging.info(f"Presentaciones canceladas: {len(presentaciones)}")
 
 async def increase_payment():
     pool = get_pool()
     async with pool.acquire() as conn:
         await conn.execute("UPDATE groups SET unpaid_weeks = unpaid_weeks + 1 WHERE status = 'active'")
-    print("Pago semanal de grupos agregado")
+    logging.info("Pago semanal de grupos agregado")
     
 async def remove_roles():
     guild_ids = [1395514643283443742, 1311186435054764032]
@@ -170,11 +171,13 @@ async def remove_roles():
 
         print(f"🔄 Limpiando {len(fanclub_roles)} roles FanClub en {guild.name}")
         # Recorremos cada miembro
-        for member in guild.members:
+        async for member in guild.fetch_members(limit=None):
+            print(member)
             to_remove = [r for r in member.roles if r in fanclub_roles]
             if to_remove:
                 try:
                     await member.remove_roles(*to_remove, reason="Reset semanal de FanClub roles")
+                    logging.info(f"Rol FanClub quitado a {member.display_name}")
                 except Exception as e:
                     print(f"❌ No pude quitar roles a {member.display_name}: {e}")
         print(f"✅ Limpieza completada en {guild.name}")

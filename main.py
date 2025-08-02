@@ -20,6 +20,8 @@ class LudiBot(commands.Bot):
 
 
 intents = discord.Intents.default()
+intents.members = True
+intents.guilds = True
 intents.message_content = True
 bot = LudiBot(command_prefix="!", intents=intents)
 
