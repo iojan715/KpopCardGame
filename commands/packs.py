@@ -343,13 +343,13 @@ class PacksGroup(app_commands.Group):
             
 
             final_receiver_id = user_id
-            total_price = pack_data["price"]
+            pack_price = pack_data["price"]
             if gift_to and gift_to.id != user_id:
                 if not pack_data["can_gift"]:
                     await interaction.response.send_message("❌ Este pack no puede ser regalado.", ephemeral=True)
                     return
                 final_receiver_id = gift_to.id
-                total_price += pack_data["base_price"]
+                pack_price += pack_data["base_price"]
 
             t_cant = ""
             if amount:
@@ -357,9 +357,21 @@ class PacksGroup(app_commands.Group):
             else:
                 amount = 1
             
+            final_price = pack_price*amount
+            total_price = final_price
+            discount = await conn.fetchval("SELECT amount FROM user_boosts WHERE user_id = $1 AND boost = 'DISCN'", user_id)
+            discount_amount = 0
+            discount_times = 0
+            if discount:
+                discount_times = min(discount,amount)
+                discount_amount = int(pack_price*0.1*discount_times)
+                final_price = final_price - discount_amount
+                if discount_times >= 1:
+                    discount_amount_str = f"(-{format(discount_amount,',')})"
+            
             embed = discord.Embed(
                 title=f"{pack_data['name']}{t_cant} - Confirmar compra",
-                description=f"🎴 Cartas: {pack_data['card_amount']}\n💸 Precio total: {format(total_price*amount,',')}",
+                description=f"🎴 Cartas: {pack_data['card_amount']}\n💸 Precio total: {format(total_price,',')} {discount_amount_str}",
                 color=discord.Color.gold()
             )
             if group_name:
@@ -374,7 +386,7 @@ class PacksGroup(app_commands.Group):
             user_credit = user_c['credits']
             embed.set_footer(text=f"Saldo actual: 💵{user_credit}")
             
-            view = ConfirmPurchaseView(user_id, pack_data, total_price, final_receiver_id, group_name, agency, amount)
+            view = ConfirmPurchaseView(user_id, pack_data, final_price, final_receiver_id, group_name, agency, amount, discount_times)
             await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
     @buy.autocomplete("gift_to")
@@ -740,7 +752,7 @@ async def open_pack(unique_id: str, user_id: int):
     return results, pack_row['name']
 
 class ConfirmPurchaseView(discord.ui.View):
-    def __init__(self, user_id, pack_data, total_price, final_receiver_id, group_name, agency, amount):
+    def __init__(self, user_id, pack_data, total_price, final_receiver_id, group_name, agency, amount, discount_times):
         super().__init__(timeout=60)
         self.user_id = user_id
         self.pack_data = pack_data
@@ -749,6 +761,7 @@ class ConfirmPurchaseView(discord.ui.View):
         self.group_name = group_name
         self.agency = agency
         self.amount = amount
+        self.discount_times = discount_times
         self.pool = get_pool()
 
     @discord.ui.button(label="Confirmar", style=discord.ButtonStyle.green)
@@ -764,6 +777,7 @@ class ConfirmPurchaseView(discord.ui.View):
                 return
             
             await conn.execute("UPDATE users SET credits = credits - $1 WHERE user_id = $2", self.total_price*quantity, self.user_id)
+            await conn.execute("UPDATE user_boosts SET amount = amount - $1 WHERE user_id = $2 AND boost = 'DISCN'", self.discount_times, self.user_id)
 
             q_gave = 0
             total_xp = 0

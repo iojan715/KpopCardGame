@@ -1,4 +1,4 @@
-import discord, random, asyncio, string
+import discord, random, asyncio, string, json
 from discord.ext import commands
 from discord import app_commands
 import csv
@@ -11,6 +11,7 @@ from datetime import datetime
 from utils.paginator import Paginator, NextButton, PreviousButton
 from collections import Counter, defaultdict
 from commands.starter import version as v
+from commands.starter import base, mult, reduct
 
 version = v
 
@@ -40,12 +41,13 @@ class InventoryGroup(app_commands.Group):
     ]
 
     ORDER_BY_CHOICES = [
-        app_commands.Choice(name="Fecha de obtención", value="date_obtained"),
-        app_commands.Choice(name="ID de idol", value="idol_id"),
-        app_commands.Choice(name="ID de set", value="set_id"),
-        app_commands.Choice(name="Rareza", value="rarity_id"),
-        app_commands.Choice(name="Estado", value="status"),
-        app_commands.Choice(name="Bloqueada", value="is_locked"),
+        app_commands.Choice(name="Fecha de obtención", value="uc.date_obtained"),
+        app_commands.Choice(name="Nombre", value="ci.idol_name"),
+        app_commands.Choice(name="Idol ID", value="uc.idol_id"),
+        app_commands.Choice(name="Set ID", value="uc.set_id"),
+        app_commands.Choice(name="Rareza", value="uc.rarity_id"),
+        app_commands.Choice(name="Estado", value="uc.status"),
+        app_commands.Choice(name="Bloqueada", value="uc.is_locked"),
     ]
 
     ORDER_CHOICES = [
@@ -96,10 +98,14 @@ class InventoryGroup(app_commands.Group):
     ):
         user_id = user.id if user else interaction.user.id
         pool = get_pool()
+        is_duplicated = False
+        if duplicated:
+            if duplicated.value == "✅":
+                is_duplicated = True
 
         
         base_query = """
-            SELECT uc.* FROM user_idol_cards uc
+            SELECT uc.*, ci.* FROM user_idol_cards uc
             JOIN cards_idol ci ON uc.card_id = ci.card_id
             WHERE uc.user_id = $1
         """
@@ -145,8 +151,8 @@ class InventoryGroup(app_commands.Group):
             params.append(boolean_value)
             idx += 1
         
-        valid_order_by = ["idol_id", "set_id", "rarity_id", "status", "is_locked"]
-        order_column = "date_obtained"
+        valid_order_by = ["uc.idol_id", "ci.idol_name", "uc.set_id", "uc.rarity_id", "uc.status", "uc.is_locked"]
+        order_column = "uc.date_obtained"
         if order_by:
             if order_by.value in valid_order_by:
                 order_column = order_by.value
@@ -164,7 +170,7 @@ class InventoryGroup(app_commands.Group):
                 if duplicated.value == "✅":
                     rows = [row for row in rows if card_counts[row['card_id']] >= 2]
                 else:
-                    rows = [row for row in rows if card_counts[row['card_id']] == 1]
+                    rows = [row for row in rows if card_counts[row['card_id']] >= 1]
 
         
         language = await get_user_language(user_id=user_id)  
@@ -176,7 +182,7 @@ class InventoryGroup(app_commands.Group):
         card_counts = Counter([row['card_id'] for row in rows])
         embeds = await generate_idol_card_embeds(rows, pool, interaction.guild)
 
-        paginator = InventoryEmbedPaginator(embeds, rows, interaction, base_query, params, embeds_per_page=3)
+        paginator = InventoryEmbedPaginator(embeds, rows, interaction, base_query, params, is_duplicated, embeds_per_page=3)
         await paginator.start()
 
     
@@ -342,17 +348,76 @@ class InventoryGroup(app_commands.Group):
             order_by="pcard_id"
         )
 
+    ORDER_BY_CHOICES_REDEEM = [
+        #app_commands.Choice(name="Type", value="r.type"),
+        app_commands.Choice(name="Name", value="r.name"),
+        app_commands.Choice(name="Last obtained", value="u.last_updated"),
+    ]
+
+    ORDER_CHOICES_REDEEM = [
+        app_commands.Choice(name="⏫", value="DESC"),
+        app_commands.Choice(name="⏬", value="ASC"),
+    ]
+    
     @app_commands.command(name="redeemables", description="Ver tus objetos canjeables")
-    @app_commands.describe(user="User")
-    async def redeemables(self, interaction: discord.Interaction, user:discord.User = None):
-        await self.display_simple_inventory(
-            interaction,
-            user = user,
-            table="user_redeemables",
-            id_field="redeemable_id",
-            quantity_field="quantity",
-            order_by="redeemable_id"
+    @app_commands.describe(user="User", order_by="Ordenar por", order="Orden")
+    @app_commands.choices(order_by=ORDER_BY_CHOICES_REDEEM, order=ORDER_CHOICES_REDEEM)
+    async def redeemables(
+        self,
+        interaction: discord.Interaction,
+        user:discord.User = None,
+        order_by: app_commands.Choice[str] = None,
+        order: app_commands.Choice[str] = None
+        ):
+        user_id = interaction.user.id
+        pool = get_pool()
+        language = await get_user_language(user_id)
+
+        if user:
+            user_id = user.id
+        
+        # Construcción dinámica del query
+        query = """
+            SELECT u.*, r.*
+            FROM user_redeemables u
+            JOIN redeemables r ON u.redeemable_id = r.redeemable_id
+            WHERE u.user_id = $1
+        """
+        params = [user_id]
+        idx = 2
+        
+        order_column = order_by.value if order_by else "u.last_updated"
+        order_direction = order.value if order else None
+        
+        if order_column:
+            if order_column == "r.name" and not order_direction:
+                order_direction = "ASC"
+        
+        if not order_direction:
+            order_direction = "DESC"
+        
+        valid_columns = {"u.last_updated": "u.last_updated", "r.type": "r.type", "r.name": "r.name"}
+        order_clause = f" ORDER BY {valid_columns.get(order_column, 'u.last_updated')} {order_direction}"
+        query += order_clause
+        
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(query, *params)
+            
+        if not rows:
+            await interaction.response.send_message("No tienes item cards por ahora.", ephemeral=True)
+            return
+        
+        embeds = await generate_redeemables_embeds(rows, pool, interaction)
+        
+        paginator = RedeemablesInventoryEmbedPaginator(
+            embeds=embeds,
+            rows=rows,
+            interaction=interaction,
+            base_query=query,
+            query_params=tuple(params),
+            embeds_per_page=5
         )
+        await paginator.start()
 
     @app_commands.command(name="badges", description="Ver tus insignias")
     @app_commands.describe(user="User")
@@ -487,17 +552,381 @@ class NextSimpleButton(discord.ui.Button):
         self.paginator.current_page = (self.paginator.current_page + 1) % self.paginator.total_pages
         await self.paginator.update(interaction)
 
+# redeemables
+async def generate_redeemables_embeds(rows: list[dict], pool, interaction) -> list[discord.Embed]:
+    embeds: list[discord.Embed] = []
+    language = await get_user_language(interaction.user.id)
+    
+    for row in rows:
+        
+        embed = discord.Embed(
+            title=f"{row['name']}: {row['quantity']}",
+            description=f"{get_translation(language,f"inventory_description.{row['redeemable_id']}")}",
+            color=discord.Color.teal()
+        )
+
+        image_url = (
+            f"https://res.cloudinary.com/dyvgkntvd/image/upload/"
+            f"f_webp,d_no_image.jpg/{row['redeemable_id']}.webp{version}"
+        )
+        #embed.set_thumbnail(url=image_url)
+
+        embeds.append(embed)
+
+    return embeds
+
+class RedeemablesInventoryEmbedPaginator:
+    def __init__(
+        self,
+        embeds: list[discord.Embed],
+        rows: list[dict],
+        interaction: discord.Interaction,
+        base_query: str,
+        query_params: tuple,
+        embeds_per_page: int = 5
+    ):
+        self.all_embeds = embeds
+        self.all_rows = rows
+        self.interaction = interaction
+        self.embeds_per_page = embeds_per_page
+        self.current_page = 0
+        self.total_pages = (len(embeds) + embeds_per_page - 1) // embeds_per_page
+        self.current_page_embeds: list[discord.Embed] = []
+
+        self.base_query = base_query
+        self.query_params = query_params
+
+    def get_page_embeds(self):
+        start = self.current_page * self.embeds_per_page
+        end = start + self.embeds_per_page
+        page = self.all_embeds[start:end]
+        footer = discord.Embed(
+            description=f"**Página** {self.current_page+1}/{self.total_pages}",
+            color=discord.Color.dark_gray()
+        )
+        return [footer] + page
+
+    def get_view(self):
+        view = discord.ui.View(timeout=120)
+        start = self.current_page * self.embeds_per_page
+        end = start + self.embeds_per_page
+        rows_this_page = self.all_rows[start:end]
+
+        for row in rows_this_page:
+            view.add_item(RedeemButton(row, self))
+
+        view.add_item(PreviousPageButton(self))
+        view.add_item(NextPageButton(self))
+        return view
+
+    async def start(self):
+        self.current_page_embeds = self.get_page_embeds()
+        await self.interaction.response.send_message(
+            embeds=self.current_page_embeds,
+            view=self.get_view(),
+            ephemeral=True
+        )
+
+    async def restart(self, interaction: discord.Interaction, restart:bool):
+        self.current_page = 0
+        self.current_page_embeds = self.get_page_embeds()
+        if restart:
+            await interaction.followup.send(
+                embeds=self.current_page_embeds,
+                view=self.get_view(),
+                ephemeral=True
+            )
+        else:
+            await interaction.response.edit_message(
+                embeds=self.current_page_embeds,
+                view=self.get_view()
+            )
+
+    async def update(self, interaction: discord.Interaction):
+        self.current_page_embeds = self.get_page_embeds()
+        await interaction.response.edit_message(
+            embeds=self.current_page_embeds,
+            view=self.get_view()
+        )
+
+    async def previous_page(self, interaction: discord.Interaction):
+        self.current_page = (self.current_page - 1) % self.total_pages
+        await self.update(interaction)
+
+    async def next_page(self, interaction: discord.Interaction):
+        self.current_page = (self.current_page + 1) % self.total_pages
+        await self.update(interaction)
+
+class RedeemButton(discord.ui.Button):
+    def __init__(self, row_data: dict, paginator: "RedeemablesInventoryEmbedPaginator"):
+        self.row_data = row_data
+        self.paginator = paginator
+        super().__init__(label=row_data['name'], style=discord.ButtonStyle.primary, disabled=row_data['type']=="redeem" or row_data['quantity']==0)
+        
+    async def callback(self, interaction: discord.Interaction):
+        row = self.row_data
+        language = await get_user_language(interaction.user.id)
+        pool = get_pool()
+        
+        need_group = ["EXCNT", "MDCNT"]
+        
+        if row['redeemable_id'] in need_group:
+            async with pool.acquire() as conn:
+                groups = await conn.fetch("SELECT * FROM groups WHERE user_id = $1 AND status = 'active'", interaction.user.id)
+            
+            desc = ""
+            for g in groups:
+                desc += f"- **{g['name']}**\n> ⭐: `{g['popularity']}` - 🏆: `{g['permanent_popularity']}`\n\n"
+                
+            "Selecciona un grupo para usar el cupón:"
+            # colocar description=desc
+            embed = discord.Embed(
+                title=f"❌ Por el momento no se puede canjear este cupón",
+                description="",
+                color=discord.Color.teal()
+                )
+            
+            view = discord.ui.View()
+            for group in groups:
+                pass
+                #view.add_item(RedeemableGroupButton(self.row_data, self.paginator, group))
+            
+            view.add_item(BackToRedeemablesInventoryButton(self.paginator.base_query, self.paginator.query_params,self.paginator))
+            
+            await interaction.response.edit_message(
+                embed=embed, view=view
+            )
+            return
+            
+        
+        embed = discord.Embed(
+            title=f"¿Deseas canjear el siguiente cupón?",
+            description=f"{row['name']}: {row['quantity']}\n> {get_translation(language,f"inventory_description.{row['redeemable_id']}")}",
+            color=discord.Color.teal()
+        )
+        
+        view = discord.ui.View()
+        view.add_item(ConfirmRedeemableButton(self.row_data, self.paginator))
+        view.add_item(BackToRedeemablesInventoryButton(self.paginator.base_query, self.paginator.query_params,self.paginator))
+        
+        await interaction.response.edit_message(
+            embed=embed, view=view
+        )
+
+class ConfirmRedeemableButton(discord.ui.Button):
+    def __init__(self, row_data: dict, paginator: "RedeemablesInventoryEmbedPaginator"):
+        self.row_data = row_data
+        self.paginator = paginator
+        super().__init__(label="Confirm", emoji="✅", style=discord.ButtonStyle.primary, disabled=row_data['type']=="redeem", row=2)
+    async def callback(self, interaction: discord.Interaction):
+        row = self.row_data
+        language = await get_user_language(interaction.user.id)
+        pool = get_pool()
+        
+        if row['type'] == "boost" and row['redeemable_id'] not in ["ORGAN", "REHRS"]:
+            async with pool.acquire() as conn:
+                await conn.execute(
+                    """INSERT INTO user_boosts (user_id, boost, amount)
+                    VALUES ($1, $2, $3)
+                    ON CONFLICT (user_id, boost) DO UPDATE 
+                    SET amount = user_boosts.amount + 1;
+                    """, row['user_id'], row['redeemable_id'], 1)
+                
+                await conn.execute(
+                    "UPDATE user_redeemables SET quantity = quantity-1 WHERE user_id = $1 AND redeemable_id = $2",
+                    row['user_id'], row['redeemable_id'])
+                
+            embed = discord.Embed(
+            title=f"✅ Effecto del cupón _{row['name']}_ canjeado!",
+            description=f"",
+            color=discord.Color.green()
+            )
+            await interaction.response.edit_message(embed=embed, view=None)
+        
+        elif row['type'] == "effect":
+            if row['redeemable_id'] == "TCONT":
+                async with pool.acquire() as conn:
+                    while True:
+                        new_card_id = await conn.fetchval("SELECT card_id FROM cards_idol ORDER BY RANDOM() LIMIT 1")
+                        exists = await conn.fetchval("SELECT 1 FROM user_idol_cards WHERE card_id = $1",new_card_id)
+                        if not exists:
+                            break
+                    
+
+                    card = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", new_card_id)
+
+                    while True:
+                        new_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=5))
+                        exists = await conn.fetchrow("SELECT 1 FROM user_idol_cards WHERE unique_id = $1", new_id)
+                        if not exists:
+                            break
+                    
+                    p_skill = a_skill = s_skill = u_skill = None
+                    
+                    # Asignar habilidades dependiendo rareza
+                    if card["rarity"] == "Regular":
+                        tipo_habilidad = random.choice(["passive", "active", "support"])
+
+                        skill_row = await conn.fetchrow("""
+                            SELECT skill_name FROM skills WHERE skill_type = $1 ORDER BY RANDOM() LIMIT 1
+                        """, tipo_habilidad)
+
+                        if skill_row:
+                            if tipo_habilidad == "passive":
+                                p_skill = skill_row["skill_name"]
+                            elif tipo_habilidad == "active":
+                                a_skill = skill_row["skill_name"]
+                            elif tipo_habilidad == "support":
+                                s_skill = skill_row["skill_name"]
+                    
+                    elif card["rarity"] == "Limited":
+                        skill_row = await conn.fetchrow("""
+                            SELECT skill_name FROM skills WHERE skill_type = 'ultimate' ORDER BY RANDOM() LIMIT 1
+                        """)
+                        if skill_row:
+                            u_skill = skill_row["skill_name"]
+
+                        extra_type = random.choice(["passive", "active", "support"])
+                        skill_row = await conn.fetchrow("""
+                            SELECT skill_name FROM skills WHERE skill_type = $1 ORDER BY RANDOM() LIMIT 1
+                        """, extra_type)
+                        if skill_row:
+                            if extra_type == "passive":
+                                p_skill = skill_row["skill_name"]
+                            elif extra_type == "active":
+                                a_skill = skill_row["skill_name"]
+                            elif extra_type == "support":
+                                s_skill = skill_row["skill_name"]
+                                
+                    elif card["rarity"] == "FCR":
+                        skill_row = await conn.fetchrow("""
+                            SELECT skill_name FROM skills WHERE skill_type = 'support' ORDER BY RANDOM() LIMIT 1
+                        """)
+                        if skill_row:
+                            s_skill = skill_row["skill_name"]
+
+                        extra_type = random.choice(["passive", "active", "ultimate"])
+                        skill_row = await conn.fetchrow("""
+                            SELECT skill_name FROM skills WHERE skill_type = $1 ORDER BY RANDOM() LIMIT 1
+                        """, extra_type)
+                        if skill_row:
+                            if extra_type == "passive":
+                                p_skill = skill_row["skill_name"]
+                            elif extra_type == "active":
+                                a_skill = skill_row["skill_name"]
+                            elif extra_type == "ultimate":
+                                u_skill = skill_row["skill_name"]
+                    
+                    elif card["rarity"] == "POB":
+                        available_types = ["passive", "active", "support", "ultimate"]
+                        chosen_types = random.sample(available_types, 3)
+
+                        for skill_type in chosen_types:
+                            skill_row = await conn.fetchrow("""
+                                SELECT skill_name FROM skills WHERE skill_type = $1 ORDER BY RANDOM() LIMIT 1
+                            """, skill_type)
+
+                            if skill_row:
+                                if skill_type == "passive":
+                                    p_skill = skill_row["skill_name"]
+                                elif skill_type == "active":
+                                    a_skill = skill_row["skill_name"]
+                                elif skill_type == "support":
+                                    s_skill = skill_row["skill_name"]
+                                elif skill_type == "ultimate":
+                                    u_skill = skill_row["skill_name"]
+                    
+                    # Agregar carta al inventario
+                    await conn.execute("""
+                        INSERT INTO user_idol_cards (unique_id, user_id, card_id, idol_id, set_id, rarity_id, p_skill, a_skill, s_skill, u_skill)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                    """, new_id, interaction.user.id, card["card_id"], card["idol_id"], card["set_id"], card["rarity_id"], p_skill, a_skill, s_skill, u_skill)
+                    
+                    await conn.execute(
+                    "UPDATE user_redeemables SET quantity = quantity-1 WHERE user_id = $1 AND redeemable_id = $2",
+                    row['user_id'], row['redeemable_id'])
+                
+                embed = discord.Embed(
+                title=f"✅ Nueva carta obtenida!",
+                description=f"**{card['idol_name']}** _{card['group_name']}_\n`{card['set_name']}`",
+                color=discord.Color.green()
+                )
+                embed.set_footer(text=f"{card['card_id']}.{new_id}")
+                c_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/d_no_image.jpg/{card['card_id']}.webp{version}"
+                embed.set_image(url=c_url)
+                await interaction.response.edit_message(embed=embed, view=None)
+        
+        else:
+            embed = discord.Embed(
+            title=f"❌ No se ha podido canjear el cupón",
+            description=f"",
+            color=discord.Color.light_gray()
+            )
+            await interaction.response.edit_message(embed=embed, view=None)
+        
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(
+                self.paginator.base_query,
+                *self.paginator.query_params
+            )
+        embeds = await generate_redeemables_embeds(rows, pool, interaction)
+        new_paginator = RedeemablesInventoryEmbedPaginator(
+            embeds=embeds,
+            rows=rows,
+            interaction=interaction,
+            base_query=self.paginator.base_query,
+            query_params=self.paginator.query_params,
+            embeds_per_page=self.paginator.embeds_per_page
+        )
+        await new_paginator.restart(interaction, True)
+        
+        
+        
+        
+class BackToRedeemablesInventoryButton(discord.ui.Button):
+    def __init__(
+        self,
+        base_query: str,
+        query_params: list,
+        paginator: "RedeemablesInventoryEmbedPaginator"
+    ):
+        super().__init__(label="Volver", style=discord.ButtonStyle.secondary, row=2)
+        self.base_query = base_query
+        self.query_params = query_params
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(
+                self.paginator.base_query,
+                *self.paginator.query_params
+            )
+
+        if not rows:
+            return await interaction.response.edit_message(
+                content="⚠️ No se encontraron cupones con estos filtros.",
+                embed=None,
+                view=None
+            )
+
+        embeds = await generate_redeemables_embeds(rows, pool, interaction)
+        new_paginator = RedeemablesInventoryEmbedPaginator(
+            embeds=embeds,
+            rows=rows,
+            interaction=interaction,
+            base_query=self.paginator.base_query,
+            query_params=self.paginator.query_params,
+            embeds_per_page=self.paginator.embeds_per_page
+        )
+        
+        await new_paginator.restart(interaction, False)
 
 
 # - item_cards
 async def generate_item_card_embeds(rows: list[dict], pool) -> list[discord.Embed]:
-    """
-    Dada la lista de rows de user_item_cards JOIN cards_item,
-    construye y devuelve la lista de embeds correspondientes.
-    """
     embeds: list[discord.Embed] = []
     for row in rows:
-        # Obtenemos info de equipamiento
         equipped_desc = ""
         async with pool.acquire() as conn:
             eq_data = await conn.fetchrow(
@@ -515,7 +944,6 @@ async def generate_item_card_embeds(rows: list[dict], pool) -> list[discord.Embe
                 )
                 equipped_desc = f"\n> Equipped to: {idol_name} - {group_name}"
 
-        # Construcción del embed
         title_prefix = "✅ " if row["status"] == "available" else ""
         embed = discord.Embed(
             title=f"{title_prefix}{row['name']} ⌛{row['durability']}",
@@ -529,7 +957,6 @@ async def generate_item_card_embeds(rows: list[dict], pool) -> list[discord.Embe
         )
         embed.set_thumbnail(url=image_url)
 
-        # Campos de bonos
         stats = [
             ("Vocal", row["plus_vocal"]),
             ("Rap", row["plus_rap"]),
@@ -1197,9 +1624,6 @@ class ConfirmItemRefundView(discord.ui.View):
 
 
 
-
-
-
 # - idol_cards
 async def generate_idol_card_embeds(rows: list, pool, guild: discord.Guild) -> list[discord.Embed]:
     """Genera una lista de embeds para cartas de idols."""
@@ -1293,23 +1717,197 @@ class CardDetailButton(discord.ui.Button):
         self.query_params = paginator.query_params
 
     async def callback(self, interaction: discord.Interaction):
-        # Aquí usarás self.row_data para construir un embed detallado
+        pool = get_pool()
+        language = await get_user_language(interaction.user.id)
+        guild = interaction.guild
+        
+        async with pool.acquire() as conn:
+            card = await conn.fetchrow("SELECT * FROM user_idol_cards WHERE unique_id = $1", self.unique_id)
+            base_card_data = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", self.card_id)
+            idol_base_row = await conn.fetchrow("SELECT * FROM idol_base WHERE idol_id = $1", base_card_data['idol_id'])
+            
+            rarity=""
+            if base_card_data['rarity'] == "Regular":
+                rarity = f"{base_card_data['rarity']} {base_card_data['rarity_id'][1]} - Lvl.{base_card_data['rarity_id'][2]}"
+            else:
+                rarity = f"{base_card_data['rarity']}"
+
+        status = ""
+        if card['status'] == 'equipped':
+            status = "👥"
+            
         embed = discord.Embed(
-            title=f"Detalles de {self.card_id}",
-            description=f"ID único: `{self.card_id}.{self.unique_id}`",
+            title=f"{idol_base_row['name']} - _{base_card_data['group_name']}_ {status}",
+            description=f"{base_card_data['set_name']} `{rarity}`",
             color=discord.Color.orange()
         )
-        # Ejemplo de campos adicionales usando los datos de la carta:
-        embed.add_field(name="Rareza", value=self.row_data.get("rarity", "Desconocido"))
-        embed.add_field(name="Nivel", value=self.row_data.get("level", "??"))
-        embed.add_field(name="Estado", value=self.row_data.get("status", "unknown"))
-        # ... puedes seguir agregando más detalles desde self.row_data ...
-
+        
+        vocal = base_card_data['vocal'] - idol_base_row['vocal']
+        rap = base_card_data['rap'] - idol_base_row['rap']
+        dance = base_card_data['dance'] - idol_base_row['dance']
+        visual = base_card_data['visual'] - idol_base_row['visual']
+        energy = base_card_data['energy'] - 50
+        
+        embed.add_field(name=f"**🎤 Vocal: {idol_base_row['vocal']} (+{vocal})**", value=f"**🎶 Rap: {idol_base_row['rap']} (+{rap})**", inline=True)
+        embed.add_field(name=f"**💃 Dance: {idol_base_row['dance']} (+{dance})**", value=f"**✨ Visual: {idol_base_row['visual']} (+{visual})**", inline=True)
+        embed.add_field(name=f"**⚡ Energy: 50 (+{energy})**", value=f"", inline=True)
+        
+        async with pool.acquire() as conn:
+            if card['p_skill']:
+                skill_data = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1", card['p_skill'])
+                condition_values = json.loads(skill_data['condition_values'])
+                condition_params = json.loads(skill_data['condition_params'])
+                
+                pcond_score=condition_params.get('score')
+                pcond_score = int((pcond_score-1)*100) if pcond_score else None
+                pcond_hype=condition_params.get('hype')
+                pcond_hype = int((pcond_hype-1)*100) if pcond_hype else None
+                cond_energy=condition_values.get("energy")
+                cond_energy = int((cond_energy)*100) if cond_energy else None
+                
+                embed.add_field(name=f"**{get_emoji(guild, "PassiveSkill")} {skill_data['skill_name']}**",
+                                value=get_translation(language,
+                                                        f"skills.{skill_data['skill_name']}",
+                                                        cond_vocal = condition_values.get("vocal"),
+                                                        cond_rap = condition_values.get("rap"),
+                                                        cond_dance = condition_values.get("dance"),
+                                                        cond_visual = condition_values.get("visual"),
+                                                        cond_energy = cond_energy,
+                                                        cond_stat = condition_values.get("stat"),
+                                                        cond_hype = condition_values.get("hype"),
+                                                        cond_duration = condition_values.get("duration"),
+                                                        pcond_vocal = condition_params.get("vocal"),
+                                                        pcond_rap = condition_params.get("rap"),
+                                                        pcond_dance = condition_params.get("dance"),
+                                                        pcond_visual = condition_params.get("visual"),
+                                                        pcond_hype = pcond_hype,
+                                                        pcond_score = pcond_score,
+                                                        pcond_extra_cost = condition_params.get("energy"),
+                                                        pcond_value = condition_params.get("value")
+                                                        ))
+            if card['a_skill']:
+                skill_data = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1", card['a_skill'])
+                condition_values = json.loads(skill_data['condition_values'])
+                condition_params = json.loads(skill_data['condition_params'])
+                eff_params = json.loads(skill_data['params'])
+                eff = skill_data['effect']
+                cost_type = skill_data['cost_type']
+                lower = higher = relative_cost = extra_cost = ""
+                
+                pcond_energy = condition_params.get("energy")
+                if pcond_energy:
+                    pcond_energy *= -1
+                
+                score=eff_params.get('score')
+                score = int((score-1)*100) if score else None
+                hype=eff_params.get('hype')
+                hype = int((hype-1)*100) if hype else None
+                
+                pcond_score=condition_params.get('score')
+                pcond_score = int((pcond_score-1)*100) if pcond_score else None
+                pcond_hype=condition_params.get('hype')
+                pcond_hype = int((pcond_hype-1)*100) if pcond_hype else None
+                cond_energy=condition_values.get("energy")
+                cond_energy = int((cond_energy)*100) if cond_energy else None
+                
+                if cost_type == "relative":
+                    relative_cost = skill_data['energy_cost']
+                    relative_cost = int((relative_cost)*100)
+                if cost_type == "fixed":
+                    extra_cost = skill_data['energy_cost']
+                if eff == "boost_lower_stat":
+                    lower = eff_params.get("value")
+                if eff == "boost_higher_stat":
+                    higher = eff_params.get("value")
+                embed.add_field(name=f"**{get_emoji(guild, "ActiveSkill")} {skill_data['skill_name']}**",
+                                value=get_translation(language,
+                                                        f"skills.{skill_data['skill_name']}",
+                                                        cond_vocal = condition_values.get("vocal"),
+                                                        cond_rap = condition_values.get("rap"),
+                                                        cond_dance = condition_values.get("dance"),
+                                                        cond_visual = condition_values.get("visual"),
+                                                        cond_energy = cond_energy,
+                                                        cond_stat = condition_values.get("stat"),
+                                                        cond_hype = condition_values.get("hype"),
+                                                        cond_duration = condition_values.get("duration"),
+                                                        pcond_vocal = condition_params.get("vocal"),
+                                                        pcond_rap = condition_params.get("rap"),
+                                                        pcond_dance = condition_params.get("dance"),
+                                                        pcond_visual = condition_params.get("visual"),
+                                                        pcond_energy = pcond_energy,
+                                                        pcond_hype = pcond_hype,
+                                                        pcond_score = pcond_score,
+                                                        pcond_extra_cost = condition_params.get("energy"),
+                                                        pcond_value = condition_params.get("value"),
+                                                        higher=higher, lower=lower,
+                                                        vocal=eff_params.get("vocal"),
+                                                        rap=eff_params.get("rap"),
+                                                        dance=eff_params.get('dance'),
+                                                        visual=eff_params.get('visual'),
+                                                        score=score,
+                                                        hype=hype,
+                                                        relative_cost=relative_cost,
+                                                        extra_cost=extra_cost,
+                                                        ))
+            if card['s_skill']:
+                skill_data = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1", card['s_skill'])
+                effect_data = await conn.fetchrow("SELECT * FROM performance_effects WHERE effect_id = $1", skill_data['effect_id'])
+                if effect_data['hype_mod']:
+                    hype = int((effect_data['hype_mod']-1)*100)
+                if effect_data['score_mod']:
+                    score = int((effect_data['score_mod']-1)*100)
+                if effect_data['relative_cost']:
+                    relative = int((effect_data['relative_cost']-1)*100)
+                embed.add_field(name=f"**{get_emoji(guild, "SupportSkill")} {skill_data['skill_name']}**",
+                                value=get_translation(language,
+                                                        f"skills.{skill_data['skill_name']}",
+                                                        duration=skill_data['duration'], energy_cost=int(skill_data['energy_cost']),
+                                                        highest = effect_data['highest_stat_mod'], lowest = effect_data['lowest_stat_mod'],
+                                                        vocal = effect_data['plus_vocal'], rap = effect_data['plus_rap'],
+                                                        dance = effect_data['plus_dance'], visual = effect_data['plus_visual'],
+                                                        hype = hype, score = score,
+                                                        extra_cost = effect_data['extra_cost'], relative_coost = relative
+                                                        ))
+            if card['u_skill']:
+                skill_data = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1", card['u_skill'])
+                cost_type = skill_data['cost_type']
+                eff_params = json.loads(skill_data['params'])
+                lower = higher = relative_cost = extra_cost = ""
+                if cost_type == "relative":
+                    relative_cost = skill_data['energy_cost']
+                    relative_cost = int((relative_cost)*100)
+                if cost_type == "fixed":
+                    extra_cost = skill_data['energy_cost']
+                    
+                score=eff_params.get('score')
+                score = int((score-1)*100) if score else None
+                hype=eff_params.get('hype')
+                hype = (int((hype-1)*100)) if hype else None
+                
+                embed.add_field(name=f"**{get_emoji(guild, "UltimateSkill")} {skill_data['skill_name']}**",
+                                value=get_translation(language,
+                                                        f"skills.{skill_data['skill_name']}",
+                                                        higher=higher, lower=lower,
+                                                        vocal=eff_params.get("vocal"),
+                                                        rap=eff_params.get("rap"),
+                                                        dance=eff_params.get('dance'),
+                                                        visual=eff_params.get('visual'),
+                                                        score=score,
+                                                        hype=hype,
+                                                        value=eff_params.get('value'),
+                                                        relative_cost=relative_cost,
+                                                        extra_cost=extra_cost,
+                                                        ))
+        
+        
+        image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{base_card_data['card_id']}.webp{version}"
+        embed.set_image(url=image_url)
+        embed.set_footer(text=f"{self.card_id}.{self.unique_id}")
+        
         view = discord.ui.View()
         view.add_item(EquipButton(self.row_data, self.paginator))
         view.add_item(DesequipButton(self.row_data, self.paginator))
 
-        # Botón para regresar a la vista anterior
         view.add_item(BackToInventoryButton(self.paginator))
 
         await interaction.response.edit_message(
@@ -1334,6 +1932,12 @@ class BackToInventoryButton(discord.ui.Button):
                 view=None
             )
             return
+        card_counts = Counter([row['card_id'] for row in rows])
+        if self.paginator.is_duplicated:
+            rows = [row for row in rows if card_counts[row['card_id']] >= 2]
+        else:
+            rows = [row for row in rows if card_counts[row['card_id']] >= 1]
+            
 
         embeds = await generate_idol_card_embeds(rows, pool, interaction.guild)
         new_paginator = InventoryEmbedPaginator(
@@ -1342,6 +1946,7 @@ class BackToInventoryButton(discord.ui.Button):
             interaction,
             base_query=self.paginator.base_query,
             query_params=self.paginator.query_params,
+            is_duplicated=self.paginator.is_duplicated,
             embeds_per_page=self.paginator.embeds_per_page
         )
         await new_paginator.restart(interaction)
@@ -1676,6 +2281,7 @@ class InventoryEmbedPaginator:
         interaction: discord.Interaction,
         base_query: str,
         query_params: tuple,
+        is_duplicated: bool,
         embeds_per_page: int = 3
     ):
         self.all_embeds = embeds
@@ -1688,6 +2294,7 @@ class InventoryEmbedPaginator:
 
         self.base_query = base_query
         self.query_params = query_params
+        self.is_duplicated = is_duplicated
     
     def get_page_embeds(self):
         start = self.current_page * self.embeds_per_page
@@ -1747,7 +2354,6 @@ class InventoryEmbedPaginator:
         await self.update(interaction)
 
 
-
 # --- /cards
 class CardGroup(app_commands.Group):
     def __init__(self):
@@ -1773,9 +2379,10 @@ class CardGroup(app_commands.Group):
         user_id = interaction.user.id
         language = await get_user_language(user_id)
         pool = get_pool()
+        guild = interaction.guild
 
         try:
-            code, unique_id = card_id.split(".")
+            card_id, unique_id = card_id.split(".")
         except ValueError:
             return await interaction.response.send_message("❌ Formato inválido. Usa `id.unique_id`", ephemeral=True)
 
@@ -1785,7 +2392,6 @@ class CardGroup(app_commands.Group):
                 SELECT * FROM user_idol_cards
                 WHERE unique_id = $1
             """, unique_id)
-            print(row)
 
             if row:
                 card_type = "idol"
@@ -1797,44 +2403,191 @@ class CardGroup(app_commands.Group):
                 if not base_data:
                     return await interaction.response.send_message("❌ No se encontró la información de la carta.", ephemeral=True)
 
-                name = base_data['idol_name']
-                card_set = base_data['set_name']
-                rarity = base_data['rarity']
-                group_name = base_data['group_name']
-                rarity_id = base_data['rarity_id']
+                
+                card = await conn.fetchrow("SELECT * FROM user_idol_cards WHERE unique_id = $1", unique_id)
+                base_card_data = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", card_id)
+                idol_base_row = await conn.fetchrow("SELECT * FROM idol_base WHERE idol_id = $1", base_card_data['idol_id'])
+                
+                rarity=""
+                if base_card_data['rarity'] == "Regular":
+                    rarity = f"{base_card_data['rarity']} {base_card_data['rarity_id'][1]} - Lvl.{base_card_data['rarity_id'][2]}"
+                else:
+                    rarity = f"{base_card_data['rarity']}"
 
-                c_rarity = rarity
-                if rarity == "Regular":
-                    model = rarity_id[1]
-                    level = rarity_id[2]
-                    rarity += f" {model} - Lvl.{level}"
-
-                blocked = "🔐" if row["is_locked"] else ""
-
-                RARITY_COLORS = {
-                    "Regular": discord.Color.light_gray(),
-                    "Special": discord.Color.purple(),
-                    "Limited": discord.Color.yellow(),
-                    "FCR": discord.Color.orange(),
-                    "POB": discord.Color.blue(),
-                    "Legacy": discord.Color.dark_purple(),
-                }
-                embed_color = RARITY_COLORS.get(c_rarity, discord.Color.default())
-
+                status = ""
+                if card['status'] == 'equipped':
+                    status = "👥"
+                
+                user_row = await conn.fetchrow("SELECT * FROM users WHERE user_id = $1", card['user_id'])    
+                propietario = f"\nAgencia: **{user_row['agency_name']}**\n> CEO: <@{card['user_id']}>"
+                    
                 embed = discord.Embed(
-                    title=f"{name} - *{group_name}* {blocked}",
-                    description=f"{card_set} `{rarity}`",
-                    color=embed_color
+                    title=f"{idol_base_row['name']} - _{base_card_data['group_name']}_ {status}",
+                    description=f"{base_card_data['set_name']} `{rarity}`{propietario}",
+                    color=discord.Color.orange()
                 )
-
-                user_row = await conn.fetchrow("SELECT agency_name FROM users WHERE user_id = $1", row['user_id'])
-                embed.add_field(name=f"Agencia: {user_row['agency_name']}", value=f"> Dirigida por: <@{row['user_id']}>")
-
-                image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{row['card_id']}.webp{version}"
+                
+                vocal = base_card_data['vocal'] - idol_base_row['vocal']
+                rap = base_card_data['rap'] - idol_base_row['rap']
+                dance = base_card_data['dance'] - idol_base_row['dance']
+                visual = base_card_data['visual'] - idol_base_row['visual']
+                energy = base_card_data['energy'] - 50
+                
+                embed.add_field(name=f"**🎤 Vocal: {idol_base_row['vocal']} (+{vocal})**", value=f"**🎶 Rap: {idol_base_row['rap']} (+{rap})**", inline=True)
+                embed.add_field(name=f"**💃 Dance: {idol_base_row['dance']} (+{dance})**", value=f"**✨ Visual: {idol_base_row['visual']} (+{visual})**", inline=True)
+                embed.add_field(name=f"**⚡ Energy: 50 (+{energy})**", value=f"", inline=True)
+                
+                async with pool.acquire() as conn:
+                    if card['p_skill']:
+                        skill_data = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1", card['p_skill'])
+                        condition_values = json.loads(skill_data['condition_values'])
+                        condition_params = json.loads(skill_data['condition_params'])
+                        
+                        pcond_score=condition_params.get('score')
+                        pcond_score = int((pcond_score-1)*100) if pcond_score else None
+                        pcond_hype=condition_params.get('hype')
+                        pcond_hype = int((pcond_hype-1)*100) if pcond_hype else None
+                        cond_energy=condition_values.get("energy")
+                        cond_energy = int((cond_energy)*100) if cond_energy else None
+                        
+                        embed.add_field(name=f"**{get_emoji(guild, "PassiveSkill")} {skill_data['skill_name']}**",
+                                        value=get_translation(language,
+                                                                f"skills.{skill_data['skill_name']}",
+                                                                cond_vocal = condition_values.get("vocal"),
+                                                                cond_rap = condition_values.get("rap"),
+                                                                cond_dance = condition_values.get("dance"),
+                                                                cond_visual = condition_values.get("visual"),
+                                                                cond_energy = cond_energy,
+                                                                cond_stat = condition_values.get("stat"),
+                                                                cond_hype = condition_values.get("hype"),
+                                                                cond_duration = condition_values.get("duration"),
+                                                                pcond_vocal = condition_params.get("vocal"),
+                                                                pcond_rap = condition_params.get("rap"),
+                                                                pcond_dance = condition_params.get("dance"),
+                                                                pcond_visual = condition_params.get("visual"),
+                                                                pcond_hype = pcond_hype,
+                                                                pcond_score = pcond_score,
+                                                                pcond_extra_cost = condition_params.get("energy"),
+                                                                pcond_value = condition_params.get("value")
+                                                                ))
+                    if card['a_skill']:
+                        skill_data = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1", card['a_skill'])
+                        condition_values = json.loads(skill_data['condition_values'])
+                        condition_params = json.loads(skill_data['condition_params'])
+                        eff_params = json.loads(skill_data['params'])
+                        eff = skill_data['effect']
+                        cost_type = skill_data['cost_type']
+                        lower = higher = relative_cost = extra_cost = ""
+                        
+                        pcond_energy = condition_params.get("energy")
+                        if pcond_energy:
+                            pcond_energy *= -1
+                        
+                        score=eff_params.get('score')
+                        score = int((score-1)*100) if score else None
+                        hype=eff_params.get('hype')
+                        hype = int((hype-1)*100) if hype else None
+                        
+                        pcond_score=condition_params.get('score')
+                        pcond_score = int((pcond_score-1)*100) if pcond_score else None
+                        pcond_hype=condition_params.get('hype')
+                        pcond_hype = int((pcond_hype-1)*100) if pcond_hype else None
+                        cond_energy=condition_values.get("energy")
+                        cond_energy = int((cond_energy)*100) if cond_energy else None
+                        
+                        if cost_type == "relative":
+                            relative_cost = skill_data['energy_cost']
+                            relative_cost = int((relative_cost)*100)
+                        if cost_type == "fixed":
+                            extra_cost = skill_data['energy_cost']
+                        if eff == "boost_lower_stat":
+                            lower = eff_params.get("value")
+                        if eff == "boost_higher_stat":
+                            higher = eff_params.get("value")
+                        embed.add_field(name=f"**{get_emoji(guild, "ActiveSkill")} {skill_data['skill_name']}**",
+                                        value=get_translation(language,
+                                                                f"skills.{skill_data['skill_name']}",
+                                                                cond_vocal = condition_values.get("vocal"),
+                                                                cond_rap = condition_values.get("rap"),
+                                                                cond_dance = condition_values.get("dance"),
+                                                                cond_visual = condition_values.get("visual"),
+                                                                cond_energy = cond_energy,
+                                                                cond_stat = condition_values.get("stat"),
+                                                                cond_hype = condition_values.get("hype"),
+                                                                cond_duration = condition_values.get("duration"),
+                                                                pcond_vocal = condition_params.get("vocal"),
+                                                                pcond_rap = condition_params.get("rap"),
+                                                                pcond_dance = condition_params.get("dance"),
+                                                                pcond_visual = condition_params.get("visual"),
+                                                                pcond_energy = pcond_energy,
+                                                                pcond_hype = pcond_hype,
+                                                                pcond_score = pcond_score,
+                                                                pcond_extra_cost = condition_params.get("energy"),
+                                                                pcond_value = condition_params.get("value"),
+                                                                higher=higher, lower=lower,
+                                                                vocal=eff_params.get("vocal"),
+                                                                rap=eff_params.get("rap"),
+                                                                dance=eff_params.get('dance'),
+                                                                visual=eff_params.get('visual'),
+                                                                score=score,
+                                                                hype=hype,
+                                                                relative_cost=relative_cost,
+                                                                extra_cost=extra_cost,
+                                                                ))
+                    if card['s_skill']:
+                        skill_data = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1", card['s_skill'])
+                        effect_data = await conn.fetchrow("SELECT * FROM performance_effects WHERE effect_id = $1", skill_data['effect_id'])
+                        if effect_data['hype_mod']:
+                            hype = int((effect_data['hype_mod']-1)*100)
+                        if effect_data['score_mod']:
+                            score = int((effect_data['score_mod']-1)*100)
+                        if effect_data['relative_cost']:
+                            relative = int((effect_data['relative_cost']-1)*100)
+                        embed.add_field(name=f"**{get_emoji(guild, "SupportSkill")} {skill_data['skill_name']}**",
+                                        value=get_translation(language,
+                                                                f"skills.{skill_data['skill_name']}",
+                                                                duration=skill_data['duration'], energy_cost=int(skill_data['energy_cost']),
+                                                                highest = effect_data['highest_stat_mod'], lowest = effect_data['lowest_stat_mod'],
+                                                                vocal = effect_data['plus_vocal'], rap = effect_data['plus_rap'],
+                                                                dance = effect_data['plus_dance'], visual = effect_data['plus_visual'],
+                                                                hype = hype, score = score,
+                                                                extra_cost = effect_data['extra_cost'], relative_coost = relative
+                                                                ))
+                    if card['u_skill']:
+                        skill_data = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1", card['u_skill'])
+                        cost_type = skill_data['cost_type']
+                        eff_params = json.loads(skill_data['params'])
+                        lower = higher = relative_cost = extra_cost = ""
+                        if cost_type == "relative":
+                            relative_cost = skill_data['energy_cost']
+                            relative_cost = int((relative_cost)*100)
+                        if cost_type == "fixed":
+                            extra_cost = skill_data['energy_cost']
+                            
+                        score=eff_params.get('score')
+                        score = int((score-1)*100) if score else None
+                        hype=eff_params.get('hype')
+                        hype = (int((hype-1)*100)) if hype else None
+                        
+                        embed.add_field(name=f"**{get_emoji(guild, "UltimateSkill")} {skill_data['skill_name']}**",
+                                        value=get_translation(language,
+                                                                f"skills.{skill_data['skill_name']}",
+                                                                higher=higher, lower=lower,
+                                                                vocal=eff_params.get("vocal"),
+                                                                rap=eff_params.get("rap"),
+                                                                dance=eff_params.get('dance'),
+                                                                visual=eff_params.get('visual'),
+                                                                score=score,
+                                                                hype=hype,
+                                                                value=eff_params.get('value'),
+                                                                relative_cost=relative_cost,
+                                                                extra_cost=extra_cost,
+                                                                ))
+                
+                
+                image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{base_card_data['card_id']}.webp{version}"
                 embed.set_image(url=image_url)
-
-                embed.add_field(name=row["status"].capitalize(), value="", inline=False)
-                embed.set_footer(text=f"{row['card_id']}.{row['unique_id']}")
+                embed.set_footer(text=f"{card_id}.{unique_id}")
 
             else:
                 # Buscar como ítem
@@ -1865,7 +2618,7 @@ class CardGroup(app_commands.Group):
 
                 embed.add_field(
                     name=f"Agencia: {user_row['agency_name']}",
-                    value=f"> Propietario: <@{row['user_id']}>",
+                    value=f"> CEO: <@{row['user_id']}>",
                     inline=False
                 )
 
@@ -2166,7 +2919,6 @@ class CardGroup(app_commands.Group):
                 description=f"{cmd}",
                 color=discord.Color.teal()
             )
-            embed.set_footer(text=f"Probabilidad de éxito: {success}%")
             posibles.append(embed)
 
         if not posibles:
@@ -2192,6 +2944,8 @@ class CardGroup(app_commands.Group):
                 SELECT * FROM user_idol_cards
                 WHERE unique_id = ANY($1::TEXT[]) AND user_id = $2
             """, uids, user_id)
+            
+            btfsn = await conn.fetchval("SELECT amount FROM user_boosts WHERE user_id = $1 AND boost = 'BTFSN'", user_id)
 
         if len(rows) != 3:
             return await interaction.response.send_message("❌ No se encontraron las tres cartas o no te pertenecen.", ephemeral=True)
@@ -2213,27 +2967,61 @@ class CardGroup(app_commands.Group):
         set_id = set_ids.pop()
         rarity_id = "SPC"
         card_id = f"{idol_id}{set_id}{rarity_id}"
-        success = 0
+        
+        success = 0.0
         for row in rows:
             nivel = int(row['rarity_id'][-1])
-            p_nivel = int((nivel*(nivel+1))/2)
-            success += p_nivel * 5
+            if nivel == 3:
+                chance = 0.95
+            elif nivel == 2:
+                chance = 0.75
+            else:
+                chance = 0.55
+                
+            if success == 0:
+                success += chance
+            else:
+                success *= chance
+        
+        extra_success = 0.0
+        plus_success = ""
+        active_btfsn = False
+        if btfsn:
+            if btfsn >= 1:
+                for row in rows:
+                    nivel = int(row['rarity_id'][-1])
+                    if nivel == 3:
+                        chance = 1.00
+                    elif nivel == 2:
+                        chance = 0.85
+                    else:
+                        chance = 0.65
+                    
+                    if extra_success == 0:
+                        extra_success += chance
+                    else:
+                        extra_success *= chance
+                    
+                extra_success -= success
+                extra_success = int(extra_success*100)
+                plus_success = f" (+{extra_success}%)"
+                active_btfsn = True
+                
+        success = int(success*100)
         
         preview = discord.Embed(
             title="✨ Confirmar fusión",
-            description=f"### Fusionarás 3 cartas regulares para obtener una carta **Special**.\n> Costo: 7,000 💵\nProbabilidad de éxito: {success}%",
+            description=f"### Fusionarás 3 cartas regulares para obtener una carta **Special**.\n> Costo: 7,000 💵\nProbabilidad de éxito: {success}%{plus_success}",
             color=discord.Color.purple()
         )
         preview.set_thumbnail(url=f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{card_id}.webp{version}")
         preview.set_footer(text="Presiona Confirmar para continuar o Cancelar para detener el proceso.")
 
-        view = ConfirmFusionView(user_id, uids, card_id, idol_id, set_id, rarity_id)
+        view = ConfirmFusionView(user_id, uids, card_id, idol_id, set_id, rarity_id, success, active_btfsn)
         await interaction.response.send_message(embed=preview, view=view, ephemeral=True)
 
     @app_commands.command(name="refund", description="Solicita un reembolso por una carta u objeto")
-    @app_commands.describe(
-        card="ID de la carta/objeto con formato ID.unique"
-    )
+    @app_commands.describe(card="ID de la carta/objeto con formato ID.unique")
     async def refund(self, interaction: discord.Interaction, card: str):
         user_id = interaction.user.id
         try:
@@ -2340,7 +3128,7 @@ class ConfirmRefundView(discord.ui.View):
 
 # fusion
 class ConfirmFusionView(discord.ui.View):
-    def __init__(self, user_id, uids, new_card_id, idol_id, set_id, rarity_id):
+    def __init__(self, user_id, uids, new_card_id, idol_id, set_id, rarity_id, success, active_btfsn):
         super().__init__(timeout=180)
         self.user_id = user_id
         self.uids = uids
@@ -2348,6 +3136,8 @@ class ConfirmFusionView(discord.ui.View):
         self.idol_id = idol_id
         self.set_id = set_id
         self.rarity_id = rarity_id
+        self.success = success
+        self.active_btfsn = active_btfsn
         self.cost = 7000
 
     @discord.ui.button(label="✅ Confirmar", style=discord.ButtonStyle.success)
@@ -2382,7 +3172,15 @@ class ConfirmFusionView(discord.ui.View):
                 view=None
             )
             await asyncio.sleep(0.5)
-
+            active_btfsn = False
+            if self.active_btfsn:
+                btfsn = await conn.fetchval("SELECT amount FROM user_boosts WHERE user_id = $1 AND boost = 'BTFSN'", self.user_id)
+                
+                if btfsn:
+                    if btfsn >= 1:
+                        active_btfsn = True
+                        await conn.execute("UPDATE user_boosts SET amount = amount - 1 WHERE user_id = $1 AND boost = 'BTFSN'", self.user_id)
+            
             success = True
             result = "## 🔮 Resultados:\n"
             for row in rows:
@@ -2390,13 +3188,14 @@ class ConfirmFusionView(discord.ui.View):
                 chance = 0
                 
                 if level == 3:
-                    chance = 96
+                    chance = 95 if not active_btfsn else 100
                 elif level == 2:
-                    chance = 77
+                    chance = 75 if not active_btfsn else 85
                 else:
-                    chance = 53
+                    chance = 55 if not active_btfsn else 65
                     
                 roll = random.randint(1, 100)
+                print(chance,roll)
                 emoji = "\n✅" if roll <= chance else "\n❌"
                 result += f"{emoji} "
                 
@@ -2415,7 +3214,7 @@ class ConfirmFusionView(discord.ui.View):
                     description="La fusión ha fallado.\nPuedes intentar nuevamente si deseas.",
                     color=discord.Color.red()
                 )
-                retry_view = RetryFusionView(self.user_id, self.uids, self.new_card_id, self.idol_id, self.set_id, self.rarity_id)
+                retry_view = RetryFusionView(self.user_id, self.uids, self.new_card_id, self.idol_id, self.set_id, self.rarity_id, self.success)
 
                 await interaction.followup.send(embed=embed_fail, view=retry_view, ephemeral=True)
                 return
@@ -2503,7 +3302,7 @@ class ConfirmFusionView(discord.ui.View):
         await interaction.response.edit_message(content="❌ Fusión cancelada.", embed=None, view=None)
 
 class RetryFusionView(discord.ui.View):
-    def __init__(self, user_id, uids, card_id, idol_id, set_id, rarity_id):
+    def __init__(self, user_id, uids, card_id, idol_id, set_id, rarity_id, success):
         super().__init__(timeout=60)
         self.user_id = user_id
         self.uids = uids
@@ -2511,22 +3310,57 @@ class RetryFusionView(discord.ui.View):
         self.idol_id = idol_id
         self.set_id = set_id
         self.rarity_id = rarity_id
+        self.success = success
 
     @discord.ui.button(label="🔁 Intentar de nuevo", style=discord.ButtonStyle.primary)
     async def retry(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user.id != self.user_id:
             return await interaction.response.send_message("❌ No puedes usar este botón.", ephemeral=True)
 
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            btfsn = await conn.fetchval("SELECT amount FROM user_boosts WHERE user_id = $1 AND boost = 'BTFSN'", self.user_id)
+            rows = await conn.fetch("""
+                SELECT * FROM user_idol_cards
+                WHERE unique_id = ANY($1::TEXT[]) AND user_id = $2
+            """, self.uids, self.user_id)
+        temp_success = self.success/100
+        
+        extra_success = 0.0
+        plus_success = ""
+        active_btfsn = False
+        if btfsn:
+            if btfsn >= 1:
+                for row in rows:
+                    nivel = int(row['rarity_id'][-1])
+                    if nivel == 3:
+                        chance = 1.00
+                    elif nivel == 2:
+                        chance = 0.85
+                    else:
+                        chance = 0.65
+                    
+                    if extra_success == 0:
+                        extra_success += chance
+                    else:
+                        extra_success *= chance
+                    
+                extra_success -= temp_success
+                extra_success = int(extra_success*100)
+                plus_success = f" (+{extra_success}%)"
+                active_btfsn = True
+                
+        
         # reconstruir el mensaje inicial
         preview = discord.Embed(
             title="✨ Confirmar fusión",
-            description=f"### Fusionarás 3 cartas regulares para obtener una carta **Special**.\n> Costo: 5,000 💵\nProbabilidad de éxito: calculada dinámicamente",
+            description=f"### Fusionarás 3 cartas regulares para obtener una carta **Special**.\n> Costo: 5,000 💵\nProbabilidad de éxito: {self.success}%{plus_success}",
             color=discord.Color.purple()
         )
         preview.set_thumbnail(url=f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{self.card_id}.webp{version}")
         preview.set_footer(text="Presiona Confirmar para continuar o Cancelar para detener el proceso.")
 
-        view = ConfirmFusionView(self.user_id, self.uids, self.card_id, self.idol_id, self.set_id, self.rarity_id)
+        view = ConfirmFusionView(self.user_id, self.uids, self.card_id, self.idol_id, self.set_id, self.rarity_id, self.success, active_btfsn)
         await interaction.response.edit_message(content=None, embed=preview, view=view)
 
 

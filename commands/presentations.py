@@ -108,8 +108,17 @@ class PresentationGroup(app_commands.Group):
         elif ptype == "event":
             cost = 0
 
+        cost_desc = f"💵 {cost}"
+        active_discount = False
         async with pool.acquire() as conn:
             user_data = await conn.fetchrow("SELECT credits FROM users WHERE user_id = $1", user_id)
+            
+            disc_invitation = await conn.fetchval("SELECT amount FROM user_boosts WHERE user_id = $1 AND boost = 'INVIT'", user_id)
+            
+            if disc_invitation and ptype == "live":
+                if disc_invitation >= 1:
+                    active_discount = True
+                    cost_desc = "GRATIS"
 
         if not user_data or user_data["credits"] < cost:
             await interaction.response.send_message(
@@ -119,9 +128,9 @@ class PresentationGroup(app_commands.Group):
             return
 
         # Muestra vista de confirmación
-        view = ConfirmCreatePresentationView(user_id, ptype, cost)
+        view = ConfirmCreatePresentationView(user_id, ptype, cost, active_discount)
         await interaction.response.send_message(
-            content=f"🎤 ¿Quieres crear una presentación de tipo **{type.name}**?\n💸 Costo: **{cost} créditos**{extra_desc}",
+            content=f"🎤 ¿Quieres crear una presentación de tipo **{type.name}**?\n💸 Costo: **{cost_desc}**{extra_desc}",
             view=view,
             ephemeral=True
         )
@@ -594,11 +603,12 @@ class NextListPageButton(discord.ui.Button):
 
 # --- create
 class ConfirmCreatePresentationView(discord.ui.View):
-    def __init__(self, user_id: int, presentation_type: str, cost: int):
+    def __init__(self, user_id: int, presentation_type: str, cost: int, active_discount:bool):
         super().__init__(timeout=60)
         self.user_id = user_id
         self.presentation_type = presentation_type
         self.cost = cost
+        self.active_discount = active_discount
 
     @discord.ui.button(label="✅ Confirmar", style=discord.ButtonStyle.success)
     async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -608,6 +618,7 @@ class ConfirmCreatePresentationView(discord.ui.View):
 
         pool = get_pool()
         presentation_id = str(random.randint(10000, 99999)).zfill(5)
+        cost = self.cost
 
         async with pool.acquire() as conn:
             # Verificar de nuevo que tiene créditos
@@ -619,16 +630,21 @@ class ConfirmCreatePresentationView(discord.ui.View):
                 )
                 return
 
-            # Insertar en la tabla `presentations`
+            if self.active_discount:
+                disc_invitation = await conn.fetchval("SELECT amount FROM user_boosts WHERE user_id = $1 AND boost = 'INVIT'", self.user_id)
+                if disc_invitation >= 1:
+                    cost = 0
+                    await conn.execute("UPDATE user_boosts SET amount = amount - 1 WHERE user_id = $1 AND boost = 'INVIT'", self.user_id)
+            
             await conn.execute("""
                 INSERT INTO presentations (presentation_id, owner_id, user_id, presentation_type)
                 VALUES ($1, $2, $3, $4)
             """, presentation_id, self.user_id, self.user_id, self.presentation_type)
 
-            # Descontar créditos
             await conn.execute("""
                 UPDATE users SET credits = credits - $1 WHERE user_id = $2
-            """, self.cost, self.user_id)
+            """, cost, self.user_id)
+            
 
         await interaction.response.edit_message(
             content=f"✅ Presentación creada exitosamente con ID `{presentation_id}`",
@@ -1278,6 +1294,8 @@ class SelectIdolToSwitchButton(discord.ui.Button):
                     pcond_score = int((pcond_score-1)*100) if pcond_score else None
                     pcond_hype=condition_params.get('hype')
                     pcond_hype = int((pcond_hype-1)*100) if pcond_hype else None
+                    cond_energy=condition_values.get("energy")
+                    cond_energy = int((cond_energy)*100) if cond_energy else None
                     
                     embed.add_field(name=f"**🟢 {skill_data['skill_name']}**",
                                     value=get_translation(language,
@@ -1286,7 +1304,7 @@ class SelectIdolToSwitchButton(discord.ui.Button):
                                                           cond_rap = condition_values.get("rap"),
                                                           cond_dance = condition_values.get("dance"),
                                                           cond_visual = condition_values.get("visual"),
-                                                          cond_energy = condition_values.get("energy"),
+                                                          cond_energy = cond_energy,
                                                           cond_stat = condition_values.get("stat"),
                                                           cond_hype = condition_values.get("hype"),
                                                           cond_duration = condition_values.get("duration"),
@@ -1309,7 +1327,8 @@ class SelectIdolToSwitchButton(discord.ui.Button):
                     lower = higher = relative_cost = extra_cost = ""
                     
                     pcond_energy = condition_params.get("energy")
-                    pcond_energy *= -1 if pcond_energy else None
+                    if pcond_energy:
+                        pcond_energy *= -1
                     
                     score=eff_params.get('score')
                     score = int((score-1)*100) if score else None
@@ -1320,6 +1339,8 @@ class SelectIdolToSwitchButton(discord.ui.Button):
                     pcond_score = int((pcond_score-1)*100) if pcond_score else None
                     pcond_hype=condition_params.get('hype')
                     pcond_hype = int((pcond_hype-1)*100) if pcond_hype else None
+                    cond_energy=condition_values.get("energy")
+                    cond_energy = int((cond_energy)*100) if cond_energy else None
                     
                     if cost_type == "relative":
                         relative_cost = skill_data['energy_cost']
@@ -1337,7 +1358,7 @@ class SelectIdolToSwitchButton(discord.ui.Button):
                                                           cond_rap = condition_values.get("rap"),
                                                           cond_dance = condition_values.get("dance"),
                                                           cond_visual = condition_values.get("visual"),
-                                                          cond_energy = condition_values.get("energy"),
+                                                          cond_energy = cond_energy,
                                                           cond_stat = condition_values.get("stat"),
                                                           cond_hype = condition_values.get("hype"),
                                                           cond_duration = condition_values.get("duration"),
@@ -3636,34 +3657,34 @@ class ReturnToSectionButton(discord.ui.Button):
         await show_current_section_view(interaction, self.presentation_id, edit=True)
 
 async def finalize_presentation(conn, presentation: dict) -> str:
-    """
-    Ejecuta la lógica de fin de presentación:
-    - Si es type == 'live', otorga popularidad y XP.
-    - Si es type == 'practice', no otorga recompensa.
-    Devuelve el contenido (string) para el edit_message.
-    """
     presentation_id = presentation["presentation_id"]
     user_id = presentation["user_id"]
     group_id = presentation["group_id"]
     ptype = presentation.get("presentation_type", "live")
 
-    # Consulta valores base
     average_score = await conn.fetchval(
         "SELECT average_score FROM songs WHERE song_id = $1",
-        presentation["song_id"]
-    )
-    # total_score ya fue actualizada por el botón antes de llegar aquí
+        presentation["song_id"])
+    
     total_score = await conn.fetchval(
         "SELECT total_score FROM presentations WHERE presentation_id = $1",
-        presentation_id
-    )
+        presentation_id)
 
     if ptype == "live":
-        # 1) calcular popularidad y XP
         popularity = int(1000 * (total_score / average_score))
         xp = popularity // 10
+        
+        pool = get_pool()
+        double = ""
+        async with pool.acquire() as conn:
+            double_reward = await conn.fetchval("SELECT amount FROM user_boosts WHERE user_id = $1 AND boost = 'DBRWR'", user_id)
+            
+            if double_reward:
+                if double_reward >= 1:
+                    await conn.execute("UPDATE user_boosts SET amount = amount - 1 WHERE user_id = $1 AND boost = 'DBRWR'", user_id)
+                    popularity *= 2
+                    double = " **(x2)**"
 
-        # 2) persistir cambios
         await conn.execute(
             "UPDATE users SET xp = xp + $1 WHERE user_id = $2",
             xp, user_id
@@ -3683,13 +3704,11 @@ async def finalize_presentation(conn, presentation: dict) -> str:
             popularity, group_id
         )
 
-        # 3) mensaje final
         return (
-            f"## 🎉 ¡Presentación completada!\n**Puntuación total:** {format(total_score,',')} _(Esperado: {format(int(average_score),',')})_\n> **Popularidad ganada:** {format(popularity,',')}\n> **XP obtenida:** {xp}"
+            f"## 🎉 ¡Presentación completada!\n**Puntuación total:** {format(total_score,',')} _(Esperado: {format(int(average_score),',')})_\n> **Popularidad ganada:** {format(popularity,',')}{double}\n> **XP obtenida:** {xp}"
         )
 
-    else:  # practice
-        # sólo marcar completada
+    else:
         await conn.execute(
             """
             UPDATE presentations
