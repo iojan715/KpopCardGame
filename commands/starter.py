@@ -7,7 +7,7 @@ from utils.localization import get_translation
 from utils.language import get_user_language
 from asyncpg import Pool
 
-version = "?v=249"
+version = "?v=247"
 base = 180
 mult = 700
 reduct = 200000
@@ -66,6 +66,11 @@ class NewAgencyModal(discord.ui.Modal, title="Create Your Agency"):
         credits = 10000
 
         async with pool.acquire() as conn:
+            exists_agency = await conn.fetchval("SELECT 1 FROM users WHERE agency_name = $1", agency)
+            if exists_agency:
+                await interaction.response.send_message(content="## ❌ Ya existe una agencia con ese nombre\nPor favor elige uno diferente", ephemeral=True)
+                return
+                
             await conn.execute("""
                 INSERT INTO users (user_id, agency_name, credits, register_date, language, last_sponsor)
                 VALUES ($1, $2, $3, $4, $5, $6)
@@ -82,7 +87,7 @@ class NewAgencyModal(discord.ui.Modal, title="Create Your Agency"):
 
         language = self.language
         welcome = get_translation(language, "start.welcome", agency=agency, credits=credits)
-        await interaction.response.send_message(welcome, ephemeral=True)
+        await interaction.response.edit_message(content=welcome, view=None)
         
         guild = interaction.guild
         

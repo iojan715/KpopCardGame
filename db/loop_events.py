@@ -4,7 +4,7 @@ from db.connection import get_pool
 import logging
 
 EJECUCION_HORA_UTC = 5  # 05:00 UTC
-GRACE_DAYS = 3  # días de tolerancia para ejecución tardía
+GRACE_DAYS = 2  # días de tolerancia para ejecución tardía
 
 BOT = None
 
@@ -172,7 +172,6 @@ async def remove_roles():
         print(f"🔄 Limpiando {len(fanclub_roles)} roles FanClub en {guild.name}")
         # Recorremos cada miembro
         async for member in guild.fetch_members(limit=None):
-            print(member)
             to_remove = [r for r in member.roles if r in fanclub_roles]
             if to_remove:
                 try:

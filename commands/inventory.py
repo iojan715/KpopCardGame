@@ -62,7 +62,7 @@ class InventoryGroup(app_commands.Group):
     
     @app_commands.command(name="idol_cards", description="Ver tus cartas de idol")
     @app_commands.describe(
-        user="Target user's inventory",
+        agency="Target agency's inventory",
         idol="Filter by idol",
         set_name="Filter by set",
         group="Filter by group",
@@ -84,7 +84,7 @@ class InventoryGroup(app_commands.Group):
     async def idol_cards(
         self,
         interaction: discord.Interaction,
-        user: discord.User = None,
+        agency: str = None,
         idol: str = None,
         set_name: str = None,
         group: str = None,
@@ -96,13 +96,16 @@ class InventoryGroup(app_commands.Group):
         order: app_commands.Choice[str] = None,
         duplicated: app_commands.Choice[str] = None,
     ):
-        user_id = user.id if user else interaction.user.id
+        user_id = interaction.user.id
         pool = get_pool()
         is_duplicated = False
         if duplicated:
             if duplicated.value == "✅":
                 is_duplicated = True
 
+        if agency:
+            async with pool.acquire() as conn:
+                user_id = await conn.fetchval("SELECT user_id FROM users WHERE agency_name = $1", agency)
         
         base_query = """
             SELECT uc.*, ci.* FROM user_idol_cards uc
@@ -195,6 +198,16 @@ class InventoryGroup(app_commands.Group):
             app_commands.Choice(name=f"{row['name']} ({row['idol_id']})", value=row['idol_id'])
             for row in rows if current.lower() in f"{row['name'].lower()} ({row['idol_id'].lower()})"
         ][:25]
+        
+    @idol_cards.autocomplete("agency")
+    async def agency_autocomplete(self, interaction: discord.Interaction, current: str):
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("SELECT agency_name FROM users ORDER BY register_date DESC")
+        return [
+            app_commands.Choice(name=f"{row['agency_name']}", value=row['agency_name'])
+            for row in rows if current.lower() in f"{row['agency_name'].lower()}"
+        ][:25]
 
     @idol_cards.autocomplete("set_name")
     async def set_autocomplete(self, interaction: discord.Interaction, current: str):
@@ -252,7 +265,7 @@ class InventoryGroup(app_commands.Group):
     
     @app_commands.command(name="item_cards", description="Ver tus item cards")
     @app_commands.describe(
-        user="User",
+        agency="Agency",
         type="Filtra por tipo de item",
         status="Filtra por estado",
         stat="Filtra por stat con bonus",
@@ -269,7 +282,7 @@ class InventoryGroup(app_commands.Group):
     async def item_cards(
         self,
         interaction: discord.Interaction,
-        user: discord.User = None,
+        agency: str = None,
         type: app_commands.Choice[str] = None,
         status: app_commands.Choice[str] = None,
         stat: app_commands.Choice[str] = None,
@@ -279,8 +292,9 @@ class InventoryGroup(app_commands.Group):
         user_id = interaction.user.id
         pool = get_pool()
 
-        if user:
-            user_id = user.id
+        if agency:
+            async with pool.acquire() as conn:
+                user_id = await conn.fetchval("SELECT user_id FROM users WHERE agency_name = $1", agency)
         
         # Construcción dinámica del query
         query = """
@@ -334,19 +348,39 @@ class InventoryGroup(app_commands.Group):
             embeds_per_page=3
         )
         await paginator.start()
-
+    
+    @item_cards.autocomplete("agency")
+    async def agency_autocomplete(self, interaction: discord.Interaction, current: str):
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("SELECT agency_name FROM users ORDER BY register_date DESC")
+        return [
+            app_commands.Choice(name=f"{row['agency_name']}", value=row['agency_name'])
+            for row in rows if current.lower() in f"{row['agency_name'].lower()}"
+        ][:25]
 
     @app_commands.command(name="performance_cards", description="Ver tus performance cards")
-    @app_commands.describe(user="User")
-    async def performance_cards(self, interaction: discord.Interaction, user:discord.User = None):
+    @app_commands.describe(agency="Agency")
+    async def performance_cards(self, interaction: discord.Interaction, agency:str = None):
+        
         await self.display_simple_inventory(
             interaction,
-            user=user,
+            agency=agency,
             table="user_performance_cards",
             id_field="pcard_id",
             quantity_field="quantity",
             order_by="pcard_id"
         )
+
+    @performance_cards.autocomplete("agency")
+    async def agency_autocomplete(self, interaction: discord.Interaction, current: str):
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("SELECT agency_name FROM users ORDER BY register_date DESC")
+        return [
+            app_commands.Choice(name=f"{row['agency_name']}", value=row['agency_name'])
+            for row in rows if current.lower() in f"{row['agency_name'].lower()}"
+        ][:25]
 
     ORDER_BY_CHOICES_REDEEM = [
         #app_commands.Choice(name="Type", value="r.type"),
@@ -360,12 +394,12 @@ class InventoryGroup(app_commands.Group):
     ]
     
     @app_commands.command(name="redeemables", description="Ver tus objetos canjeables")
-    @app_commands.describe(user="User", order_by="Ordenar por", order="Orden")
+    @app_commands.describe(agency="Agency", order_by="Ordenar por", order="Orden")
     @app_commands.choices(order_by=ORDER_BY_CHOICES_REDEEM, order=ORDER_CHOICES_REDEEM)
     async def redeemables(
         self,
         interaction: discord.Interaction,
-        user:discord.User = None,
+        agency:str = None,
         order_by: app_commands.Choice[str] = None,
         order: app_commands.Choice[str] = None
         ):
@@ -373,8 +407,9 @@ class InventoryGroup(app_commands.Group):
         pool = get_pool()
         language = await get_user_language(user_id)
 
-        if user:
-            user_id = user.id
+        if agency:
+            async with pool.acquire() as conn:
+                user_id = await conn.fetchval("SELECT user_id FROM users WHERE agency_name = $1", agency)
         
         # Construcción dinámica del query
         query = """
@@ -419,27 +454,38 @@ class InventoryGroup(app_commands.Group):
         )
         await paginator.start()
 
+    @redeemables.autocomplete("agency")
+    async def agency_autocomplete(self, interaction: discord.Interaction, current: str):
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("SELECT agency_name FROM users ORDER BY register_date DESC")
+        return [
+            app_commands.Choice(name=f"{row['agency_name']}", value=row['agency_name'])
+            for row in rows if current.lower() in f"{row['agency_name'].lower()}"
+        ][:25]
+
     @app_commands.command(name="badges", description="Ver tus insignias")
-    @app_commands.describe(user="User")
-    async def badges(self, interaction: discord.Interaction, user:discord.User = None):
+    @app_commands.describe(agency="Agency")
+    async def badges(self, interaction: discord.Interaction, agency:str = None):
         await self.display_simple_inventory(
             interaction,
-            user = user,
+            agency=agency,
             table="user_badges",
             id_field="badge_id",
             quantity_field=None,
             order_by="date_obtained"
         )
 
-    async def display_simple_inventory(self, interaction: discord.Interaction, user, table, id_field, quantity_field, order_by):
+    async def display_simple_inventory(self, interaction: discord.Interaction, agency, table, id_field, quantity_field, order_by):
         user_id = interaction.user.id
-        if user:
-            user_id = user.id
         
         pool = get_pool()
         language = await get_user_language(user_id)
 
         async with pool.acquire() as conn:
+            if agency:
+                user_id = await conn.fetchval("SELECT user_id FROM users WHERE agency_name = $1", agency)
+            
             if quantity_field:
                 query = f"SELECT {id_field}, {quantity_field} FROM {table} WHERE user_id = $1 ORDER BY {order_by} ASC"
             else:
@@ -500,10 +546,10 @@ class InventoryGroup(app_commands.Group):
                 if quantity_field:
                     quantity = row[quantity_field]
                     embed.add_field(name=f"**{p_name['name']}:** {quantity}",
-                                    value=f"> {get_translation(language,f"inventory_description.{item_id}",vocal=vocal, rap=rap, dance=dance, visual=visual, hype=hype, score=score, extra_cost=extra_cost, relative_cost=relative_cost, duration=duration)}",
+                                    value=f"- {get_translation(language,f"inventory_description.{item_id}",vocal=vocal, rap=rap, dance=dance, visual=visual, hype=hype, score=score, extra_cost=extra_cost, relative_cost=relative_cost, duration=duration)}",
                                     inline=False)
                 else:
-                    embed.add_field(name=f"**{p_name['name']}**", value="Aqui va la descripción del objeto", inline=False)
+                    embed.add_field(name=f"**{p_name['name']}**", value="", inline=False)
             embeds.append(embed)
 
         paginator = SimplePaginator(embeds)
@@ -613,7 +659,8 @@ class RedeemablesInventoryEmbedPaginator:
         rows_this_page = self.all_rows[start:end]
 
         for row in rows_this_page:
-            view.add_item(RedeemButton(row, self))
+            if row['user_id'] == self.interaction.user.id:
+                view.add_item(RedeemButton(row, self))
 
         view.add_item(PreviousPageButton(self))
         view.add_item(NextPageButton(self))
@@ -778,6 +825,25 @@ class ConfirmRedeemableButton(discord.ui.Button):
                                 a_skill = skill_row["skill_name"]
                             elif tipo_habilidad == "support":
                                 s_skill = skill_row["skill_name"]
+                    
+                    elif card["rarity"] == "Special":
+                        available_types = ["passive", "active", "support"]
+                        chosen_types = random.sample(available_types, 2)
+
+                        for skill_type in chosen_types:
+                            skill_row = await conn.fetchrow("""
+                                SELECT skill_name FROM skills WHERE skill_type = $1 ORDER BY RANDOM() LIMIT 1
+                            """, skill_type)
+
+                            if skill_row:
+                                if skill_type == "passive":
+                                    p_skill = skill_row["skill_name"]
+                                elif skill_type == "active":
+                                    a_skill = skill_row["skill_name"]
+                                elif skill_type == "support":
+                                    s_skill = skill_row["skill_name"]
+                                elif skill_type == "ultimate":
+                                    u_skill = skill_row["skill_name"]
                     
                     elif card["rarity"] == "Limited":
                         skill_row = await conn.fetchrow("""
@@ -1759,9 +1825,9 @@ class CardDetailButton(discord.ui.Button):
                 condition_params = json.loads(skill_data['condition_params'])
                 
                 pcond_score=condition_params.get('score')
-                pcond_score = int((pcond_score-1)*100) if pcond_score else None
+                pcond_score = int(round(pcond_score-1,2)*100) if pcond_score else None
                 pcond_hype=condition_params.get('hype')
-                pcond_hype = int((pcond_hype-1)*100) if pcond_hype else None
+                pcond_hype = int(round(pcond_hype-1,2)*100) if pcond_hype else None
                 cond_energy=condition_values.get("energy")
                 cond_energy = int((cond_energy)*100) if cond_energy else None
                 
@@ -1799,14 +1865,14 @@ class CardDetailButton(discord.ui.Button):
                     pcond_energy *= -1
                 
                 score=eff_params.get('score')
-                score = int((score-1)*100) if score else None
+                score = int(round(score-1,2)*100) if score else None
                 hype=eff_params.get('hype')
-                hype = int((hype-1)*100) if hype else None
+                hype = int(round(hype-1,2)*100) if hype else None
                 
                 pcond_score=condition_params.get('score')
-                pcond_score = int((pcond_score-1)*100) if pcond_score else None
+                pcond_score = int(round(pcond_score-1,2)*100) if pcond_score else None
                 pcond_hype=condition_params.get('hype')
-                pcond_hype = int((pcond_hype-1)*100) if pcond_hype else None
+                pcond_hype = int(round(pcond_hype-1,2)*100) if pcond_hype else None
                 cond_energy=condition_values.get("energy")
                 cond_energy = int((cond_energy)*100) if cond_energy else None
                 
@@ -1853,11 +1919,11 @@ class CardDetailButton(discord.ui.Button):
                 skill_data = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1", card['s_skill'])
                 effect_data = await conn.fetchrow("SELECT * FROM performance_effects WHERE effect_id = $1", skill_data['effect_id'])
                 if effect_data['hype_mod']:
-                    hype = int((effect_data['hype_mod']-1)*100)
+                    hype = int(round(effect_data['hype_mod']-1,2)*100)
                 if effect_data['score_mod']:
-                    score = int((effect_data['score_mod']-1)*100)
+                    score = int(round(effect_data['score_mod']-1,2)*100)
                 if effect_data['relative_cost']:
-                    relative = int((effect_data['relative_cost']-1)*100)
+                    relative = int(round(effect_data['relative_cost']-1,2)*100)
                 embed.add_field(name=f"**{get_emoji(guild, "SupportSkill")} {skill_data['skill_name']}**",
                                 value=get_translation(language,
                                                         f"skills.{skill_data['skill_name']}",
@@ -1877,12 +1943,12 @@ class CardDetailButton(discord.ui.Button):
                     relative_cost = skill_data['energy_cost']
                     relative_cost = int((relative_cost)*100)
                 if cost_type == "fixed":
-                    extra_cost = skill_data['energy_cost']
+                    extra_cost = int(skill_data['energy_cost'] * -1)
                     
                 score=eff_params.get('score')
-                score = int((score-1)*100) if score else None
+                score = int(round(score-1,2)*100) if score else None
                 hype=eff_params.get('hype')
-                hype = (int((hype-1)*100)) if hype else None
+                hype = (int(round(hype-1,2)*100)) if hype else None
                 
                 embed.add_field(name=f"**{get_emoji(guild, "UltimateSkill")} {skill_data['skill_name']}**",
                                 value=get_translation(language,
@@ -2444,9 +2510,9 @@ class CardGroup(app_commands.Group):
                         condition_params = json.loads(skill_data['condition_params'])
                         
                         pcond_score=condition_params.get('score')
-                        pcond_score = int((pcond_score-1)*100) if pcond_score else None
+                        pcond_score = int(round(pcond_score-1,2)*100) if pcond_score else None
                         pcond_hype=condition_params.get('hype')
-                        pcond_hype = int((pcond_hype-1)*100) if pcond_hype else None
+                        pcond_hype = int(round(pcond_hype-1,2)*100) if pcond_hype else None
                         cond_energy=condition_values.get("energy")
                         cond_energy = int((cond_energy)*100) if cond_energy else None
                         
@@ -2484,14 +2550,14 @@ class CardGroup(app_commands.Group):
                             pcond_energy *= -1
                         
                         score=eff_params.get('score')
-                        score = int((score-1)*100) if score else None
+                        score = int(round(score-1,2)*100) if score else None
                         hype=eff_params.get('hype')
-                        hype = int((hype-1)*100) if hype else None
+                        hype = int(round(hype-1,2)*100) if hype else None
                         
                         pcond_score=condition_params.get('score')
-                        pcond_score = int((pcond_score-1)*100) if pcond_score else None
+                        pcond_score = int(round(pcond_score-1,2)*100) if pcond_score else None
                         pcond_hype=condition_params.get('hype')
-                        pcond_hype = int((pcond_hype-1)*100) if pcond_hype else None
+                        pcond_hype = int(round(pcond_hype-1,2)*100) if pcond_hype else None
                         cond_energy=condition_values.get("energy")
                         cond_energy = int((cond_energy)*100) if cond_energy else None
                         
@@ -2538,11 +2604,11 @@ class CardGroup(app_commands.Group):
                         skill_data = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1", card['s_skill'])
                         effect_data = await conn.fetchrow("SELECT * FROM performance_effects WHERE effect_id = $1", skill_data['effect_id'])
                         if effect_data['hype_mod']:
-                            hype = int((effect_data['hype_mod']-1)*100)
+                            hype = int(round(effect_data['hype_mod']-1,2)*100)
                         if effect_data['score_mod']:
-                            score = int((effect_data['score_mod']-1)*100)
+                            score = int(round(effect_data['score_mod']-1,2)*100)
                         if effect_data['relative_cost']:
-                            relative = int((effect_data['relative_cost']-1)*100)
+                            relative = int(round(effect_data['relative_cost']-1,2)*100) 
                         embed.add_field(name=f"**{get_emoji(guild, "SupportSkill")} {skill_data['skill_name']}**",
                                         value=get_translation(language,
                                                                 f"skills.{skill_data['skill_name']}",
@@ -2562,12 +2628,12 @@ class CardGroup(app_commands.Group):
                             relative_cost = skill_data['energy_cost']
                             relative_cost = int((relative_cost)*100)
                         if cost_type == "fixed":
-                            extra_cost = skill_data['energy_cost']
+                            extra_cost = int(skill_data['energy_cost'] * -1)
                             
                         score=eff_params.get('score')
-                        score = int((score-1)*100) if score else None
+                        score = int(round(score-1,2)*100) if score else None
                         hype=eff_params.get('hype')
-                        hype = (int((hype-1)*100)) if hype else None
+                        hype = (int(round(hype-1,2)*100)) if hype else None
                         
                         embed.add_field(name=f"**{get_emoji(guild, "UltimateSkill")} {skill_data['skill_name']}**",
                                         value=get_translation(language,
@@ -2593,8 +2659,8 @@ class CardGroup(app_commands.Group):
                 # Buscar como ítem
                 row = await conn.fetchrow("""
                     SELECT * FROM user_item_cards
-                    WHERE unique_id = $1 AND user_id = $2
-                """, unique_id, user_id)
+                    WHERE unique_id = $1
+                """, unique_id)
 
                 if not row:
                     return await interaction.response.send_message("❌ No se encontró la carta o ítem especificado.", ephemeral=True)

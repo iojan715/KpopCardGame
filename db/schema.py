@@ -4,6 +4,7 @@ import datetime
 async def create_all_tables():
     await create_users_table()
     await create_level_rewards_table()
+    await create_user_boosts_table()
     await create_cards_idol_table()
     await create_cards_item_table()
     await create_cards_performance_table()
@@ -64,6 +65,19 @@ async def create_level_rewards_table():
                 badge TEXT
             );
         """)
+
+async def create_user_boosts_table():
+    pool = get_pool()
+    async with pool.acquire() as conn:
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS user_boosts (
+                user_id BIGINT,
+                boost TEXT NOT NULL,
+                amount INTEGER DEFAULT 0,
+                PRIMARY KEY (user_id, boost)
+            );
+        """)
+
 
 async def create_cards_idol_table():
     pool = get_pool()
@@ -542,7 +556,7 @@ async def create_loop_events_table():
             ('change_limited_set','mensual', None, 1),
             ('cancel_presentation','frecuente', None, None),
             ('increase_payment','semanal', 0, None),
-            ('remove_roles','frecuente', None, None),
+            ('remove_roles','semanal', 0, None),
         ]
 
         for event_name, tipo, dia_semana, dia_mes in eventos:

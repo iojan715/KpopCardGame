@@ -10,5 +10,5 @@ RECRT,Recruitment,redeem,RG1,20
 DISCN,Discount,boost,,15
 REHRS,Rehearsal,boost,,50
 SHOPS,Shop,redeem,item,120
-TRNNG,Training,redeem,p_card,750
-MDCNT,Media Content,effect,group,250
+TRNNG,Training,redeem,p_card,200
+MDCNT,Media Content,effect,group,150

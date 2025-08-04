@@ -272,7 +272,7 @@ class CollectionCommand(commands.Cog):
             return
 
         # === CASO: Solo se indica set ===
-        if set_name and not rarity and not idol:
+        elif set_name and not rarity and not idol:
             idols_in_set = defaultdict(lambda: {"owned": 0, "total": 0, "_counted": set(), "_owned": set()})
             total_in_set = set()
             owned_in_set = set()
@@ -327,6 +327,55 @@ class CollectionCommand(commands.Cog):
             await interaction.response.send_message(embed=embed, ephemeral=hidden)
             return
 
+        
+        
+        elif rarity and not set_name and not idol:
+            # 1) Filtramos por rareza
+            filtered = [c for c in cards if c["rarity"] == rarity]
+
+            # 2) Contamos owned / total por set
+            by_set = defaultdict(lambda: {"owned": 0, "total": 0})
+            for c in filtered:
+                key = (c["set_id"], c["set_name"])
+                by_set[key]["total"] += 1
+
+                if c["rarity"] != "Regular":
+                    if c["card_id"] in user_non_regular_ids:
+                        by_set[key]["owned"] += 1
+                else:
+                    model_key = c["idol_id"] + c["set_id"] + c["rarity_id"][:2]
+                    if model_key in user_regular_models:
+                        by_set[key]["owned"] += 1
+
+            # 3) Creamos los embeds paginados igual que en el default
+            embeds = []
+            sorted_sets = sorted(by_set.items(), key=lambda x: x[0][1])
+            chunk_size = 10
+
+            for i in range(0, len(sorted_sets), chunk_size):
+                desc = ""
+                for (set_id, set_name), data in sorted_sets[i:i + chunk_size]:
+                    pct = round(data["owned"] / data["total"] * 100, 2) if data["total"] else 0
+                    desc += f"[`{pct}%`] **{set_name}** - ({data['owned']}/{data['total']})\n"
+
+                embed = discord.Embed(
+                    title=f"🎴 Rareza: {rarity}",
+                    description=desc,
+                    color=discord.Color.green()
+                )
+                total_pages = (len(sorted_sets) - 1) // chunk_size + 1
+                embed.set_footer(text=f"Página {i//chunk_size + 1} / {total_pages}")
+                embeds.append(embed)
+
+            # 4) Enviamos embed o paginador
+            if len(embeds) == 1:
+                await interaction.response.send_message(embed=embeds[0], ephemeral=hidden)
+            else:
+                view = CollectionPaginator(embeds, user_id)
+                await interaction.response.send_message(embed=embeds[0], view=view, ephemeral=hidden)
+
+            return
+        
         # === CASO: Sin parámetros o solo rareza o solo idol ===
         sets = defaultdict(lambda: {"total": 0, "owned": 0})
         seen_regular_models = set()

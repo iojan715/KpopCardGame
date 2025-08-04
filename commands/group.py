@@ -13,28 +13,6 @@ version = v
 class Group(app_commands.Group):
     def __init__(self):
         super().__init__(name="group", description="Group comands")
-
-    @app_commands.command(name="manage", description="Gestiona uno de tus grupos")
-    async def manage_group(self, interaction: discord.Interaction):
-        pool = get_pool()
-        user_id = interaction.user.id
-        language = await get_user_language(user_id)
-
-        async with pool.acquire() as conn:
-            rows = await conn.fetch("""
-                SELECT group_id, name, popularity, permanent_popularity, status, unpaid_weeks, user_id,
-                    (SELECT COUNT(*) FROM groups_members WHERE group_id = g.group_id) AS member_count
-                FROM groups g
-                WHERE user_id = $1
-                ORDER BY creation_date DESC
-            """, user_id)
-
-        if not rows:
-            await interaction.response.send_message(get_translation(language, "group_list.not_created_groups"), ephemeral=True)
-            return
-
-        paginator = ManageGroupPaginator(groups=rows, interaction=interaction, language=language)
-        await paginator.start()
         
     @app_commands.command(name="list", description="Show groups")
     @app_commands.describe(agency="Agency")
@@ -1361,95 +1339,6 @@ class BackToDetailsButton(discord.ui.Button):
         )
         await button.callback(interaction)
 
-# --- Classes and functions to /group manage:
-class ManageGroupPaginator:
-    def __init__(self, groups: list, interaction: discord.Interaction, language: str, embeds_per_page: int = 3):
-        self.groups = groups
-        self.interaction = interaction
-        self.language = language
-        self.embeds_per_page = embeds_per_page
-        self.current_page = 0
-        self.total_pages = (len(groups) + embeds_per_page - 1) // embeds_per_page
-
-    def get_page_items(self):
-        start = self.current_page * self.embeds_per_page
-        end = start + self.embeds_per_page
-        return self.groups[start:end]
-
-    def get_embeds_and_view(self):
-        page_items = self.get_page_items()
-        embeds = []
-        view = discord.ui.View(timeout=300)
-
-        for group in page_items:
-            embed = discord.Embed(
-                title=f"{group['name']} ({group['group_id']})",
-                description=f"{get_translation(self.language, 'group_list.popularity_total', popularity=group['popularity'] + group['permanent_popularity'])}\n"
-                            f"{get_translation(self.language, 'group_list.member_count', group_member_count=group['member_count'])}\n"
-                            f"💳 {group['unpaid_weeks']} {get_translation(self.language, 'group_list.unpaid_weeks')}",
-                color=discord.Color.orange()
-            )
-            embeds.append(embed)
-
-            view.add_item(OpenManageViewButton(
-                group_id=group["group_id"],
-                user_id=group["user_id"],
-                paginator=self,
-                language=self.language
-            ))
-
-        view.add_item(PreviousPageButton(self))
-        view.add_item(NextPageButton(self))
-
-        footer = discord.Embed(description=f"{get_translation(self.language, 'utilities.page')} {self.current_page + 1}/{self.total_pages}", color=discord.Color.dark_gray())
-        embeds.append(footer)
-
-        return embeds, view
-
-    async def start(self):
-        embeds, view = self.get_embeds_and_view()
-        await self.interaction.response.send_message(embeds=embeds, view=view, ephemeral=True)
-
-    async def update(self, interaction: discord.Interaction):
-        embeds, view = self.get_embeds_and_view()
-        await interaction.response.edit_message(embeds=embeds, view=view)
-
-class OpenManageViewButton(discord.ui.Button):
-    def __init__(self, group_id: str, user_id: int, paginator, language: str):
-        super().__init__(label="🛠️", style=discord.ButtonStyle.success)
-        self.group_id = group_id
-        self.user_id = user_id
-        self.paginator = paginator
-        self.language = language
-
-    async def callback(self, interaction: discord.Interaction):
-        pool = get_pool()
-        async with pool.acquire() as conn:
-            group = await conn.fetchrow("SELECT * FROM groups WHERE group_id = $1 AND user_id = $2", self.group_id, self.user_id)
-            if not group:
-                await interaction.response.send_message("❌ No puedes gestionar un grupo que no te pertenece.", ephemeral=True)
-                return
-
-            members = await conn.fetch("""
-                SELECT gm.*, ib.name AS idol_name
-                FROM groups_members gm
-                JOIN idol_base ib ON gm.idol_id = ib.idol_id
-                WHERE gm.group_id = $1
-                ORDER BY ib.name
-            """, self.group_id)
-
-        embed = await create_group_embed(self.language, group, members)
-        view = GroupManageView(group, members, self.language, self.paginator)
-        await interaction.response.edit_message(embed=embed, view=view)
-
-class BackToManageListButton(discord.ui.Button):
-    def __init__(self, paginator):
-        super().__init__(label="🔙 Volver a grupos", style=discord.ButtonStyle.secondary)
-        self.paginator = paginator
-
-    async def callback(self, interaction: discord.Interaction):
-        await self.paginator.update(interaction)
-
 
 # - 
 async def create_group_embed(language, group, members):
@@ -1505,8 +1394,6 @@ class GroupManageView(discord.ui.View):
         self.language = language
         self.paginator = paginator
 
-        if paginator:
-            self.add_item(BackToManageListButton(paginator))
 
 class ChangeStatusButton(discord.ui.Button):
     def __init__(self, group, paginator):

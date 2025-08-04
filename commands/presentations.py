@@ -6,6 +6,7 @@ from utils.paginator import Paginator, PreviousButton, NextButton
 import random
 from typing import List
 from db.connection import get_pool
+from utils.emojis import get_emoji
 from utils.language import get_user_language
 from utils.localization import get_translation
 from commands.starter import version as v
@@ -66,7 +67,6 @@ class PresentationGroup(app_commands.Group):
             embed.add_field(name=f"**Tipo:** {r["presentation_type"].capitalize()}", value=f"**Estado:** {status}", inline=False)
             embed.add_field(name=f"**Grupo:** {group_name if group_name else "`n/a`"}", value=f"**Canción:** {song_name if song_name else "`n/a`"}", inline=False)
             embed.add_field(name=f"Creación: `{r["presentation_date"].strftime("%Y-%m-%d %H:%M")}`", value="", inline=False)
-            embed.set_footer(text=f"{r['presentation_id']}")
             embeds.append(embed)
 
         # 3) Arrancar el paginador
@@ -253,8 +253,7 @@ class PresentationGroup(app_commands.Group):
         # Buscar presentaciones en preparación
         async with pool.acquire() as conn:
             pres_rows = await conn.fetch("""
-                SELECT presentation_id, song_id, group_id
-                FROM presentations
+                SELECT * FROM presentations
                 WHERE user_id = $1 AND status = 'preparation'
                 ORDER BY presentation_date DESC
             """, user_id)
@@ -265,10 +264,29 @@ class PresentationGroup(app_commands.Group):
                 ephemeral=True
             )
             return
+        
+        embeds = []
+        
+        for row in pres_rows:
+            async with pool.acquire() as conn:
+                group_name = await conn.fetchval("SELECT name FROM groups WhERE group_id = $1", row['group_id'])
+                song_name = await conn.fetchval("SELECT name FROM songs WHERE song_id = $1", row['song_id'])
+            
+            desc = f"**Tipo:** {row['presentation_type'].capitalize().replace("_"," ")}\n"
+            desc += f"**Grupo:** {group_name if group_name else "`n/a`"}\n"
+            desc += f"**Canción:** {song_name if song_name else "`n/a`"}"
+            
+            embed = discord.Embed(
+                title=f"Presentación `{row['presentation_id']}`",
+                description=desc,
+                color=discord.Color.blue()
+            )
+            embeds.append(embed)
 
         # Mostrar lista para seleccionar una presentación
         await interaction.response.send_message(
             content="🎬 Selecciona la presentación que deseas iniciar:",
+            embeds=embeds,
             view=PresentationSelectToPerformView(interaction, pres_rows),
             ephemeral=True
         )
@@ -630,7 +648,7 @@ class ConfirmCreatePresentationView(discord.ui.View):
                 )
                 return
 
-            if self.active_discount:
+            if self.active_discount and self.presentation_type == "live":
                 disc_invitation = await conn.fetchval("SELECT amount FROM user_boosts WHERE user_id = $1 AND boost = 'INVIT'", self.user_id)
                 if disc_invitation >= 1:
                     cost = 0
@@ -874,6 +892,7 @@ class GroupAssignButton(ui.Button):
 # --- PERFORM
 async def show_current_section_view(interaction: discord.Interaction, presentation_id: str, edit: bool = False):
     pool = get_pool()
+    guild = interaction.guild
     user_id = interaction.user.id
 
     async with pool.acquire() as conn:
@@ -979,7 +998,10 @@ async def show_current_section_view(interaction: discord.Interaction, presentati
         song = await conn.fetchrow("SELECT * FROM songs WHERE song_id = $1", presentation['song_id'])
         
 
-            
+        ps_emoji = get_emoji(guild, "PassiveSkill")
+        as_emoji = get_emoji(guild, "ActiveSkill")
+        ss_emoji = get_emoji(guild, "SupportSkill")
+        us_emoji = get_emoji(guild, "UltimateSkill")
 
                 
         
@@ -1005,12 +1027,12 @@ async def show_current_section_view(interaction: discord.Interaction, presentati
                             conn, active_idol, section, presentation, check_only=True
                         )
                         p_status = "✅" if fulfilled else "❌"
-                        embed.add_field(name="🟢 PS", value=f"{passive_name} {p_status}", inline=True)
+                        embed.add_field(name=ps_emoji, value=f"{passive_name} {p_status}", inline=True)
                         
                 # 🔵 Active Skill (AS)
                 if card["a_skill"]:
                     active_name = card["a_skill"].replace("_", " ").capitalize()
-                    embed.add_field(name="🔵 AS", value=active_name, inline=True)
+                    embed.add_field(name=as_emoji, value=active_name, inline=True)
                 
                 # 🟡 Support Skill (SS)
                 if card['s_skill']:
@@ -1018,14 +1040,14 @@ async def show_current_section_view(interaction: discord.Interaction, presentati
                     support_name = card["s_skill"].replace("_", " ").capitalize()
                     can_use_support = Er >= s_skill
                     s_status = "✅" if can_use_support else "❌"
-                    embed.add_field(name="🟡 SS", value=f"{support_name} {s_status}", inline=True)
+                    embed.add_field(name=ss_emoji, value=f"{support_name} {s_status}", inline=True)
                     
                 # 🔴 Ultimate Skill (US)
                 if card["u_skill"]:
                     ult_name = card["u_skill"].replace("_", " ").capitalize()
                     can_use_ult = active_idol["can_ult"]
                     u_status = "✅" if can_use_ult else "❌"
-                    embed.add_field(name="🔴 US", value=f"{ult_name} {u_status}", inline=True)
+                    embed.add_field(name=us_emoji, value=f"{ult_name} {u_status}", inline=True)
 
         section_type = ""        
         if section['type_plus']:
@@ -1081,13 +1103,13 @@ async def show_current_section_view(interaction: discord.Interaction, presentati
                 disabled_ult = False
     
     disabled_active = disabled_active or disabled
-    view.add_item(ActiveSkillPreviewButton(presentation_id, disabled=disabled_active))
+    view.add_item(ActiveSkillPreviewButton(presentation_id, as_emoji, disabled=disabled_active))
     
     disabled_support = disabled_support or disabled
-    view.add_item(SupportSkillPreviewButton(presentation_id, disabled=disabled_support))
+    view.add_item(SupportSkillPreviewButton(presentation_id, ss_emoji, disabled=disabled_support))
 
     disabled_ult = disabled_ult or disabled
-    view.add_item(UltimateSkillPreviewButton(presentation_id, disabled=disabled_ult))
+    view.add_item(UltimateSkillPreviewButton(presentation_id, us_emoji, disabled=disabled_ult))
 
 
     if edit:
@@ -1145,7 +1167,13 @@ class IdolSwitchPaginator:
 
     async def show_page(self, interaction: Interaction = None):
         view = discord.ui.View(timeout=60)
+        guild = interaction.guild
         embeds = []
+        
+        ps_emoji = get_emoji(guild, "PassiveSkill")
+        as_emoji = get_emoji(guild, "ActiveSkill")
+        ss_emoji = get_emoji(guild, "SupportSkill")
+        us_emoji = get_emoji(guild, "UltimateSkill")
 
         for idol in self.get_page_items():
             energy_left = round(idol["max_energy"] - idol["used_energy"], 1)
@@ -1161,13 +1189,13 @@ class IdolSwitchPaginator:
                 async with pool.acquire() as conn:
                     card = await conn.fetchrow("SELECT * FROM user_idol_cards WHERE unique_id = $1", idol['unique_id'])
                     if card['p_skill']:
-                        idol_desc += "🟢"
+                        idol_desc += ps_emoji
                     if card['a_skill']:
-                        idol_desc += "🔵"
+                        idol_desc += as_emoji
                     if card['s_skill']:
-                        idol_desc += "🟡"
+                        idol_desc += ss_emoji
                     if card['u_skill']:
-                        idol_desc += "🔴"
+                        idol_desc += us_emoji
             
             embed = discord.Embed(
                 title=idol_desc,
@@ -1238,6 +1266,7 @@ class SelectIdolToSwitchButton(discord.ui.Button):
 
     async def callback(self, interaction: Interaction):
         pool = get_pool()
+        guild = interaction.guild
         user_id = interaction.user.id
         language = await get_user_language(user_id)
 
@@ -1291,13 +1320,13 @@ class SelectIdolToSwitchButton(discord.ui.Button):
                     condition_params = json.loads(skill_data['condition_params'])
                     
                     pcond_score=condition_params.get('score')
-                    pcond_score = int((pcond_score-1)*100) if pcond_score else None
+                    pcond_score = int(round(pcond_score-1,2)*100) if pcond_score else None
                     pcond_hype=condition_params.get('hype')
-                    pcond_hype = int((pcond_hype-1)*100) if pcond_hype else None
+                    pcond_hype = int(round(pcond_hype-1,2)*100) if pcond_hype else None
                     cond_energy=condition_values.get("energy")
                     cond_energy = int((cond_energy)*100) if cond_energy else None
                     
-                    embed.add_field(name=f"**🟢 {skill_data['skill_name']}**",
+                    embed.add_field(name=f"**{get_emoji(guild, "PassiveSkill")} {skill_data['skill_name']}**",
                                     value=get_translation(language,
                                                           f"skills.{skill_data['skill_name']}",
                                                           cond_vocal = condition_values.get("vocal"),
@@ -1331,14 +1360,14 @@ class SelectIdolToSwitchButton(discord.ui.Button):
                         pcond_energy *= -1
                     
                     score=eff_params.get('score')
-                    score = int((score-1)*100) if score else None
+                    score = int(round(score-1,2)*100) if score else None
                     hype=eff_params.get('hype')
-                    hype = int((hype-1)*100) if hype else None
+                    hype = int(round(hype-1,2)*100) if hype else None
                     
                     pcond_score=condition_params.get('score')
-                    pcond_score = int((pcond_score-1)*100) if pcond_score else None
+                    pcond_score = int(round(pcond_score-1,2)*100) if pcond_score else None
                     pcond_hype=condition_params.get('hype')
-                    pcond_hype = int((pcond_hype-1)*100) if pcond_hype else None
+                    pcond_hype = int(round(pcond_hype-1,2)*100) if pcond_hype else None
                     cond_energy=condition_values.get("energy")
                     cond_energy = int((cond_energy)*100) if cond_energy else None
                     
@@ -1351,7 +1380,7 @@ class SelectIdolToSwitchButton(discord.ui.Button):
                         lower = eff_params.get("value")
                     if eff == "boost_higher_stat":
                         higher = eff_params.get("value")
-                    embed.add_field(name=f"**🔵 {skill_data['skill_name']}**",
+                    embed.add_field(name=f"**{get_emoji(guild, "ActiveSkill")} {skill_data['skill_name']}**",
                                     value=get_translation(language,
                                                           f"skills.{skill_data['skill_name']}",
                                                           cond_vocal = condition_values.get("vocal"),
@@ -1385,12 +1414,12 @@ class SelectIdolToSwitchButton(discord.ui.Button):
                     skill_data = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1", card['s_skill'])
                     effect_data = await conn.fetchrow("SELECT * FROM performance_effects WHERE effect_id = $1", skill_data['effect_id'])
                     if effect_data['hype_mod']:
-                        hype = int((effect_data['hype_mod']-1)*100)
+                        hype = int(round(effect_data['hype_mod']-1,2)*100)
                     if effect_data['score_mod']:
-                        score = int((effect_data['score_mod']-1)*100)
+                        score = int(round(effect_data['score_mod']-1,2)*100)
                     if effect_data['relative_cost']:
-                        relative = int((effect_data['relative_cost']-1)*100)
-                    embed.add_field(name=f"**🟡 {skill_data['skill_name']}**",
+                        relative = int(round(effect_data['relative_cost']-1,2)*100) 
+                    embed.add_field(name=f"**{get_emoji(guild, "SupportSkill")} {skill_data['skill_name']}**",
                                     value=get_translation(language,
                                                           f"skills.{skill_data['skill_name']}",
                                                           duration=skill_data['duration'], energy_cost=int(skill_data['energy_cost']),
@@ -1409,14 +1438,14 @@ class SelectIdolToSwitchButton(discord.ui.Button):
                         relative_cost = skill_data['energy_cost']
                         relative_cost = int((relative_cost)*100)
                     if cost_type == "fixed":
-                        extra_cost = skill_data['energy_cost']
+                        extra_cost = int(skill_data['energy_cost'] * -1)
                         
                     score=eff_params.get('score')
-                    score = int((score-1)*100) if score else None
+                    score = int(round(score-1,2)*100) if score else None
                     hype=eff_params.get('hype')
-                    hype = (int((hype-1)*100)) if hype else None
+                    hype = (int(round(hype-1,2)*100)) if hype else None
                     
-                    embed.add_field(name=f"**🔴 {skill_data['skill_name']}**",
+                    embed.add_field(name=f"**{get_emoji(guild, "UltimateSkill")} {skill_data['skill_name']}**",
                                     value=get_translation(language,
                                                           f"skills.{skill_data['skill_name']}",
                                                           higher=higher, lower=lower,
@@ -2657,11 +2686,12 @@ async def apply_last_breath(params, conn, presentation_row, idol_row):
     return {"override_energy": "fixed"}
 
 class UltimateSkillPreviewButton(discord.ui.Button):
-    def __init__(self, presentation_id: str, disabled: bool = False):
-        super().__init__(label="Ultimate", emoji="🔴", style=discord.ButtonStyle.danger, disabled=disabled, row=1)
+    def __init__(self, presentation_id: str, emoji, disabled: bool = False):
+        super().__init__(label="Ultimate", emoji=emoji, style=discord.ButtonStyle.danger, disabled=disabled, row=1)
         self.presentation_id = presentation_id
 
     async def callback(self, interaction: discord.Interaction):
+        guild = interaction.guild
         pool = get_pool()
         language = await get_user_language(interaction.user.id)
         async with pool.acquire() as conn:
@@ -2693,14 +2723,14 @@ class UltimateSkillPreviewButton(discord.ui.Button):
                         relative_cost = skill_data['energy_cost']
                         relative_cost = int((relative_cost)*100)
                     if cost_type == "fixed":
-                        extra_cost = skill_data['energy_cost']
+                        extra_cost = int(skill_data['energy_cost'] * -1)
                         
                     score=eff_params.get('score')
-                    score = int((score-1)*100) if score else None
+                    score = int(round(score-1,2)*100) if score else None
                     hype=eff_params.get('hype')
-                    hype = (int((hype-1)*100)) if hype else None
+                    hype = (int(round(hype-1,2)*100)) if hype else None
                     
-                    desc = f"**🔴 {skill_data['skill_name']}**\n{get_translation(language,
+                    desc = f"**{get_emoji(guild, "UltimateSkill")} {skill_data['skill_name']}**\n{get_translation(language,
                                                           f"skills.{skill_data['skill_name']}",
                                                           higher=higher, lower=lower,
                                                           vocal=eff_params.get("vocal"),
@@ -2790,12 +2820,13 @@ class UltimateSkillUseButton(discord.ui.Button):
 
 # - support skill
 class SupportSkillPreviewButton(discord.ui.Button):
-    def __init__(self, presentation_id: str, disabled: bool = False):
-        super().__init__(label="Support", emoji="🟡", style=discord.ButtonStyle.success, disabled=disabled, row=1)
+    def __init__(self, presentation_id: str, emoji, disabled: bool = False):
+        super().__init__(label="Support", emoji=emoji, style=discord.ButtonStyle.success, disabled=disabled, row=1)
         self.presentation_id = presentation_id
 
     async def callback(self, interaction: discord.Interaction):
         pool = get_pool()
+        guild = interaction.guild
         language = await get_user_language(interaction.user.id)
         async with pool.acquire() as conn:
             presentation = await conn.fetchrow("SELECT * FROM presentations WHERE presentation_id = $1", self.presentation_id)
@@ -2830,12 +2861,12 @@ class SupportSkillPreviewButton(discord.ui.Button):
                     skill_data = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1", card['s_skill'])
                     effect_data = await conn.fetchrow("SELECT * FROM performance_effects WHERE effect_id = $1", skill_data['effect_id'])
                     if effect_data['hype_mod']:
-                        hype = int((effect_data['hype_mod']-1)*100)
+                        hype = int(round(effect_data['hype_mod']-1,2)*100)
                     if effect_data['score_mod']:
-                        score = int((effect_data['score_mod']-1)*100)
+                        score = int(round(effect_data['score_mod']-1,2)*100)
                     if effect_data['relative_cost']:
-                        relative = int((effect_data['relative_cost']-1)*100)
-                    desc = f"**🟡 {skill_data['skill_name']}**\n{get_translation(language,
+                        relative = int(round(effect_data['relative_cost']-1,2)*100)
+                    desc = f"**{get_emoji(guild, "SupportSkill")} {skill_data['skill_name']}**\n{get_translation(language,
                                                           f"skills.{skill_data['skill_name']}",
                                                           duration=skill_data['duration'], energy_cost=int(skill_data['energy_cost']),
                                                           highest = effect_data['highest_stat_mod'], lowest = effect_data['lowest_stat_mod'],
@@ -2956,12 +2987,13 @@ def parse_effect_description(skill):
     return "\n".join(effects) if effects else "Sin efecto aparente"
 
 class ActiveSkillPreviewButton(discord.ui.Button):
-    def __init__(self, presentation_id: str, disabled: bool = False):
-        super().__init__(label="Active", emoji="🔵", style=discord.ButtonStyle.primary, disabled=disabled, row=1)
+    def __init__(self, presentation_id: str, emoji, disabled: bool = False):
+        super().__init__(label="Active", emoji=emoji, style=discord.ButtonStyle.primary, disabled=disabled, row=1)
         self.presentation_id = presentation_id
 
     async def callback(self, interaction: discord.Interaction):
         pool = get_pool()
+        guild = interaction.guild
         language = await get_user_language(interaction.user.id)
         async with pool.acquire() as conn:
             presentation = await conn.fetchrow("SELECT * FROM presentations WHERE presentation_id = $1", self.presentation_id)
@@ -2999,18 +3031,22 @@ class ActiveSkillPreviewButton(discord.ui.Button):
                         lower = eff_params.get("value")
                     if eff == "boost_higher_stat":
                         higher = eff_params.get("value")
+                        
+                    pcond_energy = condition_params.get("energy")
+                    if pcond_energy:
+                        pcond_energy *= -1
                     
                     score=eff_params.get('score')
-                    score = int((score-1)*100) if score else None
+                    score = int(round(score-1,2)*100) if score else None
                     hype=eff_params.get('hype')
-                    hype = int((hype-1)*100) if hype else None
+                    hype = int(round(hype-1,2)*100) if hype else None
                     
                     pcond_score=condition_params.get('score')
-                    pcond_score = int((pcond_score-1)*100) if pcond_score else None
+                    pcond_score = int(round(pcond_score-1,2)*100) if pcond_score else None
                     pcond_hype=condition_params.get('hype')
-                    pcond_hype = int((pcond_hype-1)*100) if pcond_hype else None
+                    pcond_hype = int(round(pcond_hype-1,2)*100) if pcond_hype else None
                     
-                    desc = f"**🔵 {skill_data['skill_name']}**\n{get_translation(language,
+                    desc = f"**{get_emoji(guild, "ActiveSkill")} {skill_data['skill_name']}**\n{get_translation(language,
                                                           f"skills.{skill_data['skill_name']}",
                                                           cond_vocal = condition_values.get("vocal"),
                                                           cond_rap = condition_values.get("rap"),
@@ -3026,7 +3062,7 @@ class ActiveSkillPreviewButton(discord.ui.Button):
                                                           pcond_visual = condition_params.get("visual"),
                                                           pcond_hype = pcond_hype,
                                                           pcond_score = pcond_score,
-                                                          pcond_extra_cost = condition_params.get("energy"),
+                                                          pcond_energy = pcond_energy,
                                                           pcond_value = condition_params.get("value"),
                                                           higher=higher, lower=lower,
                                                           vocal=eff_params.get("vocal"),
