@@ -773,7 +773,7 @@ class ConfirmPurchaseView(discord.ui.View):
         quantity = self.amount
         async with self.pool.acquire() as conn:
             credits = await conn.fetchval("SELECT credits FROM users WHERE user_id = $1", self.user_id)
-            if credits is None or credits <= self.total_price * quantity:
+            if credits is None or credits < self.total_price * quantity:
                 await interaction.response.send_message("❌ No tienes créditos suficientes.", ephemeral=True)
                 return
             
