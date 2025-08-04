@@ -362,6 +362,7 @@ class PacksGroup(app_commands.Group):
             discount = await conn.fetchval("SELECT amount FROM user_boosts WHERE user_id = $1 AND boost = 'DISCN'", user_id)
             discount_amount = 0
             discount_times = 0
+            discount_amount_str=""
             if discount:
                 discount_times = min(discount,amount)
                 discount_amount = int(pack_price*0.1*discount_times)
@@ -777,7 +778,8 @@ class ConfirmPurchaseView(discord.ui.View):
                 return
             
             await conn.execute("UPDATE users SET credits = credits - $1 WHERE user_id = $2", self.total_price*quantity, self.user_id)
-            await conn.execute("UPDATE user_boosts SET amount = amount - $1 WHERE user_id = $2 AND boost = 'DISCN'", self.discount_times, self.user_id)
+            if self.discount_times:
+                await conn.execute("UPDATE user_boosts SET amount = amount - $1 WHERE user_id = $2 AND boost = 'DISCN'", self.discount_times, self.user_id)
 
             q_gave = 0
             total_xp = 0
