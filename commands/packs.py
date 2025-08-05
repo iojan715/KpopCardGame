@@ -188,7 +188,8 @@ class PacksGroup(app_commands.Group):
                         embed.set_footer(text=f"{id}.{u_id}")
                         
                     image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/d_no_image.jpg/{id}.webp{version}"
-                    embed.set_thumbnail(url=image_url)
+                    if tipo == "idol":
+                        embed.set_thumbnail(url=image_url)
                     final_embeds.append(embed)
 
                 await interaction.followup.send(
