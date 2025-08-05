@@ -1338,8 +1338,9 @@ class SelectIdolToSwitchButton(discord.ui.Button):
                     pcond_score = int(round(pcond_score-1,2)*100) if pcond_score else None
                     pcond_hype=condition_params.get('hype')
                     pcond_hype = int(round(pcond_hype-1,2)*100) if pcond_hype else None
-                    cond_energy=condition_values.get("energy")
-                    cond_energy = int((cond_energy)*100) if cond_energy else None
+                    pcond_extra_cost = condition_params.get("energy")
+                    pcond_relative_cost = condition_params.get("energy")
+                    pcond_relative_cost = int(round(pcond_relative_cost-1,2)*100) if pcond_relative_cost else None
                     
                     embed.add_field(name=f"**{get_emoji(guild, "PassiveSkill")} {skill_data['skill_name']}**",
                                     value=get_translation(language,
@@ -1358,7 +1359,8 @@ class SelectIdolToSwitchButton(discord.ui.Button):
                                                           pcond_visual = condition_params.get("visual"),
                                                           pcond_hype = pcond_hype,
                                                           pcond_score = pcond_score,
-                                                          pcond_extra_cost = condition_params.get("energy"),
+                                                          pcond_extra_cost = pcond_extra_cost,
+                                                          pcond_relative_cost = pcond_relative_cost,
                                                           pcond_value = condition_params.get("value")
                                                           ))
                 if card['a_skill']:

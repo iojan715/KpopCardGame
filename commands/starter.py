@@ -7,10 +7,10 @@ from utils.localization import get_translation
 from utils.language import get_user_language
 from asyncpg import Pool
 
-version = "?v=247"
-base = 180
-mult = 700
-reduct = 200000
+version = "?v=246"
+base = 200
+mult = 600
+reduct = 100000
 
 class StartView(discord.ui.View):
     def __init__(self, interaction: discord.Interaction):
@@ -249,7 +249,8 @@ class SponsorCommand(commands.Cog):
                                           hours=hours, minutes=minutes,
                                           influence=format(influence, ','), hours2=hours2,
                                           minutes2=minutes2, total_credits=format(total_credits, ','),
-                                          current_credits=format(user['credits'], ','))
+                                          current_credits=format(user['credits'], ','),
+                                          sponsor_speed=int(sponsor))
             embed = discord.Embed(
                 title=title,
                 description=accumulated,

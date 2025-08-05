@@ -1801,11 +1801,21 @@ class CardDetailButton(discord.ui.Button):
         status = ""
         if card['status'] == 'equipped':
             status = "👥"
-            
+        
+        RARITY_COLORS = {
+            "Regular": discord.Color.light_gray(),
+            "Special": discord.Color.purple(),
+            "Limited": discord.Color.yellow(),
+            "FCR": discord.Color.orange(),
+            "POB": discord.Color.blue(),
+            "Legacy": discord.Color.dark_purple(),
+        }
+        embed_color = RARITY_COLORS.get(base_card_data['rarity'], discord.Color.default())
+        
         embed = discord.Embed(
             title=f"{idol_base_row['name']} - _{base_card_data['group_name']}_ {status}",
             description=f"{base_card_data['set_name']} `{rarity}`",
-            color=discord.Color.orange()
+            color=embed_color
         )
         
         vocal = base_card_data['vocal'] - idol_base_row['vocal']
@@ -1831,7 +1841,8 @@ class CardDetailButton(discord.ui.Button):
                 cond_energy=condition_values.get("energy")
                 cond_energy = int((cond_energy)*100) if cond_energy else None
                 pcond_extra_cost = condition_params.get("energy")
-                pcond_extra_cost = int(round(pcond_extra_cost-1,2)*100) if pcond_extra_cost else None
+                pcond_relative_cost = condition_params.get("energy")
+                pcond_relative_cost = int(round(pcond_relative_cost-1,2)*100) if pcond_relative_cost else None
                 
                 embed.add_field(name=f"**{get_emoji(guild, "PassiveSkill")} {skill_data['skill_name']}**",
                                 value=get_translation(language,
@@ -1851,6 +1862,7 @@ class CardDetailButton(discord.ui.Button):
                                                         pcond_hype = pcond_hype,
                                                         pcond_score = pcond_score,
                                                         pcond_extra_cost = pcond_extra_cost,
+                                                        pcond_relative_cost = pcond_relative_cost,
                                                         pcond_value = condition_params.get("value")
                                                         ))
             if card['a_skill']:
@@ -2489,11 +2501,22 @@ class CardGroup(app_commands.Group):
                 
                 user_row = await conn.fetchrow("SELECT * FROM users WHERE user_id = $1", card['user_id'])    
                 propietario = f"\nAgencia: **{user_row['agency_name']}**\n> CEO: <@{card['user_id']}>"
-                    
+                
+                RARITY_COLORS = {
+                    "Regular": discord.Color.light_gray(),
+                    "Special": discord.Color.purple(),
+                    "Limited": discord.Color.yellow(),
+                    "FCR": discord.Color.orange(),
+                    "POB": discord.Color.blue(),
+                    "Legacy": discord.Color.dark_purple(),
+                }
+                embed_color = RARITY_COLORS.get(base_card_data['rarity'], discord.Color.default())
+                
+                
                 embed = discord.Embed(
                     title=f"{idol_base_row['name']} - _{base_card_data['group_name']}_ {status}",
                     description=f"{base_card_data['set_name']} `{rarity}`{propietario}",
-                    color=discord.Color.orange()
+                    color=embed_color
                 )
                 
                 vocal = base_card_data['vocal'] - idol_base_row['vocal']
@@ -2506,154 +2529,156 @@ class CardGroup(app_commands.Group):
                 embed.add_field(name=f"**💃 Dance: {idol_base_row['dance']} (+{dance})**", value=f"**✨ Visual: {idol_base_row['visual']} (+{visual})**", inline=True)
                 embed.add_field(name=f"**⚡ Energy: 50 (+{energy})**", value=f"", inline=True)
                 
-                async with pool.acquire() as conn:
-                    if card['p_skill']:
-                        skill_data = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1", card['p_skill'])
-                        condition_values = json.loads(skill_data['condition_values'])
-                        condition_params = json.loads(skill_data['condition_params'])
+                
+                if card['p_skill']:
+                    skill_data = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1", card['p_skill'])
+                    condition_values = json.loads(skill_data['condition_values'])
+                    condition_params = json.loads(skill_data['condition_params'])
+                    
+                    pcond_score=condition_params.get('score')
+                    pcond_score = int(round(pcond_score-1,2)*100) if pcond_score else None
+                    pcond_hype=condition_params.get('hype')
+                    pcond_hype = int(round(pcond_hype-1,2)*100) if pcond_hype else None
+                    cond_energy=condition_values.get("energy")
+                    cond_energy = int((cond_energy)*100) if cond_energy else None
+                    pcond_extra_cost = condition_params.get("energy")
+                    pcond_relative_cost = condition_params.get("energy")
+                    pcond_relative_cost = int(round(pcond_relative_cost-1,2)*100) if pcond_relative_cost else None
+                    
+                    embed.add_field(name=f"**{get_emoji(guild, "PassiveSkill")} {skill_data['skill_name']}**",
+                                    value=get_translation(language,
+                                                            f"skills.{skill_data['skill_name']}",
+                                                            cond_vocal = condition_values.get("vocal"),
+                                                            cond_rap = condition_values.get("rap"),
+                                                            cond_dance = condition_values.get("dance"),
+                                                            cond_visual = condition_values.get("visual"),
+                                                            cond_energy = cond_energy,
+                                                            cond_stat = condition_values.get("stat"),
+                                                            cond_hype = condition_values.get("hype"),
+                                                            cond_duration = condition_values.get("duration"),
+                                                            pcond_vocal = condition_params.get("vocal"),
+                                                            pcond_rap = condition_params.get("rap"),
+                                                            pcond_dance = condition_params.get("dance"),
+                                                            pcond_visual = condition_params.get("visual"),
+                                                            pcond_hype = pcond_hype,
+                                                            pcond_score = pcond_score,
+                                                            pcond_extra_cost = pcond_extra_cost,
+                                                            pcond_relative_cost = pcond_relative_cost,
+                                                            pcond_value = condition_params.get("value")
+                                                            ))
+                if card['a_skill']:
+                    skill_data = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1", card['a_skill'])
+                    condition_values = json.loads(skill_data['condition_values'])
+                    condition_params = json.loads(skill_data['condition_params'])
+                    eff_params = json.loads(skill_data['params'])
+                    eff = skill_data['effect']
+                    cost_type = skill_data['cost_type']
+                    lower = higher = relative_cost = extra_cost = ""
+                    
+                    pcond_energy = condition_params.get("energy")
+                    if pcond_energy:
+                        pcond_energy *= -1
+                    
+                    score=eff_params.get('score')
+                    score = int(round(score-1,2)*100) if score else None
+                    hype=eff_params.get('hype')
+                    hype = int(round(hype-1,2)*100) if hype else None
+                    
+                    pcond_score=condition_params.get('score')
+                    pcond_score = int(round(pcond_score-1,2)*100) if pcond_score else None
+                    pcond_hype=condition_params.get('hype')
+                    pcond_hype = int(round(pcond_hype-1,2)*100) if pcond_hype else None
+                    cond_energy=condition_values.get("energy")
+                    cond_energy = int((cond_energy)*100) if cond_energy else None
+                    
+                    if cost_type == "relative":
+                        relative_cost = skill_data['energy_cost']
+                        relative_cost = int((relative_cost)*100)
+                    if cost_type == "fixed":
+                        extra_cost = skill_data['energy_cost']
+                    if eff == "boost_lower_stat":
+                        lower = eff_params.get("value")
+                    if eff == "boost_higher_stat":
+                        higher = eff_params.get("value")
+                    embed.add_field(name=f"**{get_emoji(guild, "ActiveSkill")} {skill_data['skill_name']}**",
+                                    value=get_translation(language,
+                                                            f"skills.{skill_data['skill_name']}",
+                                                            cond_vocal = condition_values.get("vocal"),
+                                                            cond_rap = condition_values.get("rap"),
+                                                            cond_dance = condition_values.get("dance"),
+                                                            cond_visual = condition_values.get("visual"),
+                                                            cond_energy = cond_energy,
+                                                            cond_stat = condition_values.get("stat"),
+                                                            cond_hype = condition_values.get("hype"),
+                                                            cond_duration = condition_values.get("duration"),
+                                                            pcond_vocal = condition_params.get("vocal"),
+                                                            pcond_rap = condition_params.get("rap"),
+                                                            pcond_dance = condition_params.get("dance"),
+                                                            pcond_visual = condition_params.get("visual"),
+                                                            pcond_energy = pcond_energy,
+                                                            pcond_hype = pcond_hype,
+                                                            pcond_score = pcond_score,
+                                                            pcond_extra_cost = condition_params.get("energy"),
+                                                            pcond_value = condition_params.get("value"),
+                                                            higher=higher, lower=lower,
+                                                            vocal=eff_params.get("vocal"),
+                                                            rap=eff_params.get("rap"),
+                                                            dance=eff_params.get('dance'),
+                                                            visual=eff_params.get('visual'),
+                                                            score=score,
+                                                            hype=hype,
+                                                            relative_cost=relative_cost,
+                                                            extra_cost=extra_cost,
+                                                            ))
+                if card['s_skill']:
+                    skill_data = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1", card['s_skill'])
+                    effect_data = await conn.fetchrow("SELECT * FROM performance_effects WHERE effect_id = $1", skill_data['effect_id'])
+                    if effect_data['hype_mod']:
+                        hype = int(round(effect_data['hype_mod']-1,2)*100)
+                    if effect_data['score_mod']:
+                        score = int(round(effect_data['score_mod']-1,2)*100)
+                    if effect_data['relative_cost']:
+                        relative = int(round(effect_data['relative_cost']-1,2)*100) 
+                    embed.add_field(name=f"**{get_emoji(guild, "SupportSkill")} {skill_data['skill_name']}**",
+                                    value=get_translation(language,
+                                                            f"skills.{skill_data['skill_name']}",
+                                                            duration=skill_data['duration'], energy_cost=int(skill_data['energy_cost']),
+                                                            highest = effect_data['highest_stat_mod'], lowest = effect_data['lowest_stat_mod'],
+                                                            vocal = effect_data['plus_vocal'], rap = effect_data['plus_rap'],
+                                                            dance = effect_data['plus_dance'], visual = effect_data['plus_visual'],
+                                                            hype = hype, score = score,
+                                                            extra_cost = effect_data['extra_cost'], relative_coost = relative
+                                                            ))
+                if card['u_skill']:
+                    skill_data = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1", card['u_skill'])
+                    cost_type = skill_data['cost_type']
+                    eff_params = json.loads(skill_data['params'])
+                    lower = higher = relative_cost = extra_cost = ""
+                    if cost_type == "relative":
+                        relative_cost = skill_data['energy_cost']
+                        relative_cost = int((relative_cost)*100)
+                    if cost_type == "fixed":
+                        extra_cost = int(skill_data['energy_cost'] * -1)
                         
-                        pcond_score=condition_params.get('score')
-                        pcond_score = int(round(pcond_score-1,2)*100) if pcond_score else None
-                        pcond_hype=condition_params.get('hype')
-                        pcond_hype = int(round(pcond_hype-1,2)*100) if pcond_hype else None
-                        cond_energy=condition_values.get("energy")
-                        cond_energy = int((cond_energy)*100) if cond_energy else None
-                        pcond_extra_cost = condition_params.get("energy")
-                        pcond_extra_cost = int(round(pcond_extra_cost-1,2)*100) if pcond_extra_cost else None
-                        
-                        embed.add_field(name=f"**{get_emoji(guild, "PassiveSkill")} {skill_data['skill_name']}**",
-                                        value=get_translation(language,
-                                                                f"skills.{skill_data['skill_name']}",
-                                                                cond_vocal = condition_values.get("vocal"),
-                                                                cond_rap = condition_values.get("rap"),
-                                                                cond_dance = condition_values.get("dance"),
-                                                                cond_visual = condition_values.get("visual"),
-                                                                cond_energy = cond_energy,
-                                                                cond_stat = condition_values.get("stat"),
-                                                                cond_hype = condition_values.get("hype"),
-                                                                cond_duration = condition_values.get("duration"),
-                                                                pcond_vocal = condition_params.get("vocal"),
-                                                                pcond_rap = condition_params.get("rap"),
-                                                                pcond_dance = condition_params.get("dance"),
-                                                                pcond_visual = condition_params.get("visual"),
-                                                                pcond_hype = pcond_hype,
-                                                                pcond_score = pcond_score,
-                                                                pcond_extra_cost = pcond_extra_cost,
-                                                                pcond_value = condition_params.get("value")
-                                                                ))
-                    if card['a_skill']:
-                        skill_data = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1", card['a_skill'])
-                        condition_values = json.loads(skill_data['condition_values'])
-                        condition_params = json.loads(skill_data['condition_params'])
-                        eff_params = json.loads(skill_data['params'])
-                        eff = skill_data['effect']
-                        cost_type = skill_data['cost_type']
-                        lower = higher = relative_cost = extra_cost = ""
-                        
-                        pcond_energy = condition_params.get("energy")
-                        if pcond_energy:
-                            pcond_energy *= -1
-                        
-                        score=eff_params.get('score')
-                        score = int(round(score-1,2)*100) if score else None
-                        hype=eff_params.get('hype')
-                        hype = int(round(hype-1,2)*100) if hype else None
-                        
-                        pcond_score=condition_params.get('score')
-                        pcond_score = int(round(pcond_score-1,2)*100) if pcond_score else None
-                        pcond_hype=condition_params.get('hype')
-                        pcond_hype = int(round(pcond_hype-1,2)*100) if pcond_hype else None
-                        cond_energy=condition_values.get("energy")
-                        cond_energy = int((cond_energy)*100) if cond_energy else None
-                        
-                        if cost_type == "relative":
-                            relative_cost = skill_data['energy_cost']
-                            relative_cost = int((relative_cost)*100)
-                        if cost_type == "fixed":
-                            extra_cost = skill_data['energy_cost']
-                        if eff == "boost_lower_stat":
-                            lower = eff_params.get("value")
-                        if eff == "boost_higher_stat":
-                            higher = eff_params.get("value")
-                        embed.add_field(name=f"**{get_emoji(guild, "ActiveSkill")} {skill_data['skill_name']}**",
-                                        value=get_translation(language,
-                                                                f"skills.{skill_data['skill_name']}",
-                                                                cond_vocal = condition_values.get("vocal"),
-                                                                cond_rap = condition_values.get("rap"),
-                                                                cond_dance = condition_values.get("dance"),
-                                                                cond_visual = condition_values.get("visual"),
-                                                                cond_energy = cond_energy,
-                                                                cond_stat = condition_values.get("stat"),
-                                                                cond_hype = condition_values.get("hype"),
-                                                                cond_duration = condition_values.get("duration"),
-                                                                pcond_vocal = condition_params.get("vocal"),
-                                                                pcond_rap = condition_params.get("rap"),
-                                                                pcond_dance = condition_params.get("dance"),
-                                                                pcond_visual = condition_params.get("visual"),
-                                                                pcond_energy = pcond_energy,
-                                                                pcond_hype = pcond_hype,
-                                                                pcond_score = pcond_score,
-                                                                pcond_extra_cost = condition_params.get("energy"),
-                                                                pcond_value = condition_params.get("value"),
-                                                                higher=higher, lower=lower,
-                                                                vocal=eff_params.get("vocal"),
-                                                                rap=eff_params.get("rap"),
-                                                                dance=eff_params.get('dance'),
-                                                                visual=eff_params.get('visual'),
-                                                                score=score,
-                                                                hype=hype,
-                                                                relative_cost=relative_cost,
-                                                                extra_cost=extra_cost,
-                                                                ))
-                    if card['s_skill']:
-                        skill_data = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1", card['s_skill'])
-                        effect_data = await conn.fetchrow("SELECT * FROM performance_effects WHERE effect_id = $1", skill_data['effect_id'])
-                        if effect_data['hype_mod']:
-                            hype = int(round(effect_data['hype_mod']-1,2)*100)
-                        if effect_data['score_mod']:
-                            score = int(round(effect_data['score_mod']-1,2)*100)
-                        if effect_data['relative_cost']:
-                            relative = int(round(effect_data['relative_cost']-1,2)*100) 
-                        embed.add_field(name=f"**{get_emoji(guild, "SupportSkill")} {skill_data['skill_name']}**",
-                                        value=get_translation(language,
-                                                                f"skills.{skill_data['skill_name']}",
-                                                                duration=skill_data['duration'], energy_cost=int(skill_data['energy_cost']),
-                                                                highest = effect_data['highest_stat_mod'], lowest = effect_data['lowest_stat_mod'],
-                                                                vocal = effect_data['plus_vocal'], rap = effect_data['plus_rap'],
-                                                                dance = effect_data['plus_dance'], visual = effect_data['plus_visual'],
-                                                                hype = hype, score = score,
-                                                                extra_cost = effect_data['extra_cost'], relative_coost = relative
-                                                                ))
-                    if card['u_skill']:
-                        skill_data = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1", card['u_skill'])
-                        cost_type = skill_data['cost_type']
-                        eff_params = json.loads(skill_data['params'])
-                        lower = higher = relative_cost = extra_cost = ""
-                        if cost_type == "relative":
-                            relative_cost = skill_data['energy_cost']
-                            relative_cost = int((relative_cost)*100)
-                        if cost_type == "fixed":
-                            extra_cost = int(skill_data['energy_cost'] * -1)
-                            
-                        score=eff_params.get('score')
-                        score = int(round(score-1,2)*100) if score else None
-                        hype=eff_params.get('hype')
-                        hype = (int(round(hype-1,2)*100)) if hype else None
-                        
-                        embed.add_field(name=f"**{get_emoji(guild, "UltimateSkill")} {skill_data['skill_name']}**",
-                                        value=get_translation(language,
-                                                                f"skills.{skill_data['skill_name']}",
-                                                                higher=higher, lower=lower,
-                                                                vocal=eff_params.get("vocal"),
-                                                                rap=eff_params.get("rap"),
-                                                                dance=eff_params.get('dance'),
-                                                                visual=eff_params.get('visual'),
-                                                                score=score,
-                                                                hype=hype,
-                                                                value=eff_params.get('value'),
-                                                                relative_cost=relative_cost,
-                                                                extra_cost=extra_cost,
-                                                                ))
+                    score=eff_params.get('score')
+                    score = int(round(score-1,2)*100) if score else None
+                    hype=eff_params.get('hype')
+                    hype = (int(round(hype-1,2)*100)) if hype else None
+                    
+                    embed.add_field(name=f"**{get_emoji(guild, "UltimateSkill")} {skill_data['skill_name']}**",
+                                    value=get_translation(language,
+                                                            f"skills.{skill_data['skill_name']}",
+                                                            higher=higher, lower=lower,
+                                                            vocal=eff_params.get("vocal"),
+                                                            rap=eff_params.get("rap"),
+                                                            dance=eff_params.get('dance'),
+                                                            visual=eff_params.get('visual'),
+                                                            score=score,
+                                                            hype=hype,
+                                                            value=eff_params.get('value'),
+                                                            relative_cost=relative_cost,
+                                                            extra_cost=extra_cost,
+                                                            ))
                 
                 
                 image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{base_card_data['card_id']}.webp{version}"
@@ -2707,7 +2732,7 @@ class CardGroup(app_commands.Group):
 
                 embed.set_footer(text=f"{item_data['item_id']}.{row['unique_id']}")
                 image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{item_data['item_id']}.webp{version}"
-                embed.set_image(url=image_url)
+                #embed.set_image(url=image_url)
 
         # Mostrar mensaje
         if not public:
