@@ -61,8 +61,8 @@ class InventoryGroup(app_commands.Group):
     ]
     
     DETAIL_CHOICES = [
-        app_commands.Choice(name="✅", value="✅"),
         app_commands.Choice(name="❌", value="❌"),
+        app_commands.Choice(name="✅", value="✅"),
     ]
     
     @app_commands.command(name="idol_cards", description="Ver tus cartas de idol")
