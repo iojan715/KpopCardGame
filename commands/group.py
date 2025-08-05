@@ -18,6 +18,7 @@ class Group(app_commands.Group):
     @app_commands.describe(agency="Agency")
     async def list_groups(self, interaction: discord.Interaction, agency:str = None):
         user_id = interaction.user.id
+        i_user_id = user_id
         pool = get_pool()
         language = await get_user_language(user_id)
         
@@ -32,8 +33,13 @@ class Group(app_commands.Group):
                 (SELECT COUNT(*) FROM groups_members WHERE group_id = g.group_id) AS member_count
             FROM groups g
             WHERE user_id = $1
-            ORDER BY creation_date DESC
             """
+            
+            if user_id != i_user_id:
+                query += " AND status = 'active'"
+            
+            query += "ORDER BY creation_date DESC"
+            
             rows = await conn.fetch(query, user_id)
 
         if not rows:
