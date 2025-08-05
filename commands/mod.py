@@ -85,8 +85,17 @@ class ModGroup(app_commands.Group):
 
         redeemable_id = redeemables[level.value]
         
+        now = datetime.now(timezone.utc)
+        
         pool = get_pool()
         async with pool.acquire() as conn:
+            await conn.execute(
+                """INSERT INTO reported_bugs
+                (user_id, report_date, level, tier, message, resolved_by)
+                VALUES ($1, $2, $3, $4, $5, $6)""",
+                user.id, now, level.name, tier.value, message, interaction.user.id
+            )
+            
             await conn.execute(
                 "UPDATE users SET credits = credits + $1 WHERE user_id = $2",
                 reward_credits, user.id
@@ -97,7 +106,6 @@ class ModGroup(app_commands.Group):
                 exists = await conn.fetchval("SELECT 1 FROM players_packs WHERE unique_id = $1", new_id)
                 if not exists:
                     break
-            now = datetime.now(timezone.utc)
             await conn.execute(
                 """
                 INSERT INTO players_packs (pack_id, unique_id, user_id, buy_date)
