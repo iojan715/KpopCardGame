@@ -93,7 +93,7 @@ class ModGroup(app_commands.Group):
                 """INSERT INTO reported_bugs
                 (user_id, report_date, level, tier, message, resolved_by)
                 VALUES ($1, $2, $3, $4, $5, $6)""",
-                user.id, now, level.name, tier.value, message, interaction.user.id
+                user.id, now, level.value, tier.value, message, interaction.user.id
             )
             
             await conn.execute(
