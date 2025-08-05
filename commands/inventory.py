@@ -1971,8 +1971,9 @@ class CardDetailButton(discord.ui.Button):
         embed.set_footer(text=f"{self.card_id}.{self.unique_id}")
         
         view = discord.ui.View()
-        view.add_item(EquipButton(self.row_data, self.paginator))
-        view.add_item(DesequipButton(self.row_data, self.paginator))
+        if card['user_id'] == interaction.user.id:
+            view.add_item(EquipButton(self.row_data, self.paginator))
+            view.add_item(DesequipButton(self.row_data, self.paginator))
 
         view.add_item(BackToInventoryButton(self.paginator))
 
