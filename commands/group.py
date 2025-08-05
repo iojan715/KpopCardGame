@@ -359,7 +359,7 @@ class ConfirmButton(discord.ui.Button):
             group = await conn.fetchrow("SELECT * FROM groups WHERE group_id = $1", self.group_id)
             name = group["name"]
             members = await conn.fetch("SELECT ib.name FROM groups_members gm JOIN idol_base ib ON gm.idol_id = ib.idol_id WHERE gm.group_id = $1", self.group_id)
-            member_names = [row["idol_name"] for row in members]
+            member_names = [row["name"] for row in members]
             member_count = len(member_names)
             existing = await conn.fetchval("SELECT COUNT(*) FROM groups WHERE user_id = $1 AND status = 'active'", self.user_id)
             cost = 10000 if existing else 0
