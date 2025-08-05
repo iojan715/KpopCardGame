@@ -30,6 +30,8 @@ async def create_all_tables():
     await create_presentation_members_table()
     await create_presentation_sections_table()
     #await create_idol_usage_table()
+    await create_reported_bugs_table()
+    await create_trades_table()
     await create_loop_events_table()
 
 async def create_users_table():
@@ -528,10 +530,41 @@ async def create_idol_usage_table():
                 month TEXT NOT NULL,
                 total_score INTEGER DEFAULT 0,
                 times_used INTEGER DEFAULT 0,
-                UNIQUE (user_id, idol_id, month)
+                PRIMARY KEY (user_id, idol_id, month)
             );
         """)
 
+async def create_reported_bugs_table():
+    pool = get_pool()
+    async with pool.acquire() as conn:
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS reported_bugs (
+                bug_id SERIAL PRIMARY KEY,
+                user_id BIGINT NOT NULL,
+                report_date TIMESTAMPTZ DEFAULT now(),
+                level TEXT,
+                tier INTEGER,
+                message TEXT,
+                resolved_by BIGINT
+            );
+        """)
+
+async def create_trades_table():
+    pool = get_pool()
+    async with pool.acquire() as conn:
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS trades (
+                trade_id TEXT PRIMARY KEY,
+                from_user BIGINT NOT NULL,
+                to_user BIGINT NOT NULL,
+                offer_cards TEXT[],
+                request_cards TEXT[],
+                offer_credits INT DEFAULT 0,
+                request_credits INT DEFAULT 0,
+                status TEXT DEFAULT 'pending', -- 'pending', 'accepted', 'declined', 'cancelled'
+                created_at TIMESTAMPTZ DEFAULT now()
+            );
+        """)
 
 # - Loops table
 
