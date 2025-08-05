@@ -2216,7 +2216,8 @@ class ConfirmEquipIdolButton(discord.ui.Button):
             interaction=interaction,
             base_query=self.parent.paginator.base_query,
             query_params=self.parent.paginator.query_params,
-            embeds_per_page=self.parent.paginator.embeds_per_page
+            embeds_per_page=self.parent.paginator.embeds_per_page,
+            is_duplicated=self.parent.paginator.is_duplicated
         )
 
         await new_paginator.restart(interaction)
