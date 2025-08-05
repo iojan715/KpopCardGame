@@ -1021,7 +1021,7 @@ async def generate_item_card_embeds(rows: list[dict], pool) -> list[discord.Embe
             f"https://res.cloudinary.com/dyvgkntvd/image/upload/"
             f"f_webp,d_no_image.jpg/{row['item_id']}.webp{version}"
         )
-        embed.set_thumbnail(url=image_url)
+        #embed.set_thumbnail(url=image_url)
 
         stats = [
             ("Vocal", row["plus_vocal"]),
@@ -2518,6 +2518,8 @@ class CardGroup(app_commands.Group):
                         pcond_hype = int(round(pcond_hype-1,2)*100) if pcond_hype else None
                         cond_energy=condition_values.get("energy")
                         cond_energy = int((cond_energy)*100) if cond_energy else None
+                        pcond_extra_cost = condition_params.get("energy")
+                        pcond_extra_cost = int(round(pcond_extra_cost-1,2)*100) if pcond_extra_cost else None
                         
                         embed.add_field(name=f"**{get_emoji(guild, "PassiveSkill")} {skill_data['skill_name']}**",
                                         value=get_translation(language,
@@ -2536,7 +2538,7 @@ class CardGroup(app_commands.Group):
                                                                 pcond_visual = condition_params.get("visual"),
                                                                 pcond_hype = pcond_hype,
                                                                 pcond_score = pcond_score,
-                                                                pcond_extra_cost = condition_params.get("energy"),
+                                                                pcond_extra_cost = pcond_extra_cost,
                                                                 pcond_value = condition_params.get("value")
                                                                 ))
                     if card['a_skill']:
