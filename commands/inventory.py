@@ -60,6 +60,11 @@ class InventoryGroup(app_commands.Group):
         app_commands.Choice(name="❌", value="❌"),
     ]
     
+    DETAIL_CHOICES = [
+        app_commands.Choice(name="✅", value="✅"),
+        app_commands.Choice(name="❌", value="❌"),
+    ]
+    
     @app_commands.command(name="idol_cards", description="Ver tus cartas de idol")
     @app_commands.describe(
         agency="Target agency's inventory",
@@ -72,14 +77,16 @@ class InventoryGroup(app_commands.Group):
         is_locked="(✅/❌)",
         order_by="Sort by parameter",
         order="Sort direction (⏫/⏬)",
-        duplicated="only duplicated")
+        duplicated="only duplicated",
+        details="Show or not card stats and skills")
     @app_commands.choices(
         rarity=RARITY_CHOICES,
         status=STATUS_CHOICES,
         is_locked=IS_LOCKED_CHOICES,
         order_by=ORDER_BY_CHOICES,
         order=ORDER_CHOICES,
-        duplicated=PUBLIC_CHOICES
+        duplicated=PUBLIC_CHOICES,
+        details=DETAIL_CHOICES
     )
     async def idol_cards(
         self,
@@ -95,6 +102,7 @@ class InventoryGroup(app_commands.Group):
         order_by: app_commands.Choice[str] = None,
         order: app_commands.Choice[str] = None,
         duplicated: app_commands.Choice[str] = None,
+        details: app_commands.Choice[str] = None,
     ):
         user_id = interaction.user.id
         pool = get_pool()
@@ -174,7 +182,13 @@ class InventoryGroup(app_commands.Group):
                     rows = [row for row in rows if card_counts[row['card_id']] >= 2]
                 else:
                     rows = [row for row in rows if card_counts[row['card_id']] >= 1]
-
+        is_detailed = True
+        if details:
+            if details.value == "✅":
+                pass
+            else:
+                is_detailed = False
+                
         
         language = await get_user_language(user_id=user_id)  
             
@@ -183,9 +197,9 @@ class InventoryGroup(app_commands.Group):
             return
 
         card_counts = Counter([row['card_id'] for row in rows])
-        embeds = await generate_idol_card_embeds(rows, pool, interaction.guild)
+        embeds = await generate_idol_card_embeds(rows, pool, interaction.guild, is_detailed)
 
-        paginator = InventoryEmbedPaginator(embeds, rows, interaction, base_query, params, is_duplicated, embeds_per_page=3)
+        paginator = InventoryEmbedPaginator(embeds, rows, interaction, base_query, params, is_duplicated, is_detailed, embeds_per_page=3)
         await paginator.start()
 
     
@@ -1691,7 +1705,7 @@ class ConfirmItemRefundView(discord.ui.View):
 
 
 # - idol_cards
-async def generate_idol_card_embeds(rows: list, pool, guild: discord.Guild) -> list[discord.Embed]:
+async def generate_idol_card_embeds(rows: list, pool, guild: discord.Guild, is_detailed:bool) -> list[discord.Embed]:
     """Genera una lista de embeds para cartas de idols."""
     card_counts = Counter([row['card_id'] for row in rows])
     embeds = []
@@ -1761,9 +1775,10 @@ async def generate_idol_card_embeds(rows: list, pool, guild: discord.Guild) -> l
         visual = idol_row['visual'] - idol_base_row['visual']
         energy = idol_row['energy'] - 50
 
-        embed.add_field(name=f"**🎤 Vocal: {idol_base_row['vocal']} (+{vocal})**", value=f"**🎶 Rap: {idol_base_row['rap']} (+{rap})**", inline=True)
-        embed.add_field(name=f"**💃 Dance: {idol_base_row['dance']} (+{dance})**", value=f"**✨ Visual: {idol_base_row['visual']} (+{visual})**", inline=True)
-        embed.add_field(name=f"**⚡ Energy: 50 (+{energy})**", value=f"**Skills: {skills}**", inline=True)
+        if is_detailed:
+            embed.add_field(name=f"**🎤 Vocal: {idol_base_row['vocal']} (+{vocal})**", value=f"**🎶 Rap: {idol_base_row['rap']} (+{rap})**", inline=True)
+            embed.add_field(name=f"**💃 Dance: {idol_base_row['dance']} (+{dance})**", value=f"**✨ Visual: {idol_base_row['visual']} (+{visual})**", inline=True)
+            embed.add_field(name=f"**⚡ Energy: 50 (+{energy})**", value=f"**Skills: {skills}**", inline=True)
 
         embed.set_footer(text=f"{row['card_id']}.{row['unique_id']}")
         embeds.append(embed)
@@ -2020,7 +2035,7 @@ class BackToInventoryButton(discord.ui.Button):
             rows = [row for row in rows if card_counts[row['card_id']] >= 1]
             
 
-        embeds = await generate_idol_card_embeds(rows, pool, interaction.guild)
+        embeds = await generate_idol_card_embeds(rows, pool, interaction.guild, self.paginator.is_detailed)
         new_paginator = InventoryEmbedPaginator(
             embeds,
             rows,
@@ -2028,6 +2043,7 @@ class BackToInventoryButton(discord.ui.Button):
             base_query=self.paginator.base_query,
             query_params=self.paginator.query_params,
             is_duplicated=self.paginator.is_duplicated,
+            is_detailed=self.paginator.is_detailed,
             embeds_per_page=self.paginator.embeds_per_page
         )
         await new_paginator.restart(interaction)
@@ -2208,7 +2224,7 @@ class ConfirmEquipIdolButton(discord.ui.Button):
                 *self.parent.paginator.query_params
             )
 
-        embeds = await generate_idol_card_embeds(rows, pool, interaction.guild)
+        embeds = await generate_idol_card_embeds(rows, pool, interaction.guild, self.parent.paginator.is_detailed)
 
         new_paginator = InventoryEmbedPaginator(
             embeds=embeds,
@@ -2217,7 +2233,8 @@ class ConfirmEquipIdolButton(discord.ui.Button):
             base_query=self.parent.paginator.base_query,
             query_params=self.parent.paginator.query_params,
             embeds_per_page=self.parent.paginator.embeds_per_page,
-            is_duplicated=self.parent.paginator.is_duplicated
+            is_duplicated=self.parent.paginator.is_duplicated,
+            is_detailed=self.parent.paginator.is_detailed
         )
 
         await new_paginator.restart(interaction)
@@ -2303,13 +2320,15 @@ class ConfirmUnequipButton(discord.ui.Button):
                                     *self.parent.paginator.query_params)
 
         # 4) Regenerar embeds
-        embeds = await generate_idol_card_embeds(rows, pool, interaction.guild)
+        embeds = await generate_idol_card_embeds(rows, pool, interaction.guild, self.parent.paginator.is_detailed)
         new_pag = InventoryEmbedPaginator(
             embeds=embeds,
             rows=rows,
             interaction=interaction,
             base_query=self.parent.paginator.base_query,
             query_params=self.parent.paginator.query_params,
+            is_duplicated=self.parent.paginator.is_duplicated,
+            is_detailed=self.parent.paginator.is_detailed,
             embeds_per_page=self.parent.paginator.embeds_per_page
         )
         # 5) Reiniciar el paginador
@@ -2327,13 +2346,15 @@ class CancelUnequipButton(discord.ui.Button):
         async with pool.acquire() as conn:
             rows = await conn.fetch(self.paginator.base_query,
                                     *self.paginator.query_params)
-        embeds = await generate_idol_card_embeds(rows, pool, interaction.guild)
+        embeds = await generate_idol_card_embeds(rows, pool, interaction.guild, self.paginator.is_detailed)
         new_pag = InventoryEmbedPaginator(
             embeds=embeds,
             rows=rows,
             interaction=interaction,
             base_query=self.paginator.base_query,
             query_params=self.paginator.query_params,
+            is_duplicated=self.paginator.is_duplicated,
+            is_detailed=self.paginator.is_detailed,
             embeds_per_page=self.paginator.embeds_per_page
         )
         await new_pag.restart(interaction)
@@ -2364,6 +2385,7 @@ class InventoryEmbedPaginator:
         base_query: str,
         query_params: tuple,
         is_duplicated: bool,
+        is_detailed: bool,
         embeds_per_page: int = 3
     ):
         self.all_embeds = embeds
@@ -2377,6 +2399,7 @@ class InventoryEmbedPaginator:
         self.base_query = base_query
         self.query_params = query_params
         self.is_duplicated = is_duplicated
+        self.is_detailed = is_detailed
     
     def get_page_embeds(self):
         start = self.current_page * self.embeds_per_page
@@ -2416,6 +2439,7 @@ class InventoryEmbedPaginator:
         self.current_page = 0  # Reiniciar la página
         self.current_page_embeds = self.get_page_embeds()
         await interaction.response.edit_message(
+            content="",
             embeds=self.current_page_embeds,
             view=self.get_view()
         )
@@ -2423,6 +2447,7 @@ class InventoryEmbedPaginator:
     async def update(self, interaction: discord.Interaction):
         self.current_page_embeds = self.get_page_embeds()
         await interaction.response.edit_message(
+            content="",
             embeds=self.current_page_embeds,
             view=self.get_view()
         )
