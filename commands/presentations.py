@@ -113,13 +113,17 @@ class PresentationGroup(app_commands.Group):
         async with pool.acquire() as conn:
             user_data = await conn.fetchrow("SELECT credits FROM users WHERE user_id = $1", user_id)
             
+            not_first = await conn.fetchval("SELECT 1 FROM presentations WHERE user_id = $1", user_id)
+            
             disc_invitation = await conn.fetchval("SELECT amount FROM user_boosts WHERE user_id = $1 AND boost = 'INVIT'", user_id)
             
-            if disc_invitation and ptype == "live":
+            if disc_invitation and ptype == "live" and not not_first:
                 if disc_invitation >= 1:
                     active_discount = True
                     cost_desc = "GRATIS"
-
+            if not not_first:
+                cost = 0
+                cost_desc = "Primera Gratis"
         if not user_data or user_data["credits"] < cost:
             await interaction.response.send_message(
                 f"❌ {translation('presentation.not_enough_credits')} (Necesitas {cost} créditos)",
@@ -127,10 +131,15 @@ class PresentationGroup(app_commands.Group):
             )
             return
 
-        # Muestra vista de confirmación
+        embed = discord.Embed(
+            title=f"🎤 ¿Quieres crear una presentación de tipo **{type.name}**?",
+            description=f"💸 Costo: **{cost_desc}**{extra_desc}",
+            color=discord.Color.dark_blue()
+        )
         view = ConfirmCreatePresentationView(user_id, ptype, cost, active_discount)
         await interaction.response.send_message(
-            content=f"🎤 ¿Quieres crear una presentación de tipo **{type.name}**?\n💸 Costo: **{cost_desc}**{extra_desc}",
+            content=f"",
+            embed=embed,
             view=view,
             ephemeral=True
         )
@@ -662,10 +671,16 @@ class ConfirmCreatePresentationView(discord.ui.View):
             await conn.execute("""
                 UPDATE users SET credits = credits - $1 WHERE user_id = $2
             """, cost, self.user_id)
-            
+        
+        embed = discord.Embed(
+            title=f"✅ Presentación creada exitosamente",
+            description=f"ID: {presentation_id}",
+            color=discord.Color.dark_blue()
+        )
 
         await interaction.response.edit_message(
-            content=f"✅ Presentación creada exitosamente con ID `{presentation_id}`",
+            content=f"",
+            embed=embed,
             view=None
         )
 
