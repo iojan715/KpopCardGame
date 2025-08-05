@@ -358,7 +358,7 @@ class ConfirmButton(discord.ui.Button):
         async with pool.acquire() as conn:
             group = await conn.fetchrow("SELECT * FROM groups WHERE group_id = $1", self.group_id)
             name = group["name"]
-            members = await conn.fetch("SELECT ig.idol_name FROM groups_members gm JOIN idol_group ig ON gm.idol_id = ig.idol_id WHERE gm.group_id = $1", self.group_id)
+            members = await conn.fetch("SELECT ib.idol_name FROM groups_members gm JOIN idol_base ib ON gm.idol_id = ib.idol_id WHERE gm.group_id = $1", self.group_id)
             member_names = [row["idol_name"] for row in members]
             member_count = len(member_names)
             existing = await conn.fetchval("SELECT COUNT(*) FROM groups WHERE user_id = $1 AND status = 'active'", self.user_id)
