@@ -116,7 +116,7 @@ class ModGroup(app_commands.Group):
 
         embed = discord.Embed(
             title="🎁 Recompensa por reporte de error",
-            description=f"",
+            description=f"**Arreglado:** _{message}_",
             color=discord.Color.orange()
         )
         embed.add_field(name="💵 Dinero otorgado", value=f"{reward_credits:,}", inline=False)
@@ -125,7 +125,7 @@ class ModGroup(app_commands.Group):
         embed.set_footer(text="¡Tu ayuda mejora el juego para todos!")
 
         await interaction.response.send_message(
-            content=f"## Gracias a {user.mention} por reportar un error de nivel **{level.name}**:\n**Arreglado:** _{message}_",
+            content=f"## Gracias a {user.mention} por reportar un error de nivel **{level.name}**:",
             embed=embed, ephemeral=False)
         
         
