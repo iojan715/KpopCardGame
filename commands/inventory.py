@@ -3497,6 +3497,15 @@ class ConfirmLevelUpView(discord.ui.View):
             card_1 = rows[0]
             card_2 = rows[1]
             
+            user_credits = await conn.fetchval("SELECT credits FROM users WHERE user_id = $1", interaction.user.id)
+            
+            if self.cost > user_credits:
+                return await interaction.response.edit_message(
+                    content=f"## ❌ No tienes créditos suificientes para realizar esta acción.",
+                    embed=None,
+                    view=None
+                )
+            
             def get_skill(card):
                 for skill_type in ["p_skill", "a_skill", "s_skill"]:
                     if card[skill_type] is not None:
@@ -3510,7 +3519,7 @@ class ConfirmLevelUpView(discord.ui.View):
                 chosen_type, chosen_value = skill1_type, skill1_value
             else:
                 chosen_type, chosen_value = skill2_type, skill2_value
-                
+            
             p_skill = a_skill = s_skill = None
             if chosen_type == "p_skill":
                 p_skill = chosen_value
@@ -3542,7 +3551,7 @@ class ConfirmLevelUpView(discord.ui.View):
         # Mostrar resultado final
         final_embed = discord.Embed(
             title="✅ Carta mejorada con éxito",
-            description=f"Has obtenido una nueva carta de nivel {self.rarity_id[-1]}.",
+            description=f"### {interaction.user.mention} ha obtenido una nueva carta de nivel {self.rarity_id[-1]}.",
             color=discord.Color.light_gray()
         )
         final_embed.set_image(url=f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{self.nuevo_card_id}.webp{version}")
