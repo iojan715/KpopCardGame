@@ -462,7 +462,6 @@ class GroupPaginator:
             embed.add_field(name=f"📊 {get_translation(self.language, "utilities."+str(group["status"]))}",
                             value=f"💵 {unpaid_weeks}",
                             inline=True)
-            embed.set_footer(text=f"{group['group_id']}")
             embeds.append(embed)
 
             # Botón individual por grupo
@@ -582,12 +581,11 @@ class GroupDetailButton(discord.ui.Button):
                         value=f"",
                         inline=True)
         embed.add_field(name=get_translation(self.language, "group_list.members"),
-                        value="\n".join([f"• {row['name']} (💸{row['weekly_payment']})" for row in members]) or no_members,
+                        value="\n".join([f"• {row['name']} ({row['idol_id']})" for row in members]) or no_members,
                         inline=False)
         embed.add_field(name=f"",
                         value=f"",
                         inline=False)
-        embed.set_footer(text=f"{group['group_id']}")
 
         label_back = get_translation(self.language, "utilities.back")
         view = discord.ui.View()
