@@ -139,7 +139,7 @@
   "skills.Low Stamina": "Duplica el consumo de energía en secciones con más de {cond_dance} Dance.",
   "skills.Distracted": "{pcond_vocal} a todas las estadísticas si hay un Stage Effect activo.",
   "skills.Slippery Steps": "{pcond_visual} Visual si la sección tiene más de {cond_dance} Dance.",
-  "skills.Overthinking": "{pcond_vocal} a todas las estadísticas si la sección tiene al menos {cond_stat} en cada estadística.",
+  "skills.Overthinking": "{pcond_vocal} a todas las estadísticas si la sección tiene al menos {cond_vocal} en cada estadística.",
   "skills.Solo Act": "{pcond_extra_cost}% energía si fue la carta activa en la sección anterior y tiene la mayor energía restante del grupo.",
   "skills.Backup Star": "+{pcond_score}% puntuación obtenida si esta carta no fue activa en la sección anterior.",
   "skills.Solo Core": "{pcond_extra_cost}% energía y +{pcond_score}% puntuación si esta carta tiene la menor puntuación acumulada del grupo.",
