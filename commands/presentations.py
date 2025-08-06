@@ -2825,13 +2825,7 @@ class UltimateSkillUseButton(discord.ui.Button):
 
             score, hype, final, base_score = await perform_section_action(conn, self.presentation_id, idol, section, presentation, bonus)
 
-            if final:
-                content = await finalize_presentation(conn, presentation)
-                return await interaction.response.edit_message(
-                    content=content,
-                    embed=None,
-                    view=None
-                )
+            
 
             embed = discord.Embed(
                 title="🚀 Ultimate Skill usada",
@@ -2841,6 +2835,13 @@ class UltimateSkillUseButton(discord.ui.Button):
 
             await interaction.response.edit_message(embed=embed, view=ScoreSummaryView(self.presentation_id))
 
+            if final:
+                content = await finalize_presentation(conn, presentation)
+                return await interaction.followup.send(
+                    content=content,
+                    ephemeral = presentation['presentation_type'] == "practice"
+                )
+        
 # - support skill
 class SupportSkillPreviewButton(discord.ui.Button):
     def __init__(self, presentation_id: str, emoji, disabled: bool = False):
@@ -3150,13 +3151,7 @@ class ActiveSkillUseButton(discord.ui.Button):
             
             score, hype, final, base_score = await perform_section_action(conn, self.presentation_id, idol, section, presentation, bonus)
 
-            if final:
-                content = await finalize_presentation(conn, presentation)
-                return await interaction.response.edit_message(
-                    content=content,
-                    embed=None,
-                    view=None
-                )
+            
     
             embed = discord.Embed(
                 title="🎯 Habilidad activa usada",
@@ -3165,6 +3160,13 @@ class ActiveSkillUseButton(discord.ui.Button):
             )
 
             await interaction.response.edit_message(embed=embed, view=ScoreSummaryView(self.presentation_id))
+
+            if final:
+                content = await finalize_presentation(conn, presentation)
+                return await interaction.followup.send(
+                    content=content,
+                    ephemeral = presentation['presentation_type'] == "practice"
+                )
 
 async def apply_active_skill_if_applicable(conn, idol_row, section_row, presentation_row):
     card_id = idol_row["unique_id"]
@@ -3674,13 +3676,7 @@ class BasicActionButton(discord.ui.Button):
             
             
 
-            if final:
-                content = await finalize_presentation(conn, presentation)
-                return await interaction.response.edit_message(
-                    content=content,
-                    embed=None,
-                    view=None
-                )
+            
 
             
 
@@ -3690,6 +3686,13 @@ class BasicActionButton(discord.ui.Button):
             color=discord.Color.green()
         )
         await interaction.response.edit_message(embed=embed, view=ScoreSummaryView(self.presentation_id))
+        
+        if final:
+            content = await finalize_presentation(conn, presentation)
+            await interaction.followup.send(
+                content=content,
+                ephemeral = presentation['presentation_type'] == "practice"
+            )
 
 class ScoreSummaryView(discord.ui.View):
     def __init__(self, presentation_id: str):
@@ -3736,6 +3739,7 @@ async def finalize_presentation(conn, presentation: dict) -> str:
         pool = get_pool()
         double = ""
         async with pool.acquire() as conn:
+            group_name = await conn.fetchval("SELECT name FROM groups WHERE group_id = $1", group_id)
             double_reward = await conn.fetchval("SELECT amount FROM user_boosts WHERE user_id = $1 AND boost = 'DBRWR'", user_id)
             
             if double_reward:
@@ -3764,7 +3768,7 @@ async def finalize_presentation(conn, presentation: dict) -> str:
         )
 
         return (
-            f"## 🎉 ¡Presentación completada!\n**Puntuación total:** {format(total_score,',')} _(Esperado: {format(int(average_score),',')})_\n> **Popularidad ganada:** {format(popularity,',')}{double}\n> **XP obtenida:** {xp}"
+            f"## 🎉 ¡{group_name} ha finalizado una presentación!\n**Puntuación total:** {format(total_score,',')} _(Esperado: {format(int(average_score),',')})_\n> **Popularidad ganada:** {format(popularity,',')}{double}\n> **XP obtenida:** {xp}"
         )
 
     else:
@@ -3778,7 +3782,7 @@ async def finalize_presentation(conn, presentation: dict) -> str:
             presentation_id
         )
         return (
-            f"## ✅ Práctica finalizada.\n**Puntuación total:** {format(total_score,',')}\n> _(no se ha recibido popularidad ni XP)_"
+            f"## ✅ {group_name} ha finalizado una práctica.\n**Puntuación total:** {format(total_score,',')}\n> _(no se ha recibido popularidad ni XP)_"
         )
 
 async def setup(bot):
