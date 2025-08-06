@@ -2841,11 +2841,11 @@ class UltimateSkillUseButton(discord.ui.Button):
             )
             if final:
                 content = await finalize_presentation(conn, presentation)
+                await interaction.response.edit_message(embed=embed, view=None)
                 await interaction.followup.send(
                     content=content,
                     ephemeral = presentation['presentation_type'] == "practice"
                 )
-                await interaction.response.edit_message(embed=embed, view=None)
                 return
             
             await interaction.response.edit_message(embed=embed, view=ScoreSummaryView(self.presentation_id))
@@ -3170,11 +3170,11 @@ class ActiveSkillUseButton(discord.ui.Button):
             )
             if final:
                 content = await finalize_presentation(conn, presentation)
+                await interaction.response.edit_message(embed=embed, view=None)
                 await interaction.followup.send(
                     content=content,
                     ephemeral = presentation['presentation_type'] == "practice"
                 )
-                await interaction.response.edit_message(embed=embed, view=None)
                 return
             
             await interaction.response.edit_message(embed=embed, view=ScoreSummaryView(self.presentation_id))
@@ -3699,11 +3699,11 @@ class BasicActionButton(discord.ui.Button):
         )
         if final:
             content = await finalize_presentation(conn, presentation)
+            await interaction.response.edit_message(embed=embed, view=None)
             await interaction.followup.send(
                 content=content,
                 ephemeral = presentation['presentation_type'] == "practice"
             )
-            await interaction.response.edit_message(embed=embed, view=None)
             return
         
         await interaction.response.edit_message(embed=embed, view=ScoreSummaryView(self.presentation_id))
