@@ -671,12 +671,18 @@ class ConfirmCreatePresentationView(discord.ui.View):
             await conn.execute("""
                 UPDATE users SET credits = credits - $1 WHERE user_id = $2
             """, cost, self.user_id)
+            
+        desc = "Elige un grupo para usar en la presentación con `/presentation add_group`\n"
+        desc += "Elige una canción para presentar con `/presentation add_song`\n"
+        desc += "Inicia la presentación cuando tengas todo listo con `/presentation perform`\n\n"
+        desc += "_Puedes retomar la presentación si la dejas incompleta en cualquier momento, volviendo a usar `/presentation perform`_"
         
         embed = discord.Embed(
             title=f"✅ Presentación creada exitosamente",
-            description=f"ID: {presentation_id}",
+            description=desc,
             color=discord.Color.dark_blue()
         )
+        embed.add_field(name="🆔:",value=f"{presentation_id}")
 
         await interaction.response.edit_message(
             content=f"",
@@ -729,7 +735,9 @@ class PresentationButton(ui.Button):
                 WHERE presentation_id = $3
             """, self.song_id, datetime.now(timezone.utc), self.presentation_id)
 
-        await interaction.response.edit_message(content="✅ Canción asignada exitosamente a la presentación.", view=None, embed=None)
+        await interaction.response.edit_message(
+            content="## ✅ Canción asignada exitosamente a la presentación.\nAsigna un grupo a tu presentación con `/presentations add_group` o inicia la presentación con `/presentation perform`.",
+            view=None, embed=None)
 
 # --- add group
 class PresentationAddGroupView(ui.View):
@@ -766,13 +774,12 @@ class GroupSelectionPaginator:
                 descr = ""
                 for member in members_row:
                     base_row = await conn.fetchrow("SELECT name FROM idol_base WHERE idol_id = $1", member['idol_id'])
-                    descr += f"- {base_row['name']}\n"
+                    descr += f"- {base_row['name']} "
                     if member['card_id'] or member['mic_id'] or member['outfit_id'] or member['accessory_id'] or member['consumable_id']:
-                        descr += "> "
-                        descr += "🧑‍🎤" if member['card_id'] else ""
+                        descr += "👤" if member['card_id'] else ""
                         descr += "🎤" if member['mic_id'] else ""
                         descr += "👗" if member['outfit_id'] else ""
-                        descr += "💍" if member['accessory_id'] else ""
+                        descr += "🎀" if member['accessory_id'] else ""
                         descr += "🧃" if member['consumable_id'] else ""
                         descr += "\n"
 
@@ -781,7 +788,6 @@ class GroupSelectionPaginator:
                     description=descr or "Sin integrantes asignados.",
                     color=discord.Color.purple()
                 )
-                embed.set_footer(text=row["group_id"])
                 embeds.append(embed)
 
                 # Botón por grupo (mismo nombre visible)
@@ -845,7 +851,7 @@ class GroupAssignButton(discord.ui.Button):
             """, self.group_id, datetime.now(timezone.utc), self.presentation_id)
 
         await interaction.response.edit_message(
-            content=f"✅ Grupo asignado exitosamente a la presentación `{self.presentation_id}`.",
+            content=f"## ✅ Grupo asignado exitosamente a la presentación `{self.presentation_id}`\nAsigna una canción con `/presentation add_song` o inicia la presentación con `/presentation perform`.",
             embed=None,
             view=None
         )
