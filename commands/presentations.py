@@ -3700,13 +3700,13 @@ class BasicActionButton(discord.ui.Button):
             color=discord.Color.green()
         )
         if final:
+            is_ephemeral:bool = presentation['presentation_type'] == "practice"
             content = await finalize_presentation(conn, presentation)
-            
+            await interaction.response.edit_message(embed=embed, view=None)
             await interaction.followup.send(
                 content=content,
-                ephemeral = presentation['presentation_type'] == "practice"
+                ephemeral = is_ephemeral
             )
-            await interaction.response.edit_message(embed=embed, view=None)
             return
         
         await interaction.response.edit_message(embed=embed, view=ScoreSummaryView(self.presentation_id))
