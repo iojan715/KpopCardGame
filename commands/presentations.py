@@ -3747,14 +3747,15 @@ async def finalize_presentation(conn, presentation: dict) -> str:
     total_score = await conn.fetchval(
         "SELECT total_score FROM presentations WHERE presentation_id = $1",
         presentation_id)
-
-    if ptype == "live":
-        popularity = int(1000 * (total_score / average_score))
-        xp = popularity // 10
-        
-        pool = get_pool()
-        double = ""
-        async with pool.acquire() as conn:
+    pool = get_pool()
+    async with pool.acquire() as conn:
+        if ptype == "live":
+            popularity = int(1000 * (total_score / average_score))
+            xp = popularity // 10
+            
+            
+            double = ""
+            
             group_name = await conn.fetchval("SELECT name FROM groups WHERE group_id = $1", group_id)
             double_reward = await conn.fetchval("SELECT amount FROM user_boosts WHERE user_id = $1 AND boost = 'DBRWR'", user_id)
             
@@ -3764,42 +3765,42 @@ async def finalize_presentation(conn, presentation: dict) -> str:
                     popularity *= 2
                     double = " **(x2)**"
 
-        await conn.execute(
-            "UPDATE users SET xp = xp + $1 WHERE user_id = $2",
-            xp, user_id
-        )
-        await conn.execute(
-            """
-            UPDATE presentations
-            SET status = 'completed',
-                current_section = current_section + 1,
-                total_popularity = $1
-            WHERE presentation_id = $2
-            """,
-            popularity, presentation_id
-        )
-        await conn.execute(
-            "UPDATE groups SET popularity = popularity + $1 WHERE group_id = $2",
-            popularity, group_id
-        )
+            await conn.execute(
+                "UPDATE users SET xp = xp + $1 WHERE user_id = $2",
+                xp, user_id
+            )
+            await conn.execute(
+                """
+                UPDATE presentations
+                SET status = 'completed',
+                    current_section = current_section + 1,
+                    total_popularity = $1
+                WHERE presentation_id = $2
+                """,
+                popularity, presentation_id
+            )
+            await conn.execute(
+                "UPDATE groups SET popularity = popularity + $1 WHERE group_id = $2",
+                popularity, group_id
+            )
 
-        return (
-            f"## 🎉 ¡{group_name} ha finalizado una presentación!\n**Puntuación total:** {format(total_score,',')} _(Esperado: {format(int(average_score),',')})_\n> **Popularidad ganada:** {format(popularity,',')}{double}\n> **XP obtenida:** {xp}"
-        )
+            return (
+                f"## 🎉 ¡{group_name} ha finalizado una presentación!\n**Puntuación total:** {format(total_score,',')} _(Esperado: {format(int(average_score),',')})_\n> **Popularidad ganada:** {format(popularity,',')}{double}\n> **XP obtenida:** {xp}"
+            )
 
-    else:
-        await conn.execute(
-            """
-            UPDATE presentations
-            SET status = 'finished',
-                current_section = current_section + 1
-            WHERE presentation_id = $1
-            """,
-            presentation_id
-        )
-        return (
-            f"## ✅ {group_name} ha finalizado una práctica.\n**Puntuación total:** {format(total_score,',')}\n> _(no se ha recibido popularidad ni XP)_"
-        )
+        else:
+            await conn.execute(
+                """
+                UPDATE presentations
+                SET status = 'finished',
+                    current_section = current_section + 1
+                WHERE presentation_id = $1
+                """,
+                presentation_id
+            )
+            return (
+                f"## ✅ {group_name} ha finalizado una práctica.\n**Puntuación total:** {format(total_score,',')}\n> _(no se ha recibido popularidad ni XP)_"
+            )
 
 async def setup(bot):
     bot.tree.add_command(PresentationGroup())
