@@ -2839,15 +2839,18 @@ class UltimateSkillUseButton(discord.ui.Button):
                 description=f"Puntuación obtenida: **{format(score,',')}** (de: {format(base_score,',')})\n🔥 Hype ganado: **{hype}**",
                 color=discord.Color.red()
             )
-
-            await interaction.response.edit_message(embed=embed, view=ScoreSummaryView(self.presentation_id))
-
             if final:
                 content = await finalize_presentation(conn, presentation)
-                return await interaction.followup.send(
+                await interaction.followup.send(
                     content=content,
                     ephemeral = presentation['presentation_type'] == "practice"
                 )
+                await interaction.response.edit_message(embed=embed, view=None)
+                return
+            
+            await interaction.response.edit_message(embed=embed, view=ScoreSummaryView(self.presentation_id))
+
+            
         
 # - support skill
 class SupportSkillPreviewButton(discord.ui.Button):
@@ -3165,15 +3168,17 @@ class ActiveSkillUseButton(discord.ui.Button):
                 description=f"Puntuación obtenida: **{format(score,',')}** (de: {format(base_score,',')})\n🔥 Hype ganado: **{hype}**",
                 color=discord.Color.green()
             )
-
-            await interaction.response.edit_message(embed=embed, view=ScoreSummaryView(self.presentation_id))
-
             if final:
                 content = await finalize_presentation(conn, presentation)
-                return await interaction.followup.send(
+                await interaction.followup.send(
                     content=content,
                     ephemeral = presentation['presentation_type'] == "practice"
                 )
+                await interaction.response.edit_message(embed=embed, view=None)
+                return
+            
+            await interaction.response.edit_message(embed=embed, view=ScoreSummaryView(self.presentation_id))
+
 
 async def apply_active_skill_if_applicable(conn, idol_row, section_row, presentation_row):
     card_id = idol_row["unique_id"]
@@ -3692,14 +3697,18 @@ class BasicActionButton(discord.ui.Button):
             description=f"Puntuación obtenida: **{format(score,',')}** (de: {format(base_score,',')})\n🔥 Hype ganado: **{hype}**",
             color=discord.Color.green()
         )
-        await interaction.response.edit_message(embed=embed, view=ScoreSummaryView(self.presentation_id))
-        
         if final:
             content = await finalize_presentation(conn, presentation)
             await interaction.followup.send(
                 content=content,
                 ephemeral = presentation['presentation_type'] == "practice"
             )
+            await interaction.response.edit_message(embed=embed, view=None)
+            return
+        
+        await interaction.response.edit_message(embed=embed, view=ScoreSummaryView(self.presentation_id))
+        
+        
 
 class ScoreSummaryView(discord.ui.View):
     def __init__(self, presentation_id: str):
