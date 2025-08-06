@@ -1027,12 +1027,17 @@ async def show_current_section_view(interaction: discord.Interaction, presentati
                 
         
         # Obtener y mostrar habilidades activas, pasivas y ultimate del idol activo
-        if active_idol and active_idol["unique_id"]:
-            card = await conn.fetchrow("SELECT * FROM user_idol_cards WHERE unique_id = $1", active_idol["unique_id"])
+        if active_idol:
+            card=None
+            if active_idol["unique_id"]:
+                card = await conn.fetchrow("SELECT * FROM user_idol_cards WHERE unique_id = $1", active_idol["unique_id"])
+                
             Er = active_idol['max_energy']-active_idol['used_energy']
-                                
+                            
             energy_left = round(active_idol["max_energy"] - active_idol["used_energy"], 1)
             energy_percent = round((energy_left / active_idol["max_energy"]) * 100, 1)
+
+                
             
             embed.add_field(name=f"**🎤 Vocal: {active_idol['vocal']}**", value=f"**🎶 Rap: {active_idol['rap']}**")
             embed.add_field(name=f"**💃 Dance: {active_idol['dance']}**", value=f"**✨ Visual: {active_idol['visual']}**")
@@ -1070,6 +1075,8 @@ async def show_current_section_view(interaction: discord.Interaction, presentati
                     u_status = "✅" if can_use_ult else "❌"
                     embed.add_field(name=us_emoji, value=f"{ult_name} {u_status}", inline=True)
 
+            
+        
         section_type = ""        
         if section['type_plus']:
             section_type = section['type_plus'].capitalize().replace("_"," ")
