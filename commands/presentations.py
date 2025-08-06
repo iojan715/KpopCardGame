@@ -3739,16 +3739,17 @@ async def finalize_presentation(conn, presentation: dict) -> str:
     user_id = presentation["user_id"]
     group_id = presentation["group_id"]
     ptype = presentation.get("presentation_type", "live")
-
-    average_score = await conn.fetchval(
-        "SELECT average_score FROM songs WHERE song_id = $1",
-        presentation["song_id"])
-    
-    total_score = await conn.fetchval(
-        "SELECT total_score FROM presentations WHERE presentation_id = $1",
-        presentation_id)
     pool = get_pool()
     async with pool.acquire() as conn:
+
+        average_score = await conn.fetchval(
+            "SELECT average_score FROM songs WHERE song_id = $1",
+            presentation["song_id"])
+        
+        total_score = await conn.fetchval(
+            "SELECT total_score FROM presentations WHERE presentation_id = $1",
+            presentation_id)
+    
         if ptype == "live":
             popularity = int(1000 * (total_score / average_score))
             xp = popularity // 10
