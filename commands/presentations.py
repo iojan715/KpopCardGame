@@ -1351,6 +1351,8 @@ class SelectIdolToSwitchButton(discord.ui.Button):
                     pcond_score = int(round(pcond_score-1,2)*100) if pcond_score else None
                     pcond_hype=condition_params.get('hype')
                     pcond_hype = int(round(pcond_hype-1,2)*100) if pcond_hype else None
+                    cond_energy=condition_values.get("energy")
+                    cond_energy = int((cond_energy)*100) if cond_energy else None
                     pcond_extra_cost = condition_params.get("energy")
                     pcond_relative_cost = condition_params.get("energy")
                     pcond_relative_cost = int(round(pcond_relative_cost-1,2)*100) if pcond_relative_cost else None
@@ -3699,11 +3701,12 @@ class BasicActionButton(discord.ui.Button):
         )
         if final:
             content = await finalize_presentation(conn, presentation)
-            await interaction.response.edit_message(embed=embed, view=None)
+            
             await interaction.followup.send(
                 content=content,
                 ephemeral = presentation['presentation_type'] == "practice"
             )
+            await interaction.response.edit_message(embed=embed, view=None)
             return
         
         await interaction.response.edit_message(embed=embed, view=ScoreSummaryView(self.presentation_id))
