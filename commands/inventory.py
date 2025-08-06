@@ -1599,7 +1599,7 @@ class RefundItemButton(discord.ui.Button):
         # 3) Calcular refund y XP
         durability_ratio = row["durability"] / ref_data["max_durability"]
         base_value = ref_data["value"]
-        refund_amount = int(base_value * durability_ratio * 2)
+        refund_amount = int(base_value * durability_ratio * 2.5)
         xp_amount = max(base_value // 100, 1)
 
         # 4) Mostrar embed de confirmación
@@ -3184,7 +3184,7 @@ class CardGroup(app_commands.Group):
                 print(durability)
                 value = int(value*durability)
             
-            refund = int(value * 2)
+            refund = int(value * 2.5)
             xp = max(value // 100,1)
 
             name = ref_data.get("idol_name", ref_data.get("name"))
