@@ -778,7 +778,7 @@ class ConfirmPurchaseView(discord.ui.View):
                 await interaction.response.send_message("❌ No tienes créditos suficientes.", ephemeral=True)
                 return
             
-            await conn.execute("UPDATE users SET credits = credits - $1 WHERE user_id = $2", self.total_price*quantity, self.user_id)
+            await conn.execute("UPDATE users SET credits = credits - $1 WHERE user_id = $2", self.total_price, self.user_id)
             if self.discount_times:
                 await conn.execute("UPDATE user_boosts SET amount = amount - $1 WHERE user_id = $2 AND boost = 'DISCN'", self.discount_times, self.user_id)
 
@@ -910,4 +910,5 @@ class ConfirmFCRView(discord.ui.View):
 
 
 async def setup(bot):
+
     bot.tree.add_command(PacksGroup())
