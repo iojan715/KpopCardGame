@@ -32,6 +32,8 @@ async def create_all_tables():
     #await create_idol_usage_table()
     await create_reported_bugs_table()
     await create_trades_table()
+    await create_missions_base_table()
+    await create_user_missions_table()
     await create_loop_events_table()
 
 async def create_users_table():
@@ -566,6 +568,46 @@ async def create_trades_table():
             );
         """)
 
+
+# - missions
+async def create_missions_base_table():
+    pool = get_pool()
+    async with pool.acquire() as conn:
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS missions_base (
+                mission_id TEXT PRIMARY KEY,
+                mission_type TEXT NOT NULL,
+                needed INTEGER DEFAULT 1,
+                difficulty TEXT,
+                pack_id TEXT,
+                redeemable_id TEXT,
+                credits INTEGER DEFAULT 0,
+                xp INTEGER DEFAULT 1
+            );
+        """)
+        
+async def create_user_missions_table():
+    pool = get_pool()
+    async with pool.acquire() as conn:
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS user_missions (
+                id SERIAL PRIMARY KEY,
+                user_id BIGINT,
+                mission_number INTEGER NOT NULL,
+                mission_id TEXT,
+                needed INTEGER,
+                obtained INTEGER,
+                pack_id TEXT,
+                redeemable_id TEXT,
+                credits INTEGER DEFAULT 0,
+                xp INTEGER DEFAULT 1,
+                status TEXT DEFAULT 'active',
+                assigned_at TIMESTAMPTZ DEFAULT now(),
+                last_updated TIMESTAMPTZ DEFAULT now()
+            );
+        """)
+
+
 # - Loops table
 
 async def create_loop_events_table():
@@ -590,6 +632,8 @@ async def create_loop_events_table():
             ('cancel_presentation','frecuente', None, None),
             ('increase_payment','semanal', 0, None),
             ('remove_roles','semanal', 0, None),
+            ('add_daily_mission', 'diaria', None, None),
+            ('add_weekly_mission', 'semanal', 0, None)
         ]
 
         for event_name, tipo, dia_semana, dia_mes in eventos:
