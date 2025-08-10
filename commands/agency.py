@@ -277,8 +277,8 @@ class AgencyCommand(commands.Cog):
         embed.add_field(name="Créditos", value=f"{user_data['credits']:,} 💰", inline=True)
         embed.add_field(name=f"Nivel {user_data['level']}", value=f"{user_data['xp']}/{level_data['xp_needed']} XP", inline=True)
         embed.add_field(name="Idioma", value=lang_name, inline=True)
-        if owner:
-            embed.add_field(name="Banco", value=f"{user_data['bank']:,} 🏦", inline=True)
+        #if owner:
+        #    embed.add_field(name="Banco", value=f"{user_data['bank']:,} 🏦", inline=True)
 
         view = AgencyView(user_data, level_data, user_id, owner)
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
