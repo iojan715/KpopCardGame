@@ -438,5 +438,22 @@
   "trade.error_self_trade": "No puedes proponerte un intercambio a ti mism@.",
   "trade.error_missing_cards": "No tienes todas las cartas que estás intentando ofrecer:",
   "trade.error_insufficient_credits": "No tienes suficientes créditos para hacer esta propuesta.",
-  "trade.proposal_created": "Has enviado una propuesta de intercambio a {user}.\nID de propuesta: `{id}`"
+  "trade.proposal_created": "Has enviado una propuesta de intercambio a {user}.\nID de propuesta: `{id}`",
+
+  "mission.do_presentation": "Realiza presentación.",
+  "mission.claim_sponsor": "Reclama patrocinio con `/sponsor`",
+  "mission.open_pack": "Abre packs de cartas.",
+  "mission.redeem_coupon": "Canjea cupones desde `/inventory redeemables` o con `/redeem card`.",
+  "mission.try_fusion": "Intenta fusionar cartas con `/cards fusion`.",
+  "mission.fusion": "Completa la fusión de cartas Regular y consigue la Special.",
+  "mission.view_help": "Abre la pantalla de ayuda o tutorial con `/help`.",
+  "mission.view_inventory": "Abre el inventario de cartas idol con `/inventory idol_cards`.",
+  "mission.view_items": "Abre el inventario de objetos (con `/inventory item_cards`.",
+  "mission.view_pcards": "Abre el inventario de performance cards con `/inventory performance_cards`.",
+  "mission.view_redeemables": "Abre el inventario de cupones y redeemables con `/inventory redeemables`.",
+  "mission.view_packs": "Consulta la lista de packs disponibles con `/packs list`.",
+  "mission.view_collections": "Abre la pantalla de colecciones para ver tu progreso con `/collections`.",
+  "mission.equip_card": "Equipa una carta idol o carta item desde su inventario.",
+  "mission.view_fusion": "Revisa si puedes realizar alguna fusión con `/fusion check`.",
+  "mission.level_up": "Sube de nivel tus cartas con `/cards level_up`."
 }
