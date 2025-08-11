@@ -66,6 +66,16 @@ class CollectionCommand(commands.Cog):
             hidden = public == "❌"
 
         async with pool.acquire() as conn:
+            await conn.execute("""
+                UPDATE user_missions um
+                SET obtained = um.obtained + 1,
+                    last_updated = now()
+                FROM missions_base mb
+                WHERE um.mission_id = mb.mission_id
+                AND um.user_id = $1
+                AND um.status = 'active'
+                AND mb.mission_type = 'view_collections'
+                """, interaction.user.id)
             cards = await conn.fetch("SELECT * FROM cards_idol")
             user_cards = await conn.fetch("SELECT card_id FROM user_idol_cards WHERE user_id = $1", user_id)
 

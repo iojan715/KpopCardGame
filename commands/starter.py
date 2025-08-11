@@ -179,6 +179,17 @@ class SponsorView(discord.ui.View):
                 total_credits, now, self.user_id
             )
             
+            await conn.execute("""
+                UPDATE user_missions um
+                SET obtained = um.obtained + 1,
+                    last_updated = now()
+                FROM missions_base mb
+                WHERE um.mission_id = mb.mission_id
+                AND um.user_id = $1
+                AND um.status = 'active'
+                AND mb.mission_type = 'claim_sponsor'
+                """, interaction.user.id)
+            
             user_data = await conn.fetchrow("SELECT credits FROM users WHERE user_id = $1", interaction.user.id)
             current_credits = user_data['credits']
             

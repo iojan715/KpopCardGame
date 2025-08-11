@@ -5,6 +5,7 @@ from discord.ui import View, button, Button
 
 from utils.localization import get_translation
 from utils.language import get_user_language
+from db.connection import get_pool
 
 HELP_TOPICS = [
     "tutorial", "profile", "packs", "cards", "idols", "rarities",
@@ -21,7 +22,6 @@ HELP_TOPICS = [
 ]
 
 class HelpGuide(commands.Cog):
-    """Cog para /help con paginación mediante botones."""
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
@@ -39,6 +39,19 @@ class HelpGuide(commands.Cog):
         topic: app_commands.Choice[str],
         page: int = 1
     ):
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            await conn.execute("""
+                UPDATE user_missions um
+                SET obtained = um.obtained + 1,
+                    last_updated = now()
+                FROM missions_base mb
+                WHERE um.mission_id = mb.mission_id
+                AND um.user_id = $1
+                AND um.status = 'active'
+                AND mb.mission_type = 'view_help'
+                """, interaction.user.id)
+        
         # 1) idioma del usuario
         lang = await get_user_language(interaction.user.id)
 

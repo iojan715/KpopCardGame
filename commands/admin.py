@@ -39,7 +39,8 @@ class AdminGroup(app_commands.Group):
         app_commands.Choice(name="Effects", value="effects"),
         app_commands.Choice(name="Groups", value="idol_group"),
         app_commands.Choice(name="songs", value="songs"),
-        app_commands.Choice(name="Song sections", value="song_sections")
+        app_commands.Choice(name="Song sections", value="song_sections"),
+        app_commands.Choice(name="Missions", value="missions")
     ]
 
     @app_commands.command(name="upload_content", description="Sube datos desde un archivo CSV")
@@ -60,7 +61,8 @@ class AdminGroup(app_commands.Group):
                                  "effects",
                                  "idol_group",
                                  "songs",
-                                 "song_sections"
+                                 "song_sections",
+                                 "missions"
                                  ]
         if content_type != "all" and content_type not in ALLOWED_CONTENT_TYPES:
             contenido = ', '.join(ALLOWED_CONTENT_TYPES)
@@ -417,6 +419,44 @@ class AdminGroup(app_commands.Group):
                             inserted += 1
                     inserted_total += inserted
                     inserted = 0
+
+                elif ct == "missions":
+                    import json
+                    with open(file_path, newline='', encoding='utf-8') as csvfile:
+                        reader = csv.DictReader(csvfile)
+                        for row in reader:
+                            
+                            await conn.execute(
+                                """
+                                INSERT INTO missions_base (
+                                    mission_id, mission_type, needed, difficulty,
+                                    pack_id, redeemable_id, credits, xp
+                                ) VALUES (
+                                    $1, $2, $3, $4,
+                                    $5, $6, $7, $8
+                                )
+                                ON CONFLICT (mission_id) DO UPDATE SET
+                                    mission_type = EXCLUDED.mission_type,
+                                    needed = EXCLUDED.needed,
+                                    difficulty = EXCLUDED.difficulty,
+                                    pack_id = EXCLUDED.pack_id,
+                                    redeemable_id = EXCLUDED.redeemable_id,
+                                    credits = EXCLUDED.credits,
+                                    xp = EXCLUDED.xp;
+                                """,
+                                row["mission_id"],
+                                row.get("mission_type"),
+                                int(row.get("needed") or 1),
+                                row.get("difficulty"),
+                                row.get("pack_id") or None,
+                                row.get("redeemable_id"),
+                                int(row.get("credits") or 0),
+                                int(row.get("xp") or 1)
+                            )
+                            inserted += 1
+                    inserted_total += inserted
+                    inserted = 0
+
 
                 elif ct == "effects":
                     import json

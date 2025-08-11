@@ -294,7 +294,7 @@ class PresentationGroup(app_commands.Group):
 
         # Mostrar lista para seleccionar una presentación
         await interaction.response.send_message(
-            content="🎬 Selecciona la presentación que deseas iniciar:",
+            content="## 🎬 Selecciona una presentación:",
             embeds=embeds,
             view=PresentationSelectToPerformView(interaction, pres_rows),
             ephemeral=True
@@ -911,6 +911,201 @@ class GroupAssignButton(ui.Button):
         )
 
 # --- PERFORM
+
+# - start performance
+class PresentationSelectToPerformView(ui.View):
+    def __init__(self, interaction: Interaction, presentations: List[dict]):
+        super().__init__(timeout=60)
+        self.interaction = interaction
+        for row in presentations:
+            self.add_item(PerformPresentationButton(row["presentation_id"]))
+
+class PerformPresentationButton(ui.Button):
+    def __init__(self, presentation_id: str):
+        super().__init__(label=f"{presentation_id}", style=discord.ButtonStyle.primary)
+        self.presentation_id = presentation_id
+
+    async def callback(self, interaction: Interaction):
+        user_id = interaction.user.id
+        pool = get_pool()
+
+        # Verificar si ya hay una activa (de nuevo por seguridad)
+        async with pool.acquire() as conn:
+            already_active = await conn.fetchval("""
+                SELECT 1 FROM presentations
+                WHERE user_id = $1 AND status = 'active'
+            """, user_id)
+            presentation = await conn.fetchrow(
+                "SELECT * FROM presentations WHERE presentation_id = $1",
+                self.presentation_id
+            )
+
+            group_name = song_name = "`n/a`"
+            if presentation['group_id']:
+                group_name = await conn.fetchval(
+                    "SELECT name FROM groups WHERE group_id = $1",
+                    presentation['group_id'])
+                
+            if presentation['song_id']:
+                song_name = await conn.fetchval(
+                    "SELECT name FROM songs WHERE song_id = $1",
+                    presentation['song_id'])
+        
+        desc = f"**Tipo:** {presentation['presentation_type'].capitalize().replace("_"," ")}\n"
+        desc += f"**Grupo:** {group_name}\n"
+        desc += f"**Canción:** {song_name}"
+        
+        embed = discord.Embed(
+            title=f"🎬 Presentación `{self.presentation_id}`",
+            description=desc,
+            color=discord.Color.dark_blue()
+        )
+        
+        if already_active:
+            await interaction.response.edit_message(
+                content="⚠️ Ya tienes una presentación activa.",
+                embed=None,
+                view=None
+            )
+            return
+
+        await interaction.response.edit_message(
+            content="",
+            embed=embed,
+            view=ConfirmStartPresentationView(self.presentation_id, user_id)
+        )
+
+class ConfirmStartPresentationView(ui.View):
+    def __init__(self, presentation_id: str, user_id: int):
+        super().__init__(timeout=60)
+        self.presentation_id = presentation_id
+        self.user_id = user_id
+
+    @ui.button(label="✅ Iniciar", style=discord.ButtonStyle.primary)
+    async def confirm(self, interaction: Interaction, button: ui.Button):
+        if interaction.user.id != self.user_id:
+            await interaction.response.send_message("❌ No puedes iniciar esta presentación.", ephemeral=True)
+            return
+
+        pool = get_pool()
+
+        async with pool.acquire() as conn:
+            # Obtener info de presentación
+            pres = await conn.fetchrow("""
+                SELECT group_id, song_id FROM presentations
+                WHERE presentation_id = $1
+            """, self.presentation_id)
+
+            if not pres or not pres["group_id"] or not pres["song_id"]:
+                await interaction.response.edit_message(
+                    content="❌ La presentación no tiene grupo y canción asignados.",
+                    view=None
+                )
+                return
+
+            group_id, song_id = pres["group_id"], pres["song_id"]
+
+            # Obtener miembros del grupo
+            group_members = await conn.fetch("""
+                SELECT * FROM groups_members
+                WHERE group_id = $1
+            """, group_id)
+
+            for member in group_members:
+                # Calcular stats base
+                vocal = rap = dance = visual = energy = 0
+
+                if member['card_id']:
+                    card_id, unique_id = member['card_id'].split('.')
+                    card = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", card_id)
+
+                    vocal += card["vocal"]
+                    rap += card["rap"]
+                    dance += card["dance"]
+                    visual += card["visual"]
+                    energy += card["energy"]
+                else:
+                    card_id = unique_id = None
+                    idol = await conn.fetchrow("SELECT * FROM idol_base WHERE idol_id = $1", member['idol_id'])
+                    vocal += idol["vocal"]
+                    rap += idol["rap"]
+                    dance += idol["dance"]
+                    visual += idol["visual"]
+                    energy += 50
+
+                # Equipamiento adicional
+                for item_field in ["mic_id", "outfit_id", "accessory_id", "consumable_id"]:
+                    if member[item_field]:
+                        item_id, unique_item_id = member[item_field].split(".")
+                        item = await conn.fetchrow("""
+                            SELECT * FROM cards_item WHERE item_id = $1
+                        """, item_id)
+                        if item:
+                            vocal += item["plus_vocal"]
+                            rap += item["plus_rap"]
+                            dance += item["plus_dance"]
+                            visual += item["plus_visual"]
+                            energy += item["plus_energy"]
+
+                            # Reducir durabilidad
+                            await conn.execute("""
+                                UPDATE user_item_cards
+                                SET durability = durability - 1
+                                WHERE unique_id = $1
+                            """, unique_item_id)
+                            
+                            items_cero_durability = await conn.fetch("SELECT * FROM user_item_cards WHERE durability < 1")
+                            
+                            for item in items_cero_durability:
+                                field = ""
+                                if item['item_id'][:3] == "ACC":
+                                    field = "accessory_id"
+                                elif item['item_id'][:3] == "MIC":
+                                    field = "mic_id"
+                                elif item['item_id'][:3] == "FIT":
+                                    field = "outfit_id"
+                                elif item['item_id'][:3] == "CON":
+                                    field = "consumable_id"
+                                    
+                                await conn.execute(f"""
+                                    UPDATE groups_members
+                                    SET {field} = $1
+                                    WHERE {field} = $2
+                                """, None, f"{item['item_id']}.{item['unique_id']}")
+                            
+                                await conn.execute(f"""
+                                    DELETE FROM user_item_cards
+                                    WHERE unique_id = $1
+                                """, item['unique_id'])
+
+
+                # Insertar en members
+                await conn.execute("""
+                    INSERT INTO presentation_members (
+                        presentation_id, idol_id, card_id, unique_id, user_id,
+                        vocal, rap, dance, visual, max_energy
+                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                """, self.presentation_id, member['idol_id'], card_id, unique_id, member["user_id"],
+                     vocal, rap, dance, visual, energy or 50)
+
+            # Insertar sección 1
+            await conn.execute("""
+                INSERT INTO presentation_sections (presentation_id, section)
+                VALUES ($1, 1)
+            """, self.presentation_id)
+
+            # Cambiar estado de la presentación
+            await conn.execute("""
+                UPDATE presentations SET status = 'active', last_action = $2, free_switches = 2, performance_card_uses = 2
+                WHERE presentation_id = $1
+            """, self.presentation_id, datetime.now(timezone.utc))
+            
+        await show_current_section_view(interaction, self.presentation_id, edit=True)
+
+
+
+
+
 async def show_current_section_view(interaction: discord.Interaction, presentation_id: str, edit: bool = False):
     pool = get_pool()
     guild = interaction.guild
@@ -2239,178 +2434,6 @@ class CancelPerformanceCardPreviewButton(discord.ui.Button):
         await show_current_section_view(interaction, self.presentation_id, edit=True)
 
 
-# - start performance
-class PresentationSelectToPerformView(ui.View):
-    def __init__(self, interaction: Interaction, presentations: List[dict]):
-        super().__init__(timeout=60)
-        self.interaction = interaction
-        for row in presentations:
-            self.add_item(PerformPresentationButton(row["presentation_id"]))
-
-class PerformPresentationButton(ui.Button):
-    def __init__(self, presentation_id: str):
-        super().__init__(label=f"{presentation_id}", style=discord.ButtonStyle.primary)
-        self.presentation_id = presentation_id
-
-    async def callback(self, interaction: Interaction):
-        user_id = interaction.user.id
-        pool = get_pool()
-
-        # Verificar si ya hay una activa (de nuevo por seguridad)
-        async with pool.acquire() as conn:
-            already_active = await conn.fetchval("""
-                SELECT 1 FROM presentations
-                WHERE user_id = $1 AND status = 'active'
-            """, user_id)
-
-        if already_active:
-            await interaction.response.edit_message(
-                content="⚠️ Ya tienes una presentación activa.",
-                embed=None,
-                view=None
-            )
-            return
-
-        await interaction.response.edit_message(
-            content=f"🎬 ¿Deseas comenzar la presentación `{self.presentation_id}`?",
-            view=ConfirmStartPresentationView(self.presentation_id, user_id),
-            embed=None
-        )
-
-class ConfirmStartPresentationView(ui.View):
-    def __init__(self, presentation_id: str, user_id: int):
-        super().__init__(timeout=60)
-        self.presentation_id = presentation_id
-        self.user_id = user_id
-
-    @ui.button(label="✅ Iniciar", style=discord.ButtonStyle.success)
-    async def confirm(self, interaction: Interaction, button: ui.Button):
-        if interaction.user.id != self.user_id:
-            await interaction.response.send_message("❌ No puedes iniciar esta presentación.", ephemeral=True)
-            return
-
-        pool = get_pool()
-
-        async with pool.acquire() as conn:
-            # Obtener info de presentación
-            pres = await conn.fetchrow("""
-                SELECT group_id, song_id FROM presentations
-                WHERE presentation_id = $1
-            """, self.presentation_id)
-
-            if not pres or not pres["group_id"] or not pres["song_id"]:
-                await interaction.response.edit_message(
-                    content="❌ La presentación no tiene grupo y canción asignados.",
-                    view=None
-                )
-                return
-
-            group_id, song_id = pres["group_id"], pres["song_id"]
-
-            # Obtener miembros del grupo
-            group_members = await conn.fetch("""
-                SELECT * FROM groups_members
-                WHERE group_id = $1
-            """, group_id)
-
-            for member in group_members:
-                # Calcular stats base
-                vocal = rap = dance = visual = energy = 0
-
-                if member['card_id']:
-                    card_id, unique_id = member['card_id'].split('.')
-                    card = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", card_id)
-
-                    vocal += card["vocal"]
-                    rap += card["rap"]
-                    dance += card["dance"]
-                    visual += card["visual"]
-                    energy += card["energy"]
-                else:
-                    card_id = unique_id = None
-                    idol = await conn.fetchrow("SELECT * FROM idol_base WHERE idol_id = $1", member['idol_id'])
-                    vocal += idol["vocal"]
-                    rap += idol["rap"]
-                    dance += idol["dance"]
-                    visual += idol["visual"]
-                    energy += 50
-
-                # Equipamiento adicional
-                for item_field in ["mic_id", "outfit_id", "accessory_id", "consumable_id"]:
-                    if member[item_field]:
-                        item_id, unique_item_id = member[item_field].split(".")
-                        item = await conn.fetchrow("""
-                            SELECT * FROM cards_item WHERE item_id = $1
-                        """, item_id)
-                        if item:
-                            vocal += item["plus_vocal"]
-                            rap += item["plus_rap"]
-                            dance += item["plus_dance"]
-                            visual += item["plus_visual"]
-                            energy += item["plus_energy"]
-
-                            # Reducir durabilidad
-                            await conn.execute("""
-                                UPDATE user_item_cards
-                                SET durability = durability - 1
-                                WHERE unique_id = $1
-                            """, unique_item_id)
-                            
-                            items_cero_durability = await conn.fetch("SELECT * FROM user_item_cards WHERE durability < 1")
-                            
-                            for item in items_cero_durability:
-                                field = ""
-                                if item['item_id'][:3] == "ACC":
-                                    field = "accessory_id"
-                                elif item['item_id'][:3] == "MIC":
-                                    field = "mic_id"
-                                elif item['item_id'][:3] == "FIT":
-                                    field = "outfit_id"
-                                elif item['item_id'][:3] == "CON":
-                                    field = "consumable_id"
-                                    
-                                await conn.execute(f"""
-                                    UPDATE groups_members
-                                    SET {field} = $1
-                                    WHERE {field} = $2
-                                """, None, f"{item['item_id']}.{item['unique_id']}")
-                            
-                                await conn.execute(f"""
-                                    DELETE FROM user_item_cards
-                                    WHERE unique_id = $1
-                                """, item['unique_id'])
-
-
-                # Insertar en members
-                await conn.execute("""
-                    INSERT INTO presentation_members (
-                        presentation_id, idol_id, card_id, unique_id, user_id,
-                        vocal, rap, dance, visual, max_energy
-                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-                """, self.presentation_id, member['idol_id'], card_id, unique_id, member["user_id"],
-                     vocal, rap, dance, visual, energy or 50)
-
-            # Insertar sección 1
-            await conn.execute("""
-                INSERT INTO presentation_sections (presentation_id, section)
-                VALUES ($1, 1)
-            """, self.presentation_id)
-
-            # Cambiar estado de la presentación
-            await conn.execute("""
-                UPDATE presentations SET status = 'active', last_action = $2, free_switches = 2, performance_card_uses = 2
-                WHERE presentation_id = $1
-            """, self.presentation_id, datetime.now(timezone.utc))
-            
-        await show_current_section_view(interaction, self.presentation_id, edit=True)
-
-
-
-
-    @ui.button(label="❌ Cancelar", style=discord.ButtonStyle.danger)
-    async def cancel(self, interaction: Interaction, button: ui.Button):
-        await interaction.response.edit_message(content="❌ Inicio de presentación cancelado.", view=None)
-
 # - Funcion reutilizable para calculo de valores, stats, score, hype, etc
 async def perform_section_action(conn, presentation_id: str, idol_row, song_section, presentation_row, skill_bonus: dict):
     current_section = presentation_row["current_section"]
@@ -2842,11 +2865,12 @@ class UltimateSkillUseButton(discord.ui.Button):
                 color=discord.Color.red()
             )
             if final:
+                is_ephemeral:bool = presentation['presentation_type'] == "practice"
                 content = await finalize_presentation(conn, presentation)
                 await interaction.response.edit_message(embed=embed, view=None)
                 await interaction.followup.send(
                     content=content,
-                    ephemeral = presentation['presentation_type'] == "practice"
+                    ephemeral = is_ephemeral
                 )
                 return
             
@@ -3171,11 +3195,12 @@ class ActiveSkillUseButton(discord.ui.Button):
                 color=discord.Color.green()
             )
             if final:
+                is_ephemeral:bool = presentation['presentation_type'] == "practice"
                 content = await finalize_presentation(conn, presentation)
                 await interaction.response.edit_message(embed=embed, view=None)
                 await interaction.followup.send(
                     content=content,
-                    ephemeral = presentation['presentation_type'] == "practice"
+                    ephemeral = is_ephemeral
                 )
                 return
             
@@ -3699,10 +3724,12 @@ class BasicActionButton(discord.ui.Button):
             description=f"Puntuación obtenida: **{format(score,',')}** (de: {format(base_score,',')})\n🔥 Hype ganado: **{hype}**",
             color=discord.Color.green()
         )
+        
         if final:
             is_ephemeral:bool = presentation['presentation_type'] == "practice"
             content = await finalize_presentation(conn, presentation)
             await interaction.response.edit_message(embed=embed, view=None)
+            
             await interaction.followup.send(
                 content=content,
                 ephemeral = is_ephemeral
@@ -3757,6 +3784,16 @@ async def finalize_presentation(conn, presentation: dict) -> str:
             popularity = int(1000 * (total_score / average_score))
             xp = popularity // 10
             
+            await conn.execute("""
+                UPDATE user_missions um
+                SET obtained = um.obtained + 1,
+                    last_updated = now()
+                FROM missions_base mb
+                WHERE um.mission_id = mb.mission_id
+                AND um.user_id = $1
+                AND um.status = 'active'
+                AND mb.mission_type = 'do_presentation'
+                """, user_id)
             
             double = ""
             
@@ -3793,6 +3830,17 @@ async def finalize_presentation(conn, presentation: dict) -> str:
             )
 
         else:
+            await conn.execute("""
+                UPDATE user_missions um
+                SET obtained = um.obtained + 1,
+                    last_updated = now()
+                FROM missions_base mb
+                WHERE um.mission_id = mb.mission_id
+                AND um.user_id = $1
+                AND um.status = 'active'
+                AND mb.mission_type = 'do_practice'
+                """, user_id)
+            
             await conn.execute(
                 """
                 UPDATE presentations

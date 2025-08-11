@@ -152,6 +152,17 @@ class RedeemableButton(discord.ui.Button):
 
         # Verificar si el usuario aún tiene ese redeemable
         async with pool.acquire() as conn:
+            await conn.execute("""
+                UPDATE user_missions um
+                SET obtained = um.obtained + 1,
+                    last_updated = now()
+                FROM missions_base mb
+                WHERE um.mission_id = mb.mission_id
+                AND um.user_id = $1
+                AND um.status = 'active'
+                AND mb.mission_type = 'redeem_coupon'
+                """, interaction.user.id)
+            
             row = await conn.execute(
                 "UPDATE user_redeemables SET quantity = quantity - 1 WHERE user_id = $1 AND redeemable_id = $2 AND quantity > 0 ",
                 user_id, self.redeemable_id)

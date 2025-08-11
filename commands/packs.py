@@ -107,6 +107,20 @@ class PacksGroup(app_commands.Group):
                 self.paginator = paginator
 
             async def callback(self, interaction: discord.Interaction):
+                pool = get_pool()
+                
+                async with pool.acquire() as conn:
+                    await conn.execute("""
+                        UPDATE user_missions um
+                        SET obtained = um.obtained + 1,
+                            last_updated = now()
+                        FROM missions_base mb
+                        WHERE um.mission_id = mb.mission_id
+                        AND um.user_id = $1
+                        AND um.status = 'active'
+                        AND mb.mission_type = 'open_pack'
+                        """, interaction.user.id)
+                
                 await interaction.response.edit_message(content="## 📦 Abriendo el pack...", embed=None, view=None)
 
                 # Abrir el pack y obtener resultado
@@ -432,6 +446,17 @@ class PacksGroup(app_commands.Group):
             rows = await conn.fetch("""
                 SELECT * FROM packs
             """)
+            
+            await conn.execute("""
+                UPDATE user_missions um
+                SET obtained = um.obtained + 1,
+                    last_updated = now()
+                FROM missions_base mb
+                WHERE um.mission_id = mb.mission_id
+                AND um.user_id = $1
+                AND um.status = 'active'
+                AND mb.mission_type = 'view_packs'
+                """, user_id)
 
         if not rows:
             await interaction.response.send_message("No hay packs disponibles actualmente.", ephemeral=True)
@@ -910,5 +935,4 @@ class ConfirmFCRView(discord.ui.View):
 
 
 async def setup(bot):
-
     bot.tree.add_command(PacksGroup())

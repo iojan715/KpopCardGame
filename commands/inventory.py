@@ -175,6 +175,16 @@ class InventoryGroup(app_commands.Group):
         base_query += f" ORDER BY {order_column} {order_dir}"
         
         async with pool.acquire() as conn:
+            await conn.execute("""
+                UPDATE user_missions um
+                SET obtained = um.obtained + 1,
+                    last_updated = now()
+                FROM missions_base mb
+                WHERE um.mission_id = mb.mission_id
+                AND um.user_id = $1
+                AND um.status = 'active'
+                AND mb.mission_type = 'view_inventory'
+                """, interaction.user.id)
             rows = await conn.fetch(base_query, *params)
             if duplicated:
                 card_counts = Counter([row['card_id'] for row in rows])
@@ -343,6 +353,16 @@ class InventoryGroup(app_commands.Group):
         query += order_clause
 
         async with pool.acquire() as conn:
+            await conn.execute("""
+                UPDATE user_missions um
+                SET obtained = um.obtained + 1,
+                    last_updated = now()
+                FROM missions_base mb
+                WHERE um.mission_id = mb.mission_id
+                AND um.user_id = $1
+                AND um.status = 'active'
+                AND mb.mission_type = 'view_items'
+                """, interaction.user.id)
             rows = await conn.fetch(query, *params)
 
         language = await get_user_language(user_id=user_id)
@@ -376,6 +396,19 @@ class InventoryGroup(app_commands.Group):
     @app_commands.command(name="performance_cards", description="Ver tus performance cards")
     @app_commands.describe(agency="Agency")
     async def performance_cards(self, interaction: discord.Interaction, agency:str = None):
+        pool = get_pool()
+        
+        async with pool.acquire() as conn:
+            await conn.execute("""
+                UPDATE user_missions um
+                SET obtained = um.obtained + 1,
+                    last_updated = now()
+                FROM missions_base mb
+                WHERE um.mission_id = mb.mission_id
+                AND um.user_id = $1
+                AND um.status = 'active'
+                AND mb.mission_type = 'view_pcards'
+                """, interaction.user.id)
         
         await self.display_simple_inventory(
             interaction,
@@ -450,6 +483,16 @@ class InventoryGroup(app_commands.Group):
         query += order_clause
         
         async with pool.acquire() as conn:
+            await conn.execute("""
+                UPDATE user_missions um
+                SET obtained = um.obtained + 1,
+                    last_updated = now()
+                FROM missions_base mb
+                WHERE um.mission_id = mb.mission_id
+                AND um.user_id = $1
+                AND um.status = 'active'
+                AND mb.mission_type = 'view_redeemables'
+                """, interaction.user.id)
             rows = await conn.fetch(query, *params)
             
         if not rows:
@@ -786,6 +829,17 @@ class ConfirmRedeemableButton(discord.ui.Button):
         
         if row['type'] == "boost" and row['redeemable_id'] not in ["ORGAN", "REHRS"]:
             async with pool.acquire() as conn:
+                await conn.execute("""
+                    UPDATE user_missions um
+                    SET obtained = um.obtained + 1,
+                        last_updated = now()
+                    FROM missions_base mb
+                    WHERE um.mission_id = mb.mission_id
+                    AND um.user_id = $1
+                    AND um.status = 'active'
+                    AND mb.mission_type = 'redeem_coupon'
+                    """, interaction.user.id)
+                
                 await conn.execute(
                     """INSERT INTO user_boosts (user_id, boost, amount)
                     VALUES ($1, $2, $3)
@@ -1363,6 +1417,16 @@ class SelectMemberItemButton(discord.ui.Button):
             )
 
         async with pool.acquire() as conn:
+            await conn.execute("""
+                UPDATE user_missions um
+                SET obtained = um.obtained + 1,
+                    last_updated = now()
+                FROM missions_base mb
+                WHERE um.mission_id = mb.mission_id
+                AND um.user_id = $1
+                AND um.status = 'active'
+                AND mb.mission_type = 'equip_card'
+                """, interaction.user.id)
             # 1) Desequipar antiguo si existe
             old = await conn.fetchval(
                 f"SELECT {slot} FROM groups_members WHERE group_id = $1 AND idol_id = $2",
@@ -1391,8 +1455,6 @@ class SelectMemberItemButton(discord.ui.Button):
                 self.row_data["unique_id"]
             )
 
-        # 4) Regenerar inventario
-        async with pool.acquire() as conn:
             rows = await conn.fetch(self.base_query, *self.query_params)
         embeds = await generate_item_card_embeds(rows, pool)
         new_p = ItemInventoryEmbedPaginator(
@@ -2185,6 +2247,17 @@ class ConfirmEquipIdolButton(discord.ui.Button):
         card_full_id = f"{self.parent.card['card_id']}.{self.parent.card['unique_id']}"
         # Obtener nombre para el mensaje final
         async with pool.acquire() as conn:
+            await conn.execute("""
+                UPDATE user_missions um
+                SET obtained = um.obtained + 1,
+                    last_updated = now()
+                FROM missions_base mb
+                WHERE um.mission_id = mb.mission_id
+                AND um.user_id = $1
+                AND um.status = 'active'
+                AND mb.mission_type = 'equip_card'
+                """, interaction.user.id)
+            
             name_row = await conn.fetchrow(
                 "SELECT idol_name FROM cards_idol WHERE card_id = $1", 
                 self.parent.card["card_id"]
@@ -2993,6 +3066,17 @@ class CardGroup(app_commands.Group):
         pool = await get_pool()
 
         async with pool.acquire() as conn:
+            await conn.execute("""
+                UPDATE user_missions um
+                SET obtained = um.obtained + 1,
+                    last_updated = now()
+                FROM missions_base mb
+                WHERE um.mission_id = mb.mission_id
+                AND um.user_id = $1
+                AND um.status = 'active'
+                AND mb.mission_type = 'view_fusion'
+                """, interaction.user.id)
+            
             rows = await conn.fetch("""
                 SELECT uc.unique_id, uc.card_id, uc.idol_id, uc.set_id, uc.rarity_id,
                     ci.idol_name, ci.set_name
@@ -3272,6 +3356,17 @@ class ConfirmFusionView(discord.ui.View):
         pool = await get_pool()
         xp = 150
         async with pool.acquire() as conn:
+            await conn.execute("""
+                UPDATE user_missions um
+                SET obtained = um.obtained + 1,
+                    last_updated = now()
+                FROM missions_base mb
+                WHERE um.mission_id = mb.mission_id
+                AND um.user_id = $1
+                AND um.status = 'active'
+                AND mb.mission_type = 'try_fusion'
+                """, interaction.user.id)
+            
             rows = await conn.fetch("""
                 SELECT * FROM user_idol_cards
                 WHERE unique_id = ANY($1::TEXT[]) AND user_id = $2 AND status = 'available'
@@ -3344,6 +3439,17 @@ class ConfirmFusionView(discord.ui.View):
                 return
 
 
+            await conn.execute("""
+                UPDATE user_missions um
+                SET obtained = um.obtained + 1,
+                    last_updated = now()
+                FROM missions_base mb
+                WHERE um.mission_id = mb.mission_id
+                AND um.user_id = $1
+                AND um.status = 'active'
+                AND mb.mission_type = 'fusion'
+                """, interaction.user.id)
+            
             await conn.execute("""
                 DELETE FROM user_idol_cards
                 WHERE unique_id = ANY($1::TEXT[]) AND user_id = $2
@@ -3508,6 +3614,17 @@ class ConfirmLevelUpView(discord.ui.View):
 
         pool = await get_pool()
         async with pool.acquire() as conn:
+            await conn.execute("""
+                UPDATE user_missions um
+                SET obtained = um.obtained + 1,
+                    last_updated = now()
+                FROM missions_base mb
+                WHERE um.mission_id = mb.mission_id
+                AND um.user_id = $1
+                AND um.status = 'active'
+                AND mb.mission_type = 'level_up'
+                """, interaction.user.id)
+            
             # Verificar que ambas cartas aún estén disponibles
             rows = await conn.fetch("""
                 SELECT * FROM user_idol_cards
