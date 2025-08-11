@@ -924,10 +924,10 @@ class ConfirmRemoveIdolButton(discord.ui.Button):
                     id, u_id = mi.split(".")
                     await conn.execute("UPDATE user_item_cards SET status = 'available' WHERE unique_id = $1", u_id)
 
-            member_card = await conn.fetchrow("SELECT card_id FROM groups_members WHERE group_id = $1 AND idol_id = $2",
+            member_card = await conn.fetchval("SELECT card_id FROM groups_members WHERE group_id = $1 AND idol_id = $2",
                                               self.group_id, self.idol_id)
             if member_card:
-                card_id, unique_id = member_card['card_id'].split(".")
+                card_id, unique_id = member_card.split(".")
                 await conn.execute("UPDATE user_idol_cards SET status = 'available' WHERE unique_id = $1", unique_id)
             
             await conn.execute("""
@@ -1646,4 +1646,5 @@ class ReturnButtonMembers(discord.ui.Button):
 
 
 async def setup(bot):
+
     bot.tree.add_command(Group())
