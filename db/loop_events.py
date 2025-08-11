@@ -1,10 +1,10 @@
 import asyncio
-import datetime
+import datetime, random
 from db.connection import get_pool
 import logging
 
 EJECUCION_HORA_UTC = 5  # 05:00 UTC
-GRACE_DAYS = 2  # días de tolerancia para ejecución tardía
+GRACE_DAYS = 50  # días de tolerancia para ejecución tardía
 
 BOT = None
 
@@ -59,9 +59,8 @@ async def ejecutar_evento_si_corresponde(nombre_evento, funcion_callback):
 
         if fecha_programada is None:
             return
-
         # Ejecutar si corresponde hoy, o si se pasó más de X días desde la última ejecución válida
-        diferencia = now - fecha_programada
+        diferencia = now - last_applied
         tolerancia_superada = diferencia.days >= GRACE_DAYS
         no_ejecutado_aun = last_applied < fecha_programada
 
@@ -154,6 +153,272 @@ async def increase_payment():
     async with pool.acquire() as conn:
         await conn.execute("UPDATE groups SET unpaid_weeks = unpaid_weeks + 1 WHERE status = 'active'")
     logging.info("Pago semanal de grupos agregado")
+
+async def add_daily_missions():
+    pool = get_pool()
+    async with pool.acquire() as conn:
+        users = await conn.fetch("SELECT user_id FROM users")
+
+        exploratories = await conn.fetch("""
+            SELECT mission_id, mission_type, needed, pack_id, redeemable_id, credits, xp
+            FROM missions_base
+            WHERE difficulty = 'exploratory'
+        """)
+        easy_missions = await conn.fetch("""
+            SELECT mission_id, mission_type, needed, pack_id, redeemable_id, credits, xp
+            FROM missions_base
+            WHERE difficulty = 'easy'
+        """)
+
+        if not exploratories and not easy_missions:
+            return
+
+        for u in users:
+            user_id = u["user_id"]
+
+            active_rows = await conn.fetch(
+                """
+                SELECT um.mission_number, um.mission_id, mb.mission_type
+                FROM user_missions um
+                LEFT JOIN missions_base mb ON um.mission_id = mb.mission_id
+                WHERE um.user_id = $1 AND um.status = 'active'
+                """,
+                user_id
+            )
+
+            active_ids = {r["mission_id"] for r in active_rows if r["mission_id"]}
+            
+            active_types = {r["mission_type"] for r in active_rows if r["mission_type"]}
+            active_by_number = {r["mission_number"]: r["mission_id"] for r in active_rows if r["mission_id"]}
+
+            if 1 not in active_by_number:
+                candidates = [m for m in exploratories if m["mission_id"] not in active_ids]
+                if candidates:
+                    m = random.choice(candidates)
+                    await conn.execute(
+                        """
+                        INSERT INTO user_missions (
+                            user_id, mission_number, mission_id, needed, obtained,
+                            pack_id, redeemable_id, credits, xp, status, assigned_at, last_updated
+                        ) VALUES (
+                            $1, $2, $3, $4, $5,
+                            $6, $7, $8, $9, 'active', now(), now()
+                        )
+                        ON CONFLICT DO NOTHING
+                        """,
+                        user_id,
+                        1,
+                        m["mission_id"],
+                        int(m["needed"] or 1),
+                        0,
+                        m["pack_id"] or None,
+                        m["redeemable_id"] or None,
+                        int(m["credits"] or 0),
+                        int(m["xp"] or 1)
+                    )
+                    active_ids.add(m["mission_id"])
+                    active_by_number[1] = m["mission_id"]
+                    
+                    if m.get("mission_type"):
+                        active_types.add(m["mission_type"])
+
+            if 2 not in active_by_number:
+                candidates = [
+                    m for m in easy_missions
+                    if m["mission_id"] not in active_ids and (m.get("mission_type") not in active_types)
+                ]
+                if candidates:
+                    m = random.choice(candidates)
+                    await conn.execute(
+                        """
+                        INSERT INTO user_missions (
+                            user_id, mission_number, mission_id, needed, obtained,
+                            pack_id, redeemable_id, credits, xp, status, assigned_at, last_updated
+                        ) VALUES (
+                            $1, $2, $3, $4, $5,
+                            $6, $7, $8, $9, 'active', now(), now()
+                        )
+                        ON CONFLICT DO NOTHING
+                        """,
+                        user_id,
+                        2,
+                        m["mission_id"],
+                        int(m["needed"] or 1),
+                        0,
+                        m["pack_id"] or None,
+                        m["redeemable_id"] or None,
+                        int(m["credits"] or 0),
+                        int(m["xp"] or 1)
+                    )
+                    active_ids.add(m["mission_id"])
+                    active_by_number[2] = m["mission_id"]
+                    if m.get("mission_type"):
+                        active_types.add(m["mission_type"])
+
+            if 3 not in active_by_number:
+                candidates = [
+                    m for m in easy_missions
+                    if m["mission_id"] not in active_ids and (m.get("mission_type") not in active_types)
+                ]
+                if candidates:
+                    m = random.choice(candidates)
+                    await conn.execute(
+                        """
+                        INSERT INTO user_missions (
+                            user_id, mission_number, mission_id, needed, obtained,
+                            pack_id, redeemable_id, credits, xp, status, assigned_at, last_updated
+                        ) VALUES (
+                            $1, $2, $3, $4, $5,
+                            $6, $7, $8, $9, 'active', now(), now()
+                        )
+                        ON CONFLICT DO NOTHING
+                        """,
+                        user_id,
+                        3,
+                        m["mission_id"],
+                        int(m["needed"] or 1),
+                        0,
+                        m["pack_id"] or None,
+                        m["redeemable_id"] or None,
+                        int(m["credits"] or 0),
+                        int(m["xp"] or 1)
+                    )
+                    active_ids.add(m["mission_id"])
+                    active_by_number[3] = m["mission_id"]
+                    if m.get("mission_type"):
+                        active_types.add(m["mission_type"])
+    logging.info("Misiones diarias agregadas correctamente.")
+
+async def add_weekly_missions():
+    pool = get_pool()
+    async with pool.acquire() as conn:
+        users = await conn.fetch("SELECT user_id FROM users")
+
+        medium_missions = await conn.fetch("""
+            SELECT mission_id, mission_type, needed, pack_id, redeemable_id, credits, xp
+            FROM missions_base
+            WHERE difficulty = 'medium'
+        """)
+        hard_missions = await conn.fetch("""
+            SELECT mission_id, mission_type, needed, pack_id, redeemable_id, credits, xp
+            FROM missions_base
+            WHERE difficulty = 'hard'
+        """)
+
+        if not medium_missions and not hard_missions:
+            return
+
+        for u in users:
+            user_id = u["user_id"]
+
+            active_rows = await conn.fetch(
+                """
+                SELECT um.mission_number, um.mission_id, mb.mission_type
+                FROM user_missions um
+                LEFT JOIN missions_base mb ON um.mission_id = mb.mission_id
+                WHERE um.user_id = $1 AND um.status = 'active' AND um.mission_number IN (4,5)
+                """,
+                user_id
+            )
+
+            active_by_number = {r["mission_number"]: r["mission_id"] for r in active_rows if r["mission_id"]}
+            active_types = {r["mission_type"] for r in active_rows if r["mission_type"]}
+
+            if 4 not in active_by_number and medium_missions:
+                forbidden_type_for_4 = None
+                if 5 in active_by_number:
+                    for r in active_rows:
+                        if r["mission_number"] == 5:
+                            forbidden_type_for_4 = r.get("mission_type")
+                            break
+
+                candidates = [
+                    m for m in medium_missions
+                    if (forbidden_type_for_4 is None or (m.get("mission_type") != forbidden_type_for_4))
+                ]
+
+                if not candidates:
+                    candidates = list(medium_missions)
+
+                if candidates:
+                    m = random.choice(candidates)
+                    await conn.execute(
+                        """
+                        INSERT INTO user_missions (
+                            user_id, mission_number, mission_id, needed, obtained,
+                            pack_id, redeemable_id, credits, xp, status, assigned_at, last_updated
+                        ) VALUES (
+                            $1, $2, $3, $4, $5,
+                            $6, $7, $8, $9, 'active', now(), now()
+                        )
+                        ON CONFLICT DO NOTHING
+                        """,
+                        user_id,
+                        4,
+                        m["mission_id"],
+                        int(m["needed"] or 1),
+                        0,
+                        m["pack_id"] or None,
+                        m["redeemable_id"] or None,
+                        int(m["credits"] or 0),
+                        int(m["xp"] or 1)
+                    )
+                    
+                    if m.get("mission_type"):
+                        active_types.add(m["mission_type"])
+                        active_by_number[4] = m["mission_id"]
+
+            if 5 not in active_by_number and hard_missions:
+                
+                forbidden_type_for_5 = None
+                if 4 in active_by_number:
+                    
+                    for r in active_rows:
+                        if r["mission_number"] == 4:
+                            forbidden_type_for_5 = r.get("mission_type")
+                            break
+                    
+                    if forbidden_type_for_5 is None and active_types:
+                        pass
+
+                candidates = [
+                    m for m in hard_missions
+                    if (m.get("mission_type") not in active_types)
+                ]
+
+                if not candidates:
+                    candidates = list(hard_missions)
+
+                if candidates:
+                    m = random.choice(candidates)
+                    await conn.execute(
+                        """
+                        INSERT INTO user_missions (
+                            user_id, mission_number, mission_id, needed, obtained,
+                            pack_id, redeemable_id, credits, xp, status, assigned_at, last_updated
+                        ) VALUES (
+                            $1, $2, $3, $4, $5,
+                            $6, $7, $8, $9, 'active', now(), now()
+                        )
+                        ON CONFLICT DO NOTHING
+                        """,
+                        user_id,
+                        5,
+                        m["mission_id"],
+                        int(m["needed"] or 1),
+                        0,
+                        m["pack_id"] or None,
+                        m["redeemable_id"] or None,
+                        int(m["credits"] or 0),
+                        int(m["xp"] or 1)
+                    )
+                    
+                    active_by_number[5] = m["mission_id"]
+                    if m.get("mission_type"):
+                        active_types.add(m["mission_type"])
+
+    logging.info("Misiones semanales agregadas correctamente.")
+
     
 async def remove_roles():
     guild_ids = [1395514643283443742, 1311186435054764032]
@@ -197,6 +462,8 @@ async def events_loop(bot):
         await ejecutar_evento_si_corresponde("cancel_presentation", cancel_presentation_func)
         await ejecutar_evento_si_corresponde("increase_payment", increase_payment)
         await ejecutar_evento_si_corresponde("remove_roles", remove_roles)
+        await ejecutar_evento_si_corresponde("add_daily_mission", add_daily_missions)
+        await ejecutar_evento_si_corresponde("add_weekly_mission", add_weekly_missions)
 
         await asyncio.sleep(300)  # revisa cada 5 minutos
 
