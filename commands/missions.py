@@ -218,7 +218,7 @@ async def build_missions_embed_view_for_user(user_id: int):
             mtype = r["mission_type"] or "unknown"
             status = r["status"] or "unknown"
             
-            m_desc = get_translation(language, mtype)
+            m_desc = get_translation(language, f"mission.{mtype}")
             
             status_e = canceled = ""
             if status == "completed":
@@ -229,7 +229,7 @@ async def build_missions_embed_view_for_user(user_id: int):
 
             embed.add_field(
                 name=f"🔹 Misión #{num}{status_e}",
-                value=f"**Tipo:** {mtype}\n{canceled}**Progreso:** {obtained}/{needed}{canceled}",
+                value=f"**Tipo:** {m_desc}\n{canceled}**Progreso:** {obtained}/{needed}{canceled}",
                 inline=False
             )
 
