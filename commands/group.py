@@ -377,7 +377,7 @@ class ConfirmButton(discord.ui.Button):
 
         if credits < cost:
             await show_error(interaction, self.user_id, self.group_id,
-                             get_translation(language, "group_create.not_enough_credits"))
+                             get_translation(language, "group_create.not_enough_credits", cost=cost, credits=credits))
             return
 
         description = get_translation(language, "group_create.sure_to_create")
@@ -1648,4 +1648,5 @@ class ReturnButtonMembers(discord.ui.Button):
 async def setup(bot):
 
     bot.tree.add_command(Group())
+
 
