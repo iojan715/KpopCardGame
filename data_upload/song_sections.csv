@@ -88,34 +88,34 @@ section_id,song_id,section_number,section_type,duration,lyrics,vocal,rap,dance,v
 0087,008,33,chorus,5,*.*,45,0,40,15,optional,harmony,20,,5,,27900
 0088,008,34,chorus,6,*.*,45,0,35,20,locked,,,,,,26900
 0089,008,35,ending,9,*.*,0,0,20,80,optional,pose_sync,,,,,38500
-0090,003,1,intro,9,*.*,0,0,10,90,optional,pose_sync,,,,15,46100
-0091,003,2,verse,4,*.*,40,10,30,20,forced,,,,,,18000
-0092,003,3,verse,4,*.*,40,10,30,20,optional,backup_dance,,,15,,20600
-0093,003,4,verse,4,*.*,35,10,40,15,forced,,,,,,18000
-0094,003,5,verse,4,*.*,40,10,25,25,optional,,,,,,18000
-0095,003,6,pre_chorus,8,*.*,40,10,35,15,forced,group_dance,,,10,,39900
-0096,003,7,chorus,9,*.*,50,0,30,20,forced,group_dance,,,15,10,51100
-0097,003,8,chorus,8,*.*,55,0,25,20,optional,pose_sync,,,10,15,45500
-0098,003,9,chorus,8,*.*,50,0,30,20,forced,backup_dance,,,15,5,44100
-0099,003,10,chorus,5,*.*,45,0,35,20,optional,,,,,,23200
-0100,003,11,chorus,3,*.*,55,0,20,25,optional,,,,,,13800
-0101,003,12,verse,9,*.*,0,55,35,10,forced,backup_dance,,,15,5,49600
-0102,003,13,verse,4,*.*,40,10,20,30,forced,,,,,,18400
-0103,003,14,verse,4,*.*,40,10,25,25,optional,,,,,,18400
-0104,003,15,pre_chorus,4,*.*,45,0,30,25,forced,pose_sync,,,5,10,21100
-0105,003,16,pre_chorus,4,*.*,45,0,25,30,optional,,,,,,18500
-0106,003,17,chorus,9,*.*,50,0,35,15,forced,group_dance,,,15,10,51900
-0107,003,18,chorus,8,*.*,50,0,30,20,optional,pose_sync,,,10,15,46100
-0108,003,19,chorus,8,*.*,45,0,35,20,forced,backup_dance,,,15,5,44800
-0109,003,20,chorus,6,*.*,45,0,35,20,optional,,,,,,28300
-0110,003,21,chorus,3,*.*,55,0,15,30,optional,,,,,,14000
-0111,003,22,bridge,8,*.*,0,55,25,20,forced,,,,,,37100
-0112,003,23,bridge,5,*.*,45,0,40,15,forced,,,,,,23000
-0113,003,24,bridge,5,*.*,60,0,20,20,optional,,,,,,23200
-0114,003,25,chorus,6,*.*,50,0,30,20,forced,high_note,15,,10,5,35900
-0115,003,26,chorus,8,*.*,45,0,45,10,forced,adlib,15,,10,,46500
-0116,003,27,chorus,9,*.*,45,0,35,20,forced,pose_sync,5,,5,15,52700
-0117,003,28,chorus,5,*.*,45,0,40,15,forced,group_dance,5,,15,5,29300
-0118,003,29,chorus,3,*.*,50,0,30,20,optional,,,,,,14100
-0119,003,30,ending,8,*.*,0,40,30,30,forced,group_dance,,,15,5,44100
-0120,003,31,ending,9,*.*,0,40,20,40,optional,,,,,,41000
+0090,003,1,intro,9,**,0,0,10,90,optional,pose_sync,,,,15,46100
+0091,003,2,verse,4,*eodumeul kkae-ul i candle*\n*bureul buchyeo*,40,10,30,20,forced,,,,,,18000
+0092,003,3,verse,4,*deo isang chameul sun eopji?*\n*So do I*,40,10,30,20,optional,backup_dance,,,15,,20600
+0093,003,4,verse,4,*neomu oraetdong-an we've starvin'*\n*I'm out of control*,35,10,40,15,forced,,,,,,18000
+0094,003,5,verse,4,*jamjadeon nae anui madness*\n*kkae-eonal sigan*,40,10,25,25,optional,,,,,,18000
+0095,003,6,pre_chorus,8,*Ah sinseonhan gonggiga piryohae*\n*nan jigeum gakkai wa soksagyeojulge*,40,10,35,15,forced,group_dance,,,10,,39900
+0096,003,7,chorus,9,*You want some sweet juice?*\n*kkaemureo pop it pop it*\n*jogeumssik drippin' drippin'*\n*bonneung-eul ttara ttara*,50,0,30,20,forced,group_dance,,,15,10,51100
+0097,003,8,chorus,8,*Heaven*\n*i maseun sweety sweety*\n*onmomui sin-gyeongdeuri*\n*chumeul chwo dda-la dda-la*,55,0,25,20,optional,pose_sync,,,10,15,45500
+0098,003,9,chorus,8,*igeotjeogeot saenggakal sigani eopseo*\n*bulkkotcheoreom taolla da*\n*da ollata*,50,0,30,20,forced,backup_dance,,,15,5,44100
+0099,003,10,chorus,5,*eotteon geotdo urireul gadwo dul su eopseo*\n*i barame taolla da*,45,0,35,20,optional,,,,,,23200
+0100,003,11,chorus,3,*I want some sweet juice*,55,0,20,25,optional,,,,,,13800
+0101,003,12,verse,9,*You want it too i sweet juice*\n*mogeul taseo deureoganeun i neukkimeun taboo*\n*My brain jibaehae like tattoo*\n*I feel so good jungdokdwae beorigesseo i mat*,0,55,35,10,forced,backup_dance,,,15,5,49600
+0102,003,13,verse,4,*sumjugigo keep it quiet*\n*momeul natchwo*,40,10,20,30,forced,,,,,,18400
+0103,003,14,verse,4,*balgeoreum sorineun silence*\n*Shh nobody knows*,40,10,25,25,optional,,,,,,18400
+0104,003,15,pre_chorus,4,*Ah sinseonhan gonggiga piryohae nan jigeum*,45,0,30,25,forced,pose_sync,,,5,10,21100
+0105,003,16,pre_chorus,4,*gakkai wa neol kkeonaejulge*,45,0,25,30,optional,,,,,,18500
+0106,003,17,chorus,9,*You want some sweet juice?*\n*kkaemureo pop it pop it*\n*jogeumssik drippin' drippin'*\n*bonneung-eul ttara ttara*,50,0,35,15,forced,group_dance,,,15,10,51900
+0107,003,18,chorus,8,*Heaven*\n*i maseun sweety sweety*\n*onmomui sin-gyeongdeuri*\n*chumeul chwo dda-la dda-la*,50,0,30,20,optional,pose_sync,,,10,15,46100
+0108,003,19,chorus,8,*igeotjeogeot saenggakal sigani eopseo*\n*bulkkotcheoreom taolla da*\n*da ollata*,45,0,35,20,forced,backup_dance,,,15,5,44800
+0109,003,20,chorus,6,*eotteon geotdo urireul gadwo dul su eopseo*\n*i barame taolla da*,45,0,35,20,optional,,,,,,28300
+0110,003,21,chorus,3,*I want some sweet juice*,55,0,15,30,optional,,,,,,14000
+0111,003,22,bridge,8,*Love it tasty want it so sweety*\n*deo wonhage doejana chatge doejana nado moreuge*,0,55,25,20,forced,,,,,,37100
+0112,003,23,bridge,5,*adeuki binnan jeo teumeul hyanghae dasi*,45,0,40,15,forced,,,,,,23000
+0113,003,24,bridge,5,*I want it more and more*\n**\n*Sweet juice~*,60,0,20,20,optional,,,,,,23200
+0114,003,25,chorus,6,*nan jigeum thirsty thirsty*\n*jeo neomeo runnin' runnin' (runnin')*\n*eoseo nal ttara ttara*,50,0,30,20,forced,high_note,15,,10,5,35900
+0115,003,26,chorus,8,*Have fun (you know I got somethin')*\n*ije got party start (oh-oh)*\n*ireolsurok cheoncheonhi (oh-oh)*\n*eoseo nal ttara ttara*,45,0,45,10,forced,adlib,15,,10,,46500
+0116,003,27,chorus,9,*igeotjeogeot saenggakal sigani eopseo*\n*bulkkotcheoreom taolla da (oh no nothing)*\n*da ollata (oh no nothing)*,45,0,35,20,forced,pose_sync,5,,5,15,52700
+0117,003,28,chorus,5,*eotteon geotdo urireul gadwo dul su eopseo*\n*i barame taolla da*,45,0,40,15,forced,group_dance,5,,15,5,29300
+0118,003,29,chorus,3,*I want some sweet juice*,50,0,30,20,optional,,,,,,14100
+0119,003,30,ending,8,*We through yeah-yeah geutorok kkumkkwoon sun-gan*\n*Sweet juice ttara oh ma-eumkkeot*,0,40,30,30,forced,group_dance,,,15,5,44100
+0120,003,31,ending,9,*We through yeah-yeah geutorok kkumkkwoon sun-gan*\n*Sweet juice ttara oh ma-eumkkeot*,0,40,20,40,optional,,,,,,41000
