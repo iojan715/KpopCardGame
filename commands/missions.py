@@ -1,5 +1,5 @@
 import discord, random, string
-from datetime import timezone, datetime
+from datetime import timezone, datetime, timedelta
 from discord.ext import commands
 from discord import app_commands
 from utils.language import get_user_language
@@ -209,8 +209,36 @@ async def build_missions_embed_view_for_user(user_id: int):
 
     # mapear por número (1..5)
     by_number = {r["mission_number"]: r for r in rows}
-
+    now = datetime.now(timezone.utc)
+    
     for num in range(1, 6):
+        if num == 1:
+            next_daily = now.replace(hour=5, minute=0, second=0, microsecond=0)
+            if now >= next_daily:
+                next_daily = next_daily + timedelta(days=1)
+
+            ts = int(next_daily.timestamp())
+            embed.add_field(
+                name="⏰ Reinicio diario (misiones 1, 2 y 3):",
+                value=f"<t:{ts}:R>",
+                inline=False
+            )
+            
+        if num == 4:
+            days_ahead = (0 - now.weekday()) % 7
+            next_monday = (now + timedelta(days=days_ahead)).replace(hour=5, minute=0, second=0, microsecond=0)
+            
+            if now >= next_monday:
+                next_monday = next_monday + timedelta(days=7)
+
+            ts_week = int(next_monday.timestamp())
+            embed.add_field(
+                name="----------\n📅 Reinicio semanal (misiones 4 y 5)",
+                value=f"<t:{ts_week}:R>",
+                inline=False
+            )
+            
+            
         if num in by_number:
             r = by_number[num]
             needed = r["needed"] or 0
@@ -220,7 +248,8 @@ async def build_missions_embed_view_for_user(user_id: int):
             
             m_desc = get_translation(language, f"mission.{mtype}")
             
-            status_e = canceled = ""
+            status_e = "🔹"
+            canceled = ""
             if status == "completed":
                 status_e = " ✅"
             elif status == "cancelled":
@@ -228,7 +257,7 @@ async def build_missions_embed_view_for_user(user_id: int):
                 canceled = "~~"
 
             embed.add_field(
-                name=f"🔹 Misión #{num}{status_e}",
+                name=f"{status_e} Misión #{num}",
                 value=f"**Tipo:** {m_desc}\n{canceled}**Progreso:** {obtained}/{needed}{canceled}",
                 inline=False
             )
