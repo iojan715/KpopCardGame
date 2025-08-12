@@ -97,7 +97,6 @@ class PresentationGroup(app_commands.Group):
         user_id = interaction.user.id
         pool = get_pool()
         language = await get_user_language(user_id)
-        translation = lambda k: get_translation(language, k)
         ptype = type.value
 
         cost = base_cost
@@ -126,7 +125,7 @@ class PresentationGroup(app_commands.Group):
                 cost_desc = "Primera Gratis"
         if not user_data or user_data["credits"] < cost:
             await interaction.response.send_message(
-                f"❌ {translation('presentation.not_enough_credits')} (Necesitas {cost} créditos)",
+                get_translation(language,'presentation.not_enough_credits', cost=cost),
                 ephemeral=True
             )
             return
@@ -1102,6 +1101,21 @@ class ConfirmStartPresentationView(ui.View):
             
         await show_current_section_view(interaction, self.presentation_id, edit=True)
 
+class placeholderView(ui.View):
+    def __init__(self, presentation_id: str, user_id: int):
+        super().__init__(timeout=60)
+
+    @ui.button(label="➕ Grupo", style=discord.ButtonStyle.success)
+    async def add_group(self, interaction: Interaction, button: ui.Button):
+        pass
+    
+    @ui.button(label="➕ Canción", style=discord.ButtonStyle.success)
+    async def add_song(self, interaction: Interaction, button: ui.Button):
+        pass
+
+    @ui.button(label="❌ Cancelar", style=discord.ButtonStyle.danger)
+    async def cancel(self, interaction: Interaction, button: ui.Button):
+        await interaction.response.edit_message(content="❌ Inicio de presentación cancelado.", view=None)
 
 
 
