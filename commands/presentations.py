@@ -64,9 +64,12 @@ class PresentationGroup(app_commands.Group):
                 title=f"🎬 Presentación {r['presentation_id']}",
                 color=discord.Color.blurple()
             )
+            
+            ts = int(r['presentation_date'].timestamp())
+            
             embed.add_field(name=f"**Tipo:** {r["presentation_type"].capitalize()}", value=f"**Estado:** {status}", inline=False)
             embed.add_field(name=f"**Grupo:** {group_name if group_name else "`n/a`"}", value=f"**Canción:** {song_name if song_name else "`n/a`"}", inline=False)
-            embed.add_field(name=f"Creación: `{r["presentation_date"].strftime("%Y-%m-%d %H:%M")}`", value="", inline=False)
+            embed.add_field(name=f"Creación: <t:{int(r['presentation_date'].timestamp())}:f>", value="", inline=False)
             embeds.append(embed)
 
         # 3) Arrancar el paginador
@@ -335,8 +338,8 @@ class PresentationDetailButton(discord.ui.Button):
                 f"**Estado:** {status}\n"
                 f"**Grupo:** {group_name if group_name else "`n/a`"}\n"
                 f"**Canción:** {song_name if song_name else "`n/a`"}\n"
-                f"**Creación:** `{self.rowdata['presentation_date'].strftime("%Y-%m-%d %H:%M")}`\n"
-                f"**Ultima acción:** `{self.rowdata['last_action'].strftime("%Y-%m-%d %H:%M")}`\n"
+                f"**Creación:** <t:{int(self.rowdata['presentation_date'].timestamp())}:f>\n"
+                f"**Ultima acción:** <t:{int(self.rowdata['last_action'].timestamp())}:f>\n"
                 f"**Sección:** `{self.rowdata['current_section']}`\n"
                 f"**Puntuación:** `{format(self.rowdata['total_score'],',')}`\n"
                 f"**Hype:** `{round(self.rowdata['total_hype'],1)}`\n"
@@ -529,7 +532,7 @@ class BackToPresentationListButton(discord.ui.Button):
             )
             e.add_field(name=f"**Tipo:** {r["presentation_type"].capitalize()}", value=f"**Estado:** {status}", inline=False)
             e.add_field(name=f"**Grupo:** {group_name if group_name else "`n/a`"}", value=f"**Canción:** {song_name if song_name else "`n/a`"}", inline=False)
-            e.add_field(name=f"Creación: `{r["presentation_date"].strftime("%Y-%m-%d %H:%M")}`", value="", inline=False)
+            e.add_field(name=f"Creación: <t:{int(r['presentation_date'].timestamp())}:f>", value="", inline=False)
             e.set_footer(text=f"{r['presentation_id']}")
             embeds.append(e)
 
