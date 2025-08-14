@@ -783,7 +783,7 @@ class GroupSelectionPaginator:
                         descr += "👗" if member['outfit_id'] else ""
                         descr += "🎀" if member['accessory_id'] else ""
                         descr += "🧃" if member['consumable_id'] else ""
-                        descr += "\n"
+                    descr += "\n"
 
                 embed = discord.Embed(
                     title=row["name"],
