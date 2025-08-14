@@ -782,18 +782,17 @@ class RedeemButton(discord.ui.Button):
             for g in groups:
                 desc += f"- **{g['name']}**\n> ⭐: `{g['popularity']}` - 🏆: `{g['permanent_popularity']}`\n\n"
                 
-            "Selecciona un grupo para usar el cupón:"
-            # colocar description=desc
+            
             embed = discord.Embed(
-                title=f"❌ Por el momento no se puede canjear este cupón",
+                title=f"Selecciona un grupo para usar el cupón:",
                 description="",
                 color=discord.Color.teal()
                 )
             
             view = discord.ui.View()
             for group in groups:
-                pass
-                #view.add_item(RedeemableGroupButton(self.row_data, self.paginator, group))
+                if row['redeemable_id'] != "EXCNT":
+                    view.add_item(RedeemableGroupButton(self.row_data, self.paginator, group))
             
             view.add_item(BackToRedeemablesInventoryButton(self.paginator.base_query, self.paginator.query_params,self.paginator))
             
@@ -1012,10 +1011,107 @@ class ConfirmRedeemableButton(discord.ui.Button):
             query_params=self.paginator.query_params,
             embeds_per_page=self.paginator.embeds_per_page
         )
+        await new_paginator.restart(interaction, True)   
+        
+class RedeemableGroupButton(discord.ui.Button):
+    def __init__(self, row_data: dict, paginator: "RedeemablesInventoryEmbedPaginator", group):
+        self.row_data = row_data
+        self.paginator = paginator
+        self.group = group
+        super().__init__(label=group['name'], style=discord.ButtonStyle.primary)
+    async def callback(self, interaction: discord.Interaction):
+        row = self.row_data
+        language = await get_user_language(interaction.user.id)
+        pool = get_pool()
+        
+        embed = discord.Embed(
+            title=f"¿Deseas usar tu cupón _{row['name']}_ en tu grupo *{self.group['name']}*?",
+            description=f"{row['name']}: {row['quantity']}\n> {get_translation(language,f"inventory_description.{row['redeemable_id']}")}",
+            color=discord.Color.teal()
+            )
+        
+        view = discord.ui.View()
+        
+        view.add_item(ConfirmRedeemableGroupButton(self.row_data, self.paginator, self.group))
+        
+        view.add_item(BackToRedeemablesInventoryButton(self.paginator.base_query, self.paginator.query_params,self.paginator))
+        
+        await interaction.response.edit_message(
+            embed=embed, view=view
+        )
+        return
+        
+
+class ConfirmRedeemableGroupButton(discord.ui.Button):
+    def __init__(self, row_data: dict, paginator: "RedeemablesInventoryEmbedPaginator", group):
+        self.row_data = row_data
+        self.paginator = paginator
+        self.group = group
+        super().__init__(label="Confirmar", emoji="✅", style=discord.ButtonStyle.primary)
+    async def callback(self, interaction: discord.Interaction):
+        pool = get_pool()
+        language = await get_user_language(interaction.user.id)
+        row = self.row_data
+        
+        async with pool.acquire() as conn:
+            
+            
+            embed = discord.Embed(
+                title="✅ Cupón canjeado correctamente",
+                description="",
+                color=discord.Color.dark_grey()
+            )
+            await interaction.response.edit_message(
+                embed=embed, view=None
+            )
+            
+            if row["redeemable_id"] == "MDCNT":
+                extra_pop = random.randint(1,15)
+                event_num = random.randint(1,14)
+                
+                desc_response = get_translation(language, f"media_content.response_{extra_pop}", extra_pop=extra_pop)
+                desc_event = get_translation(language, f"media_content.event_{event_num}", idol_name="Alguien", group_name=self.group['name'])
+                
+                await conn.execute(
+                    "UPDATE groups SET permanent_popularity = permanent_popularity + $1 WHERE group_id = $2",
+                    extra_pop, self.group['group_id']
+                )
+                
+                desc = f"{desc_event}{desc_response}"
+                await interaction.followup.send(
+                    content=desc, ephemeral=False
+                )
+                
+                
+            await conn.execute("""
+                UPDATE user_missions um
+                SET obtained = um.obtained + 1,
+                    last_updated = now()
+                FROM missions_base mb
+                WHERE um.mission_id = mb.mission_id
+                AND um.user_id = $1
+                AND um.status = 'active'
+                AND mb.mission_type = 'redeem_coupon'
+                """, interaction.user.id)
+            
+            await conn.execute(
+                "UPDATE user_redeemables SET quantity = quantity-1 WHERE user_id = $1 AND redeemable_id = $2",
+                row['user_id'], row['redeemable_id'])
+            rows = await conn.fetch(
+                self.paginator.base_query,
+                *self.paginator.query_params
+            )
+
+        embeds = await generate_redeemables_embeds(rows, pool, interaction)
+        new_paginator = RedeemablesInventoryEmbedPaginator(
+            embeds=embeds,
+            rows=rows,
+            interaction=interaction,
+            base_query=self.paginator.base_query,
+            query_params=self.paginator.query_params,
+            embeds_per_page=self.paginator.embeds_per_page
+        )
         await new_paginator.restart(interaction, True)
-        
-        
-        
         
 class BackToRedeemablesInventoryButton(discord.ui.Button):
     def __init__(
