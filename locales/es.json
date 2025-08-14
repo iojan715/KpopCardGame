@@ -77,6 +77,8 @@
   "group_manage.select_group_to_add": "Selecciona un grupo de idols para elegir",
   "group_manage.error_group_full":"## ⚠️No se ha podido agregar porque el grupo ya tiene 24 integrantes",
   "group_manage.error_idol_already_in_group":"## ⚠️No se ha podido agregar porque {idol_name} ({idol_id}) ya esta en el grupo.",
+
+  "presentation.not_enough_credits": "## ❌ No tienes suficiente 💵 para crear esta presentación (Necesitas 💵{cost})",
   
   "inventory_description.RNFRC01": "Recupera 15 de energia a un idol",
   "inventory_description.RNFRC02": "Recupera 5 de energia a todo el grupo",
