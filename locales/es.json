@@ -16,7 +16,7 @@
   "upload_content.succesfull": "Contenido cargado correctamente: **{inserted} registros** de `{content_type}` añadidos.",
   "upload_content.succesfull_all": "✅ Se subieron {inserted} registros desde todos los archivos disponibles.",
 
-  "setting.language_updated": "Idioma actualizado a: **Español**",
+  "setting.language_updated": "## Idioma actualizado a: **Español**",
 
   "utilities.page": "\nPágina: ",
   "utilities.active":"Activo",
@@ -490,4 +490,5 @@
   "mission.equip_card": "Equipa una carta idol o carta item desde su inventario.",
   "mission.view_fusion": "Revisa si puedes realizar alguna fusión con `/fusion check`.",
   "mission.level_up": "Sube de nivel tus cartas con `/cards level_up`."
+
 }
