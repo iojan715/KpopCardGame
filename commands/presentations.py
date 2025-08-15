@@ -244,6 +244,7 @@ class PresentationGroup(app_commands.Group):
 
     @app_commands.command(name="perform", description="Iniciar una presentación en preparación")
     async def perform(self, interaction: Interaction):
+        await interaction.response.defer(ephemeral=True)
         user_id = interaction.user.id
         pool = get_pool()
         language = await get_user_language(user_id)
@@ -270,9 +271,8 @@ class PresentationGroup(app_commands.Group):
             """, user_id)
 
         if not pres_rows:
-            await interaction.response.send_message(
-                "❌ No tienes presentaciones en preparación.",
-                ephemeral=True
+            await interaction.edit_original_response(
+                content="❌ No tienes presentaciones en preparación."
             )
             return
         
@@ -295,11 +295,10 @@ class PresentationGroup(app_commands.Group):
             embeds.append(embed)
 
         # Mostrar lista para seleccionar una presentación
-        await interaction.response.send_message(
+        await interaction.edit_original_response(
             content="## 🎬 Selecciona una presentación:",
             embeds=embeds,
-            view=PresentationSelectToPerformView(interaction, pres_rows),
-            ephemeral=True
+            view=PresentationSelectToPerformView(interaction, pres_rows)
         )
 
 
@@ -985,8 +984,9 @@ class ConfirmStartPresentationView(ui.View):
 
     @ui.button(label="✅ Iniciar", style=discord.ButtonStyle.primary)
     async def confirm(self, interaction: Interaction, button: ui.Button):
+        await interaction.response.defer()
         if interaction.user.id != self.user_id:
-            await interaction.response.send_message("❌ No puedes iniciar esta presentación.", ephemeral=True)
+            await interaction.edit_original_response(content="❌ No puedes iniciar esta presentación.")
             return
 
         pool = get_pool()
@@ -999,7 +999,7 @@ class ConfirmStartPresentationView(ui.View):
             """, self.presentation_id)
 
             if not pres or not pres["group_id"] or not pres["song_id"]:
-                await interaction.response.edit_message(
+                await interaction.edit_original_response(
                     content="❌ La presentación no tiene grupo y canción asignados.",
                     view=None
                 )
@@ -1136,7 +1136,7 @@ async def show_current_section_view(interaction: discord.Interaction, presentati
         """, presentation_id, user_id)
 
         if not presentation:
-            await interaction.response.send_message("❌ No se encontró la presentación.")
+            await interaction.edit_original_response(content="❌ No se encontró la presentación.")
             return
 
         # Obtener nombres de la canción y grupo
@@ -1353,9 +1353,9 @@ async def show_current_section_view(interaction: discord.Interaction, presentati
 
 
     if edit:
-        await interaction.response.edit_message(content="", embeds=embeds, view=view)
+        await interaction.edit_original_response(content="", embeds=embeds, view=view)
     else:
-        await interaction.response.send_message(content="", embeds=embeds, view=view, ephemeral=True)
+        await interaction.edit_original_response(content="", embeds=embeds, view=view)
 
 # - switch idol
 class SwitchIdolView(discord.ui.View):
@@ -1478,6 +1478,7 @@ class CancelSwitchViewButton(discord.ui.Button):
         self.presentation_id = presentation_id
 
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         await show_current_section_view(interaction, self.presentation_id, edit=True)
 
 class IdolPrevButton(discord.ui.Button):
@@ -1718,6 +1719,7 @@ class ConfirmSwitchIdolView(ui.View):
 
     @ui.button(label="✅ Confirmar", style=discord.ButtonStyle.success)
     async def confirm(self, interaction: Interaction, button: ui.Button):
+        await interaction.response.defer()
         user_id = interaction.user.id
         pool = get_pool()
 
@@ -1771,6 +1773,7 @@ class ConfirmSwitchIdolView(ui.View):
 
     @ui.button(label="❌ Cancelar", style=discord.ButtonStyle.danger)
     async def cancel(self, interaction: Interaction, button: ui.Button):
+        await interaction.response.defer()
         await show_current_section_view(interaction, self.presentation_id, edit=True)
 
 # - Performance Cards
@@ -1809,6 +1812,7 @@ class PerformanceCardsCancelButton(discord.ui.Button):
         self.presentation_id = presentation_id
 
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         await show_current_section_view(interaction, self.presentation_id, edit=True)
 
 async def show_performance_cards_by_type(interaction: discord.Interaction, presentation_id: str, card_type: str):
@@ -1966,18 +1970,19 @@ class ConfirmUsePerformanceCardButton(discord.ui.Button):
         self.card_type = card_type
 
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         user_id = interaction.user.id
         pool = get_pool()
 
         async with pool.acquire() as conn:
             presentation = await conn.fetchrow("SELECT * FROM presentations WHERE presentation_id = $1 AND user_id = $2", self.presentation_id, user_id)
             if not presentation:
-                await interaction.response.edit_message(content="❌ No se encontró la presentación.")
+                await interaction.edit_original_response(content="❌ No se encontró la presentación.")
                 return
 
             # Verificar usos disponibles
             if presentation["performance_card_uses"] <= 0:
-                await interaction.response.edit_message(content="❌ Ya has usado el máximo de cartas de performance en esta sección.")
+                await interaction.edit_original_response(content="❌ Ya has usado el máximo de cartas de performance en esta sección.")
                 return
 
             # Verificar si el usuario tiene la carta
@@ -1986,13 +1991,13 @@ class ConfirmUsePerformanceCardButton(discord.ui.Button):
                 user_id, self.pcard_id
             )
             if not user_card or user_card["quantity"] <= 0:
-                await interaction.response.edit_message(content="❌ No tienes esta carta disponible.")
+                await interaction.edit_original_response(content="❌ No tienes esta carta disponible.")
                 return
 
             # Obtener detalles de la carta
             card = await conn.fetchrow("SELECT * FROM cards_performance WHERE pcard_id = $1", self.pcard_id)
             if not card:
-                await interaction.response.edit_message(content="❌ No se encontró información sobre esta carta.")
+                await interaction.edit_original_response(content="❌ No se encontró información sobre esta carta.")
                 return
 
             if self.card_type == "stage":
@@ -2132,7 +2137,7 @@ class ConfirmUsePerformanceCardButton(discord.ui.Button):
                 return
 
         # Seguridad final (no debería llegar aquí)
-        await interaction.response.edit_message(content="❌ Acción no reconocida.")
+        await interaction.edit_original_response(content="❌ Acción no reconocida.")
 
 
 class PerformanceIdolPaginator:
@@ -2398,6 +2403,7 @@ class ChooseIdolForPerformanceCardButton(discord.ui.Button):
         self.idol_id = idol_id
 
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         user_id = interaction.user.id
         pool = get_pool()
 
@@ -2448,6 +2454,7 @@ class CancelPerformanceCardPreviewButton(discord.ui.Button):
         self.presentation_id = presentation_id
 
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         await show_current_section_view(interaction, self.presentation_id, edit=True)
 
 
@@ -2834,6 +2841,7 @@ class UltimateSkillCancelButton(discord.ui.Button):
         self.presentation_id = presentation_id
 
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         await show_current_section_view(interaction, self.presentation_id, edit=True)
 
 class UltimateSkillUseButton(discord.ui.Button):
@@ -2843,6 +2851,7 @@ class UltimateSkillUseButton(discord.ui.Button):
         self.skill_name = skill_name
 
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         pool = get_pool()
         async with pool.acquire() as conn:
             presentation = await conn.fetchrow("SELECT * FROM presentations WHERE presentation_id = $1", self.presentation_id)
@@ -2884,14 +2893,14 @@ class UltimateSkillUseButton(discord.ui.Button):
             if final:
                 is_ephemeral:bool = presentation['presentation_type'] == "practice"
                 content = await finalize_presentation(conn, presentation)
-                await interaction.response.edit_message(embed=embed, view=None)
+                await interaction.edit_original_response(embed=embed, view=None)
                 await interaction.followup.send(
                     content=content,
                     ephemeral = is_ephemeral
                 )
                 return
             
-            await interaction.response.edit_message(embed=embed, view=ScoreSummaryView(self.presentation_id))
+            await interaction.edit_original_response(embed=embed, view=ScoreSummaryView(self.presentation_id))
 
             
         
@@ -2970,6 +2979,7 @@ class SupportSkillCancelButton(discord.ui.Button):
         self.presentation_id = presentation_id
 
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         await show_current_section_view(interaction, self.presentation_id, edit=True)
 
 class SupportSkillUseButton(discord.ui.Button):
@@ -2979,6 +2989,7 @@ class SupportSkillUseButton(discord.ui.Button):
         self.skill_name = skill_name
 
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         pool = get_pool()
         user_id = interaction.user.id
 
@@ -2990,7 +3001,7 @@ class SupportSkillUseButton(discord.ui.Button):
             """, self.presentation_id, user_id)
 
             if not presentation:
-                return await interaction.response.send_message("❌ No se encontró la presentación.", ephemeral=True)
+                return await interaction.followup.send("❌ No se encontró la presentación.", ephemeral=True)
 
             # Verificar idol activo
             idol = await conn.fetchrow("""
@@ -2999,7 +3010,7 @@ class SupportSkillUseButton(discord.ui.Button):
             """, self.presentation_id)
 
             if not idol or not idol["card_id"]:
-                return await interaction.response.send_message("❌ Idol activo sin carta asignada.", ephemeral=True)
+                return await interaction.followup.send("❌ Idol activo sin carta asignada.", ephemeral=True)
 
             # Obtener skill de soporte
             skill = await conn.fetchrow("""
@@ -3008,7 +3019,7 @@ class SupportSkillUseButton(discord.ui.Button):
             """, self.skill_name)
 
             if not skill:
-                return await interaction.response.send_message("❌ No se encontró la habilidad de soporte.", ephemeral=True)
+                return await interaction.followup.send("❌ No se encontró la habilidad de soporte.", ephemeral=True)
 
             effect_id = skill["effect_id"]
             duration = skill["duration"]
@@ -3017,7 +3028,7 @@ class SupportSkillUseButton(discord.ui.Button):
             # Verificar energía suficiente
             energia_disponible = idol["max_energy"] - idol["used_energy"]
             if energia_disponible < energy_cost:
-                return await interaction.response.send_message("❌ Energía insuficiente para usar esta habilidad.", ephemeral=True)
+                return await interaction.followup.send("❌ Energía insuficiente para usar esta habilidad.", ephemeral=True)
 
             # Aplicar el efecto de soporte en la presentación
             await conn.execute("""
@@ -3169,6 +3180,7 @@ class ActiveSkillCancelButton(discord.ui.Button):
         self.presentation_id = presentation_id
 
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         await show_current_section_view(interaction, self.presentation_id, edit=True)
 
 class ActiveSkillUseButton(discord.ui.Button):
@@ -3178,6 +3190,7 @@ class ActiveSkillUseButton(discord.ui.Button):
         self.skill_name = skill_name
 
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         pool = get_pool()
         async with pool.acquire() as conn:
             presentation = await conn.fetchrow("SELECT * FROM presentations WHERE presentation_id = $1", self.presentation_id)
@@ -3214,14 +3227,14 @@ class ActiveSkillUseButton(discord.ui.Button):
             if final:
                 is_ephemeral:bool = presentation['presentation_type'] == "practice"
                 content = await finalize_presentation(conn, presentation)
-                await interaction.response.edit_message(embed=embed, view=None)
+                await interaction.edit_original_response(embed=embed, view=None)
                 await interaction.followup.send(
                     content=content,
                     ephemeral = is_ephemeral
                 )
                 return
             
-            await interaction.response.edit_message(embed=embed, view=ScoreSummaryView(self.presentation_id))
+            await interaction.edit_original_response(embed=embed, view=ScoreSummaryView(self.presentation_id))
 
 
 async def apply_active_skill_if_applicable(conn, idol_row, section_row, presentation_row):
@@ -3693,6 +3706,7 @@ class BasicActionButton(discord.ui.Button):
         self.presentation_id = presentation_id
 
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         pool = get_pool()
         async with pool.acquire() as conn:
             # Obtener info de la presentación
@@ -3726,7 +3740,7 @@ class BasicActionButton(discord.ui.Button):
             print(f"section number: {song_section['section_number']}")
 
             if not song_section:
-                return await interaction.response.edit_message("Sección no encontrada.", ephemeral=True)
+                return await interaction.followup.send(content="Sección no encontrada.", ephemeral=True)
             passive_bonus = await apply_passive_skill_if_applicable(conn, idol, song_section, presentation)
             score, hype, final, base_score = await perform_section_action(conn, self.presentation_id, idol, song_section, presentation, passive_bonus)
             
@@ -3745,7 +3759,7 @@ class BasicActionButton(discord.ui.Button):
         if final:
             is_ephemeral:bool = presentation['presentation_type'] == "practice"
             content = await finalize_presentation(conn, presentation)
-            await interaction.response.edit_message(embed=embed, view=None)
+            await interaction.edit_original_response(embed=embed, view=None)
             
             await interaction.followup.send(
                 content=content,
@@ -3753,7 +3767,7 @@ class BasicActionButton(discord.ui.Button):
             )
             return
         
-        await interaction.response.edit_message(embed=embed, view=ScoreSummaryView(self.presentation_id))
+        await interaction.edit_original_response(embed=embed, view=ScoreSummaryView(self.presentation_id))
         
         
 
@@ -3764,6 +3778,7 @@ class ScoreSummaryView(discord.ui.View):
 
     @discord.ui.button(label="Continuar", style=discord.ButtonStyle.success)
     async def continue_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.defer()
         await show_current_section_view(interaction, self.presentation_id, edit=True)
 
 class ReturnToSectionView(discord.ui.View):
@@ -3779,6 +3794,7 @@ class ReturnToSectionButton(discord.ui.Button):
         self.presentation_id = presentation_id
 
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         await show_current_section_view(interaction, self.presentation_id, edit=True)
 
 async def finalize_presentation(conn, presentation: dict) -> str:
