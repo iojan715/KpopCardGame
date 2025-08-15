@@ -104,6 +104,9 @@ class InventoryGroup(app_commands.Group):
         duplicated: app_commands.Choice[str] = None,
         details: app_commands.Choice[str] = None,
     ):
+        await interaction.response.defer(
+            ephemeral=True
+        )
         user_id = interaction.user.id
         pool = get_pool()
         is_duplicated = False
@@ -203,7 +206,7 @@ class InventoryGroup(app_commands.Group):
         language = await get_user_language(user_id=user_id)  
             
         if not rows:
-            await interaction.response.send_message("No hay cartas para mostrar.", ephemeral=True)
+            await interaction.response.edit_message("No hay cartas para mostrar.")
             return
 
         card_counts = Counter([row['card_id'] for row in rows])
@@ -313,6 +316,7 @@ class InventoryGroup(app_commands.Group):
         order_by: app_commands.Choice[str] = None,
         order: app_commands.Choice[str] = None
     ):
+        await interaction.response.defer(ephemeral=True)
         user_id = interaction.user.id
         pool = get_pool()
 
@@ -1250,16 +1254,15 @@ class ItemInventoryEmbedPaginator:
 
     async def start(self):
         self.current_page_embeds = self.get_page_embeds()
-        await self.interaction.response.send_message(
+        await self.interaction.edit_original_response(
             embeds=self.current_page_embeds,
-            view=self.get_view(),
-            ephemeral=True
+            view=self.get_view()
         )
 
     async def restart(self, interaction: discord.Interaction):
         self.current_page = 0
         self.current_page_embeds = self.get_page_embeds()
-        await interaction.response.edit_message(
+        await interaction.edit_original_response(
             embeds=self.current_page_embeds,
             view=self.get_view()
         )
@@ -1343,6 +1346,7 @@ class BackToItemInventoryButton(discord.ui.Button):
         self.paginator = paginator
 
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         pool = get_pool()
         # Volvemos a ejecutar la consulta original
         async with pool.acquire() as conn:
@@ -1496,6 +1500,7 @@ class SelectMemberItemButton(discord.ui.Button):
         self.query_params = paginator.query_params
 
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         pool = get_pool()
 
         # Determinar slot según tipo
@@ -1567,6 +1572,7 @@ class CancelItemEquipButton(discord.ui.Button):
         self.paginator = paginator
 
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         await self.paginator.restart(interaction)
 
 
@@ -1612,6 +1618,7 @@ class ConfirmUnequipItemButton(discord.ui.Button):
         self.parent = parent
 
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         row = self.parent.row_data
         paginator = self.parent.paginator
         pool = get_pool()
@@ -1805,6 +1812,7 @@ class ConfirmItemRefundView(discord.ui.View):
 
     @discord.ui.button(label="✅ Confirmar", style=discord.ButtonStyle.success)
     async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.defer()
         pool = get_pool()
 
         # 1) Verificar nuevamente disponibilidad
@@ -1845,6 +1853,7 @@ class ConfirmItemRefundView(discord.ui.View):
 
     @discord.ui.button(label="❌ Cancelar", style=discord.ButtonStyle.danger)
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.defer()
         # Volver al inventario sin cambios
         pool = get_pool()
         async with pool.acquire() as conn:
@@ -2177,6 +2186,7 @@ class BackToInventoryButton(discord.ui.Button):
         self.paginator = paginator
 
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         pool = get_pool()
         async with pool.acquire() as conn:
             rows = await conn.fetch(self.paginator.base_query, *self.paginator.query_params)
@@ -2336,6 +2346,7 @@ class ConfirmEquipIdolButton(discord.ui.Button):
         self.parent = parent
 
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         pool = get_pool()
         user_id = interaction.user.id
         language = await get_user_language(user_id)
@@ -2458,6 +2469,7 @@ class ConfirmUnequipButton(discord.ui.Button):
         self.parent = parent  # tipo: ConfirmUnequipView
 
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         row = self.parent.row_data
         pool = get_pool()
         user_id = interaction.user.id
@@ -2511,6 +2523,7 @@ class CancelUnequipButton(discord.ui.Button):
         self.paginator = paginator
 
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         # simplemente regenerar inventario
         pool = get_pool()
         rows = await pool.acquire().__aenter__()  # para simplificar…
@@ -2600,16 +2613,15 @@ class InventoryEmbedPaginator:
 
     async def start(self):
         self.current_page_embeds = self.get_page_embeds()
-        await self.interaction.response.send_message(
+        await self.interaction.edit_original_response(
             embeds=self.current_page_embeds,
-            view=self.get_view(),
-            ephemeral=True
+            view=self.get_view()
         )
 
     async def restart(self, interaction: discord.Interaction):
         self.current_page = 0  # Reiniciar la página
         self.current_page_embeds = self.get_page_embeds()
-        await interaction.response.edit_message(
+        await interaction.edit_original_response(
             content="",
             embeds=self.current_page_embeds,
             view=self.get_view()
