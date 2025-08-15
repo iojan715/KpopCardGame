@@ -400,6 +400,7 @@ class InventoryGroup(app_commands.Group):
     @app_commands.command(name="performance_cards", description="Ver tus performance cards")
     @app_commands.describe(agency="Agency")
     async def performance_cards(self, interaction: discord.Interaction, agency:str = None):
+        await interaction.response.defer(ephemeral=True)
         pool = get_pool()
         
         async with pool.acquire() as conn:
@@ -528,6 +529,7 @@ class InventoryGroup(app_commands.Group):
     @app_commands.command(name="badges", description="Ver tus insignias")
     @app_commands.describe(agency="Agency")
     async def badges(self, interaction: discord.Interaction, agency:str = None):
+        await interaction.response.defer(ephemeral=True)
         await self.display_simple_inventory(
             interaction,
             agency=agency,
@@ -625,7 +627,7 @@ class SimplePaginator:
 
     async def start(self, interaction: discord.Interaction):
         embed = self.get_current_embed()
-        await interaction.response.send_message(embed=embed, view=self.get_view(), ephemeral=True)
+        await interaction.edit_original_response(embed=embed, view=self.get_view())
 
     def get_view(self):
         view = discord.ui.View()
@@ -3821,3 +3823,4 @@ class ConfirmLevelUpView(discord.ui.View):
 async def setup(bot):
     bot.tree.add_command(InventoryGroup())
     bot.tree.add_command(CardGroup())
+
