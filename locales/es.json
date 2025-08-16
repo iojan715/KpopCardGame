@@ -209,7 +209,7 @@
   "skills.Performance Leader": "+{pcond_visual} Visual si esta carta tiene la mayor puntuación acumulada del grupo.",
   "skills.Comeback Path": "+{pcond_dance} Dance si esta carta tiene la menor puntuación acumulada del grupo.",
   "skills.Momentum Holder": "+{pcond_rap} Rap y +{pcond_dance} Dance si esta carta tiene la mayor puntuación acumulada del grupo.",
-  "skills.Vocal Boost": "+{pcond_vocal} Vocal y -{pcond_rap} si la mayor estadística de la sección es {cond_stat}.",
+  "skills.Vocal Boost": "+{pcond_vocal} Vocal y {pcond_rap} si la mayor estadística de la sección es {cond_stat}.",
   "skills.Stylish Execution": "+{pcond_visual} Visual si la mayor estadística de la sección es {cond_stat}.",
   "skills.Technical Flow": "+{pcond_rap} Rap si la mayor estadística de la sección es {cond_stat}.",
   "skills.Sharp Moves": "+{pcond_dance} Dance si la mayor estadística de la sección es {cond_stat}.",
@@ -492,3 +492,4 @@
   "mission.level_up": "Sube de nivel tus cartas con `/cards level_up`."
 
 }
+
