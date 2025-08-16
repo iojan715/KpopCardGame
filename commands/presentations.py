@@ -2244,11 +2244,10 @@ class PerformanceIdolPaginator:
     async def start(self):
         embeds = self.build_embeds()
         view = self.build_view()
-        await self.interaction.response.send_message(
+        await self.interaction.edit_original_response(
             content="🔁 Elige un ídol para aplicar la carta:",
             embeds=embeds,
-            view=view,
-            ephemeral=True
+            view=view
         )
 
     async def update(self, interaction: discord.Interaction):
