@@ -582,7 +582,7 @@ class InventoryGroup(app_commands.Group):
 
         for page_rows in pages:
             embed = discord.Embed(
-                title=f"📦 {table.replace('user_', '').replace('_', ' ').title()}",
+                title=f"{table.replace('user_', '').replace('_', ' ').title()}",
                 color=discord.Color.teal()
             )
             for row in page_rows:

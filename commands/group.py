@@ -599,7 +599,7 @@ class GroupDetailButton(discord.ui.Button):
             #view.add_item(StatusButton(self.group_id))
             #view.add_item(RenameGroupButton(self.group_id))
         
-        await interaction.response.edit_message(content="",embed=embed, view=view, attachments=[])
+        await interaction.response.edit_message(embed=embed, view=view, attachments=[])
 
 # - Add member
 class AddMemberButton(discord.ui.Button):
@@ -1646,7 +1646,4 @@ class ReturnButtonMembers(discord.ui.Button):
 
 
 async def setup(bot):
-
     bot.tree.add_command(Group())
-
-

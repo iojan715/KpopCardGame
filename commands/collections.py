@@ -1,4 +1,4 @@
-import discord, logging, asyncio
+import discord, logging, asyncio, random, string, datetime
 from discord.ext import commands
 from discord import app_commands
 from utils.localization import get_translation
@@ -76,7 +76,7 @@ class CollectionCommand(commands.Cog):
                 AND um.status = 'active'
                 AND mb.mission_type = 'view_collections'
                 """, interaction.user.id)
-            cards = await conn.fetch("SELECT * FROM cards_idol")
+            cards = await conn.fetch("SELECT * FROM cards_idol ORDER BY card_id")
             user_cards = await conn.fetch("SELECT card_id FROM user_idol_cards WHERE user_id = $1", user_id)
 
         user_card_ids = {uc["card_id"] for uc in user_cards}
@@ -119,7 +119,7 @@ class CollectionCommand(commands.Cog):
             await interaction.response.send_message(embed=embed, ephemeral=hidden)
             return
 
-        elif set_name and rarity:
+        elif set_name and rarity and not idol:
             # 2. SET + RAREZA
             filtered_cards = [c for c in cards if c["set_name"].lower() == set_name.lower() and c["rarity"] == rarity]
             if not filtered_cards:
@@ -156,7 +156,7 @@ class CollectionCommand(commands.Cog):
             await interaction.response.send_message(embed=embed, ephemeral=hidden)
             return
 
-        elif set_name and idol:
+        elif set_name and idol and not rarity:
             # 3. SET + IDOL
             filtered_cards = [c for c in cards if c["set_name"].lower() == set_name.lower() and c["idol_id"].lower() == idol.lower()]
             if not filtered_cards:
@@ -187,17 +187,53 @@ class CollectionCommand(commands.Cog):
                     description += f"`{card['card_id']}` - {'✅' if owned else '❌'} {rarity}\n"
                     if not owned:
                         completed = False
-
+            async with pool.acquire() as conn:
+                idol_name = await conn.fetchval("SELECT name FROM idol_base WHERE idol_id = $1", idol)
             embed = discord.Embed(
-                title=f"{idol} - {set_name}",
+                title=f"{idol_name} ({idol}) - {set_name}",
                 description=description,
                 color=discord.Color.teal()
             )
-            embed.set_footer(text="✅ Idol completo en este set" if completed else "❌ Aún te faltan cartas de este idol en el set")
-            await interaction.response.send_message(embed=embed, ephemeral=hidden)
+            badge_id = have_it = None
+            if completed:
+                async with pool.acquire() as conn:
+                    set_id = await conn.fetchval("SELECT set_id FROM cards_idol WHERE set_name = $1", set_name)
+                    badge_id = await conn.fetchval(
+                        "SELECT badge_id FROM badges WHERE set_id = $1 AND idol_id = $2",
+                        set_id, idol
+                    )
+                    if badge_id:
+                        have_it = await conn.fetch("SELECT 1 FROM user_badges WHERE badge_id = $1 AND user_id = $2",
+                                               badge_id, interaction.user.id)
+                        embed.set_footer(text="✅ Idol completo en este set")
+                    else:
+                        have_it = True
+                        embed.set_footer(text="Este set no tiene recompensas individuales")
+                    
+                    
+                    await interaction.response.send_message(embed=embed, ephemeral=hidden)
+                    
+                    if not have_it:
+                        await conn.execute("INSERT INTO user_badges (user_id, badge_id) VALUES ($1, $2)",
+                                       interaction.user.id, badge_id)
+                        await conn.execute("UPDATE users SET credits = credits + 5000, xp = xp + 50")
+                        new_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
+                        now = datetime.datetime.now(datetime.timezone.utc)
+                        await conn.execute(
+                            "INSERT INTO players_packs (pack_id, user_id, unique_id, buy_date) VALUES ('MST', $1, $2, $3)",
+                            interaction.user.id, new_id, now)
+                    
+                        await interaction.followup.send(
+                            content=f"## ⭐ Has completado todas las cartas de _{idol_name} ({idol})_ del set _{set_name}_\n_Has recibido 💵5,000 y 50 XP y un **Mini Star Pack**_",
+                            ephemeral=True)
+            else:
+                embed.set_footer(text="❌ Aún te faltan cartas de este idol en el set")
+                await interaction.response.send_message(embed=embed, ephemeral=hidden)
+                
+            
             return
 
-        elif rarity and idol:
+        elif rarity and idol and not set_name:
             # 4. RAREZA + IDOL
             filtered_cards = [c for c in cards if c["rarity"] == rarity and c["idol_id"].lower() == idol.lower()]
             if not filtered_cards:
@@ -317,6 +353,7 @@ class CollectionCommand(commands.Cog):
 
             # ✅ Verificación del set completo
             set_completed = total_in_set == owned_in_set
+            members_amount = int(len(total_in_set)/7)
 
 
             s_desc = ""
@@ -331,10 +368,45 @@ class CollectionCommand(commands.Cog):
             )
             
             if set_completed:
-                embed.set_footer(text="✅ ¡Set completo!")
+                async with pool.acquire() as conn:
+                    set_id = await conn.fetchval("SELECT set_id FROM cards_idol WHERE set_name = $1", set_name)
+                    badge_id = await conn.fetchval("SELECT badge_id FROM badges WHERE set_id = $1 AND idol_id = ''",
+                                                   set_id)
+                    if badge_id:
+                        have_it = await conn.fetch("SELECT 1 FROM user_badges WHERE badge_id = $1 AND user_id = $2",
+                                               badge_id, interaction.user.id)
+                        embed.set_footer(text="✅ ¡Set completo!")
+                    else:
+                        have_it = True
+                        embed.set_footer(text="Este set no tiene recompensa grupal")
+                    
+                    
+                    await interaction.response.send_message(embed=embed, ephemeral=hidden)
+                    
+                    if not have_it:
+                        await conn.execute("INSERT INTO user_badges (user_id, badge_id) VALUES ($1, $2)",
+                                       interaction.user.id, badge_id)
+                        
+                        credits_given = 3000 * members_amount
+                        xp = 25 * members_amount
+                        
+                        if credits_given > 50000:
+                            credits_given = 50000
+                        
+                        await conn.execute("UPDATE users SET credits = credits + $1, xp = xp + $2", credits_given, xp)
+                        new_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
+                        now = datetime.datetime.now(datetime.timezone.utc)
+                        await conn.execute(
+                            "INSERT INTO players_packs (pack_id, user_id, unique_id, buy_date) VALUES ('STR', $1, $2, $3)",
+                            interaction.user.id, new_id, now)
+                    
+                        await interaction.followup.send(
+                            content=f"## ⭐ Has completado todas las cartas del set _{set_name}_\n_Has recibido 💵{format(credits_given,',')} y {xp} XP y un **Star Pack**_",
+                            ephemeral=True)
+                
             else:
                 embed.set_footer(text="❌ Aún no tienes todas las cartas del set.")
-            await interaction.response.send_message(embed=embed, ephemeral=hidden)
+                await interaction.response.send_message(embed=embed, ephemeral=hidden)
             return
 
         

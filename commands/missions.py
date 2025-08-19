@@ -219,7 +219,7 @@ async def build_missions_embed_view_for_user(user_id: int):
 
             ts = int(next_daily.timestamp())
             embed.add_field(
-                name="⏰ Reinicio diario (misiones 1, 2 y 3):",
+                name="⏰ Reinicio diario:",
                 value=f"<t:{ts}:R>",
                 inline=False
             )
@@ -233,7 +233,7 @@ async def build_missions_embed_view_for_user(user_id: int):
 
             ts_week = int(next_monday.timestamp())
             embed.add_field(
-                name="----------\n📅 Reinicio semanal (misiones 4 y 5)",
+                name="--------------------\n📅 Reinicio semanal:",
                 value=f"<t:{ts_week}:R>",
                 inline=False
             )

@@ -84,7 +84,142 @@ class NewAgencyModal(discord.ui.Modal, title="Create Your Agency"):
             await conn.execute("""INSERT INTO players_packs (unique_id, user_id, pack_id, buy_date)
                                VALUES ($1, $2, 'MST', $3)
                                """, p_id, user_id, now)
+            
+            
+            exploratories = await conn.fetch("""
+                SELECT mission_id, mission_type, needed, pack_id, redeemable_id, credits, xp
+                FROM missions_base WHERE difficulty = 'exploratory'
+            """)
+            easy_missions = await conn.fetch("""
+                SELECT mission_id, mission_type, needed, pack_id, redeemable_id, credits, xp
+                FROM missions_base WHERE difficulty = 'easy'
+            """)
+            medium_missions = await conn.fetch("""
+                SELECT mission_id, mission_type, needed, pack_id, redeemable_id, credits, xp
+                FROM missions_base WHERE difficulty = 'medium'
+            """)
+            hard_missions = await conn.fetch("""
+                SELECT mission_id, mission_type, needed, pack_id, redeemable_id, credits, xp
+                FROM missions_base WHERE difficulty = 'hard'
+            """)
 
+            used_ids = set()
+            used_types = set()
+
+            if exploratories:
+                m = random.choice(exploratories)
+                await conn.execute(
+                    """
+                    INSERT INTO user_missions (
+                        user_id, mission_number, mission_id, needed, obtained,
+                        pack_id, redeemable_id, credits, xp, status, assigned_at, last_updated
+                    ) VALUES (
+                        $1, 1, $2, $3, 0,
+                        $4, $5, $6, $7, 'active', now(), now()
+                    )
+                    ON CONFLICT DO NOTHING
+                    """,
+                    user_id,
+                    m["mission_id"],
+                    int(m.get("needed") or 1),
+                    m.get("pack_id") or None,
+                    m.get("redeemable_id") or None,
+                    int(m.get("credits") or 0),
+                    int(m.get("xp") or 1)
+                )
+
+            slot2_choice = None
+            if easy_missions:
+                slot2_choice = random.choice(easy_missions)
+                await conn.execute(
+                    """
+                    INSERT INTO user_missions (
+                        user_id, mission_number, mission_id, needed, obtained,
+                        pack_id, redeemable_id, credits, xp, status, assigned_at, last_updated
+                    ) VALUES (
+                        $1, 2, $2, $3, 0,
+                        $4, $5, $6, $7, 'active', now(), now()
+                    )
+                    ON CONFLICT DO NOTHING
+                    """,
+                    user_id,
+                    slot2_choice["mission_id"],
+                    int(slot2_choice.get("needed") or 1),
+                    slot2_choice.get("pack_id") or None,
+                    slot2_choice.get("redeemable_id") or None,
+                    int(slot2_choice.get("credits") or 0),
+                    int(slot2_choice.get("xp") or 1)
+                )
+
+            if slot2_choice and easy_missions:
+                candidates = [m for m in easy_missions if m["mission_id"] != slot2_choice["mission_id"]]
+                if candidates:
+                    m = random.choice(candidates)
+                    await conn.execute(
+                        """
+                        INSERT INTO user_missions (
+                            user_id, mission_number, mission_id, needed, obtained,
+                            pack_id, redeemable_id, credits, xp, status, assigned_at, last_updated
+                        ) VALUES (
+                            $1, 3, $2, $3, 0,
+                            $4, $5, $6, $7, 'active', now(), now()
+                        )
+                        ON CONFLICT DO NOTHING
+                        """,
+                        user_id,
+                        m["mission_id"],
+                        int(m.get("needed") or 1),
+                        m.get("pack_id") or None,
+                        m.get("redeemable_id") or None,
+                        int(m.get("credits") or 0),
+                        int(m.get("xp") or 1)
+                    )
+
+            if medium_missions:
+                m = random.choice(medium_missions)
+                await conn.execute(
+                    """
+                    INSERT INTO user_missions (
+                        user_id, mission_number, mission_id, needed, obtained,
+                        pack_id, redeemable_id, credits, xp, status, assigned_at, last_updated
+                    ) VALUES (
+                        $1, 4, $2, $3, 0,
+                        $4, $5, $6, $7, 'active', now(), now()
+                    )
+                    ON CONFLICT DO NOTHING
+                    """,
+                    user_id,
+                    m["mission_id"],
+                    int(m.get("needed") or 1),
+                    m.get("pack_id") or None,
+                    m.get("redeemable_id") or None,
+                    int(m.get("credits") or 0),
+                    int(m.get("xp") or 1)
+                )
+
+            # Slot 5: hard
+            if hard_missions:
+                m = random.choice(hard_missions)
+                await conn.execute(
+                    """
+                    INSERT INTO user_missions (
+                        user_id, mission_number, mission_id, needed, obtained,
+                        pack_id, redeemable_id, credits, xp, status, assigned_at, last_updated
+                    ) VALUES (
+                        $1, 5, $2, $3, 0,
+                        $4, $5, $6, $7, 'active', now(), now()
+                    )
+                    ON CONFLICT DO NOTHING
+                    """,
+                    user_id,
+                    m["mission_id"],
+                    int(m.get("needed") or 1),
+                    m.get("pack_id") or None,
+                    m.get("redeemable_id") or None,
+                    int(m.get("credits") or 0),
+                    int(m.get("xp") or 1)
+                )
+            
         language = self.language
         welcome = get_translation(language, "start.welcome", agency=agency, credits=credits)
         await interaction.response.edit_message(content=welcome, view=None)

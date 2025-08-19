@@ -43,3 +43,36 @@ BDGLVL040,K-Industry Partner (Lv. 40),level,,
 BDGLVL045,Promotions Lead (Lv. 45),level,,
 BDGLVL050,Executive Producer (Lv. 50),level,,
 BDGEVNT006,Star Hunter,event,,
+BDGCOLL021,Full Collector: `Assemble25`,collection,AA25,
+BDGCOLL022,Dedicated Fan: Chaewon `Assemble25`,collection,AA25,CHW
+BDGCOLL023,Dedicated Fan: Yubin `Assemble25`,collection,AA25,GYB
+BDGCOLL024,Dedicated Fan: Hayeon `Assemble25`,collection,AA25,HAY
+BDGCOLL025,Dedicated Fan: Hyerin `Assemble25`,collection,AA25,JHR
+BDGCOLL026,Dedicated Fan: Jiyeon `Assemble25`,collection,AA25,JIY
+BDGCOLL027,Dedicated Fan: Joobin `Assemble25`,collection,AA25,JOO
+BDGCOLL028,Dedicated Fan: Kaede `Assemble25`,collection,AA25,KAE
+BDGCOLL029,Dedicated Fan: Chaeyeon `Assemble25`,collection,AA25,KCY
+BDGCOLL030,Dedicated Fan: Kotone `Assemble25`,collection,AA25,KOT
+BDGCOLL031,Dedicated Fan: Soomin `Assemble25`,collection,AA25,KSM
+BDGCOLL032,Dedicated Fan: Yeonji `Assemble25`,collection,AA25,KYJ
+BDGCOLL033,Dedicated Fan: Yooyeon `Assemble25`,collection,AA25,KYY
+BDGCOLL034,Dedicated Fan: Jiwoo `Assemble25`,collection,AA25,LJW
+BDGCOLL035,Dedicated Fan: Lynn `Assemble25`,collection,AA25,LYN
+BDGCOLL036,Dedicated Fan: Mayu `Assemble25`,collection,AA25,MAY
+BDGCOLL037,Dedicated Fan: Nakyoung `Assemble25`,collection,AA25,NAK
+BDGCOLL038,Dedicated Fan: Nien `Assemble25`,collection,AA25,NIE
+BDGCOLL039,Dedicated Fan: Sohyun `Assemble25`,collection,AA25,PSH
+BDGCOLL040,Dedicated Fan: Shion `Assemble25`,collection,AA25,PSO
+BDGCOLL041,Dedicated Fan: Dahyun `Assemble25`,collection,AA25,SDH
+BDGCOLL042,Dedicated Fan: Sullin `Assemble25`,collection,AA25,SLL
+BDGCOLL043,Dedicated Fan: Seoah `Assemble25`,collection,AA25,SOA
+BDGCOLL044,Dedicated Fan: Xinyu `Assemble25`,collection,AA25,XNY
+BDGCOLL045,Dedicated Fan: Seoyeon `Assemble25`,collection,AA25,YSY
+BDGCOLL046,Full Collector: `S`,collection,SSSS,
+BDGCOLL047,Dedicated Fan: Isa `S`,collection,SSSS,ISA
+BDGCOLL048,Dedicated Fan: J `S`,collection,SSSS,JYE
+BDGCOLL049,Dedicated Fan: Seeun `S`,collection,SSSS,SEE
+BDGCOLL050,Dedicated Fan: Sieun `S`,collection,SSSS,SIE
+BDGCOLL051,Dedicated Fan: Sumin `S`,collection,SSSS,SMN
+BDGCOLL052,Dedicated Fan: Yoon `S`,collection,SSSS,YON
+BDGCOLL053,Solo Collector: Yves `I did`,collection,IDID,

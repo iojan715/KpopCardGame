@@ -16,7 +16,7 @@
   "upload_content.succesfull": "Contenido cargado correctamente: **{inserted} registros** de `{content_type}` añadidos.",
   "upload_content.succesfull_all": "✅ Se subieron {inserted} registros desde todos los archivos disponibles.",
 
-  "setting.language_updated": "## Idioma actualizado a: **Español**",
+  "setting.language_updated": "Idioma actualizado a: **Español**",
 
   "utilities.page": "\nPágina: ",
   "utilities.active":"Activo",
@@ -209,7 +209,7 @@
   "skills.Performance Leader": "+{pcond_visual} Visual si esta carta tiene la mayor puntuación acumulada del grupo.",
   "skills.Comeback Path": "+{pcond_dance} Dance si esta carta tiene la menor puntuación acumulada del grupo.",
   "skills.Momentum Holder": "+{pcond_rap} Rap y +{pcond_dance} Dance si esta carta tiene la mayor puntuación acumulada del grupo.",
-  "skills.Vocal Boost": "+{pcond_vocal} Vocal y {pcond_rap} si la mayor estadística de la sección es {cond_stat}.",
+  "skills.Vocal Boost": "+{pcond_vocal} Vocal y -{pcond_rap} si la mayor estadística de la sección es {cond_stat}.",
   "skills.Stylish Execution": "+{pcond_visual} Visual si la mayor estadística de la sección es {cond_stat}.",
   "skills.Technical Flow": "+{pcond_rap} Rap si la mayor estadística de la sección es {cond_stat}.",
   "skills.Sharp Moves": "+{pcond_dance} Dance si la mayor estadística de la sección es {cond_stat}.",
@@ -231,7 +231,7 @@
   "skills.Popularity Pressure": "{pcond_dance} Dance si el Hype está por encima de {cond_hype}%.",
   "skills.Sluggish Mood": "{pcond_vocal} a todas las estadísticas si la energía restante de la carta es mayor al {cond_energy}%.",
   "skills.Spotlight Anxiety": "{pcond_score}% de puntuación si la estadística más alta de la sección es Visual.",
-  "skills.Spotlight Fatigue": "{pcond_vocal} a todas las estadísticas si la carta participó en la sección.",
+  "skills.Spotlight Fatigue": "{pcond_vocal} a todas las estadísticas si la carta participó en la sección anterior.",
   "skills.Stage Anxiety": "{pcond_rap} Rap si el Hype está por debajo de {cond_hype}%.",
   "skills.Tempo Strain": "{pcond_dance} Dance si la duración de la sección es mayor a {cond_duration}.",
   "skills.Tension": "{pcond_rap} Rap y {pcond_dance} Dance si el Hype está por debajo de {cond_hype}%.",
@@ -296,7 +296,7 @@
   "skills.Hidden Charm": "Iguala la peor estadística de la sección al valor de la mejor estadística.",
   "skills.Hyper Rest": "Recupera {value} de energía.",
   "skills.One More Time": "Durante esta sección, no se consume energía y se obtienen +{vocal} en todas las estadísticas.",
-  "skills.Audience Bond": "Duplica la emoción obtenida en la sección.",
+  "skills.Audience Bond": "Duplicael Hype obtenido en la sección.",
   "skills.Inverse Vitality": "Calcula el puntaje de la sección usando la energía restante como si fuera energía gastada. No consume energía.",
   "skills.Full Bloom": "Aumenta +{vocal} a todas las estadísticas en esta sección.",
   "skills.All Eyes On Me": "Iguala el valor Visual de la sección al Visual de la carta.",
@@ -474,7 +474,7 @@
   "trade.error_insufficient_credits": "No tienes suficientes créditos para hacer esta propuesta.",
   "trade.proposal_created": "Has enviado una propuesta de intercambio a {user}.\nID de propuesta: `{id}`",
 
-  "mission.do_presentation": "Realiza presentación.",
+  "mission.do_presentation": "Realizar presentación.",
   "mission.claim_sponsor": "Reclama patrocinio con `/sponsor`",
   "mission.open_pack": "Abre packs de cartas.",
   "mission.redeem_coupon": "Canjea cupones desde `/inventory redeemables` o con `/redeem card`.",
@@ -490,6 +490,4 @@
   "mission.equip_card": "Equipa una carta idol o carta item desde su inventario.",
   "mission.view_fusion": "Revisa si puedes realizar alguna fusión con `/fusion check`.",
   "mission.level_up": "Sube de nivel tus cartas con `/cards level_up`."
-
 }
-
