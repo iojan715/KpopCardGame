@@ -206,7 +206,7 @@ class InventoryGroup(app_commands.Group):
         language = await get_user_language(user_id=user_id)  
             
         if not rows:
-            await interaction.response.edit_message("No hay cartas para mostrar.")
+            await interaction.edit_original_response(content="## ❌No hay cartas para mostrar.")
             return
 
         card_counts = Counter([row['card_id'] for row in rows])
@@ -372,7 +372,7 @@ class InventoryGroup(app_commands.Group):
         language = await get_user_language(user_id=user_id)
 
         if not rows:
-            await interaction.response.send_message("No tienes item cards por ahora.", ephemeral=True)
+            await interaction.edit_original_response(content="## ❌No tienes item cards por ahora.")
             return
 
         embeds = await generate_item_card_embeds(rows, pool)
@@ -501,7 +501,7 @@ class InventoryGroup(app_commands.Group):
             rows = await conn.fetch(query, *params)
             
         if not rows:
-            await interaction.response.send_message("No tienes item cards por ahora.", ephemeral=True)
+            await interaction.response.send_message("No tienes cupones por ahora.", ephemeral=True)
             return
         
         embeds = await generate_redeemables_embeds(rows, pool, interaction)
@@ -557,7 +557,7 @@ class InventoryGroup(app_commands.Group):
             rows = await conn.fetch(query, user_id)
 
         if not rows:
-            await interaction.response.send_message("No tienes objetos de este tipo por ahora.", ephemeral=True)
+            await interaction.edit_original_response(content="No tienes objetos de este tipo por ahora.")
             return
 
         # Crear páginas de hasta 10 elementos
@@ -797,7 +797,7 @@ class RedeemButton(discord.ui.Button):
             
             view = discord.ui.View()
             for group in groups:
-                if row['redeemable_id'] != "EXCNT":
+                if row['redeemable_id'] not in ["EXCNT", "RERLL", "UPGRD"]:
                     view.add_item(RedeemableGroupButton(self.row_data, self.paginator, group))
             
             view.add_item(BackToRedeemablesInventoryButton(self.paginator.base_query, self.paginator.query_params,self.paginator))
@@ -3823,4 +3823,3 @@ class ConfirmLevelUpView(discord.ui.View):
 async def setup(bot):
     bot.tree.add_command(InventoryGroup())
     bot.tree.add_command(CardGroup())
-
