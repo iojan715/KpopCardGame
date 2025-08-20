@@ -1297,8 +1297,8 @@ async def show_current_section_view(interaction: discord.Interaction, presentati
             description=f"> {section_type}\n{section['lyrics'].replace("\\n","\n")}",
             color=discord.Color.orange()
         )
-        embed2.add_field(name=f"🎤 Vocal: {section['vocal']}", value=f"💃 Dance: {section['dance']}")
-        embed2.add_field(name=f"🎶 Rap: {section['rap']}", value=f"📸 Visual: {section['visual']}")
+        embed2.add_field(name=f"🎤 Vocal: {section['vocal']}", value=f"🎶 Rap: {section['rap']}")
+        embed2.add_field(name=f"💃 Dance: {section['dance']}", value=f"📸 Visual: {section['visual']}")
         embed2.set_footer(text=f"⭐ Puntuación esperada: {section['average_score']}")
         
         embeds.append(embed)
