@@ -314,8 +314,12 @@
   "equip_item.select_group_title": "Selecciona un grupo",
   "equip_item.select_group_desc": "Selecciona un grupo para equipar **{item_name}**",
   "equip_item.select_idol_title": "Selecciona el idol",
-  "equip_item.select_idol_desc": "Selecciona al idol que recibirá el objeto en el slot **{slot_name}**",
+  "equip_item.select_idol_desc": "Selecciona al idol que recibirá el **{slot_name}**",
   "equip_item.success": "✅ Objeto **{item_id}** equipado correctamente a **{idol_id}**.",
+  "equip_item.type_accesory": "accesorio",
+  "equip_item.type_mic": "micrófono",
+  "equip_item.type_outfit": "outfit",
+  "equip_item.type_consumable": "consumible",
   
   "unequip_item.not_found": "❌ No se encontró una carta de objeto válida con ese ID.",
   "unequip_item.not_equipped": "⚠️ Este objeto no está actualmente equipado.",

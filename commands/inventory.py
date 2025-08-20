@@ -1467,11 +1467,12 @@ class SelectGroupItemButton(discord.ui.Button):
                 self.group["group_id"], interaction.user.id
             )
 
+        slot_name = get_translation(language, f"equip_item.type_{self.row_data['type']}")
         # Construir vista de selección de idol
         embed = discord.Embed(
             title=get_translation(language, "equip_item.select_idol_title"),
             description=get_translation(language, "equip_item.select_idol_desc",
-                                       group_name=self.group["name"]),
+                                       slot_name=slot_name),
             color=discord.Color.blue()
         )
         view = discord.ui.View(timeout=120)
@@ -3466,16 +3467,7 @@ class ConfirmFusionView(discord.ui.View):
         pool = await get_pool()
         xp = 150
         async with pool.acquire() as conn:
-            await conn.execute("""
-                UPDATE user_missions um
-                SET obtained = um.obtained + 1,
-                    last_updated = now()
-                FROM missions_base mb
-                WHERE um.mission_id = mb.mission_id
-                AND um.user_id = $1
-                AND um.status = 'active'
-                AND mb.mission_type = 'try_fusion'
-                """, interaction.user.id)
+            
             
             rows = await conn.fetch("""
                 SELECT * FROM user_idol_cards
@@ -3494,6 +3486,17 @@ class ConfirmFusionView(discord.ui.View):
                     content="❌ No tienes suficientes créditos para realizar la fusión.",
                     embed=None, view=None
                 )
+            
+            await conn.execute("""
+                UPDATE user_missions um
+                SET obtained = um.obtained + 1,
+                    last_updated = now()
+                FROM missions_base mb
+                WHERE um.mission_id = mb.mission_id
+                AND um.user_id = $1
+                AND um.status = 'active'
+                AND mb.mission_type = 'try_fusion'
+                """, interaction.user.id)
 
             msg = await interaction.response.edit_message(
                 content="## 🔮 Realizando fusión...\n",
