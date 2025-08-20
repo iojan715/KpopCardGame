@@ -3697,7 +3697,7 @@ class RetryFusionView(discord.ui.View):
         # reconstruir el mensaje inicial
         preview = discord.Embed(
             title="✨ Confirmar fusión",
-            description=f"### Fusionarás 3 cartas regulares para obtener una carta **Special**.\n> Costo: 5,000 💵\nProbabilidad de éxito: {self.success}%{plus_success}",
+            description=f"### Fusionarás 3 cartas regulares para obtener una carta **Special**.\n> Costo: 7,000 💵\nProbabilidad de éxito: {self.success}%{plus_success}",
             color=discord.Color.purple()
         )
         preview.set_thumbnail(url=f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{self.card_id}.webp{version}")
