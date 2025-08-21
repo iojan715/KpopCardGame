@@ -259,6 +259,7 @@
   "skills.Extended Momentum": "+{dance} a Dance durante {duration} secciones. Consumo: {energy_cost} Energía.",
   "skills.Snap Focus": "+{visual} a Visual durante {duration} secciones. Consumo: {energy_cost} Energía.",
   "skills.Rhythm Buffer": "+{vocal} a todas las estadísticas durante {duration} secciones. Consumo: {energy_cost} Energía.",
+  "skills.All Around Boost": "+{vocal} a todas las estadísticas durante {duration} secciones. Consumo: {energy_cost} Energía.",
   "skills.Long Set Strategy": "{extra_cost} costo de energía durante {duration} secciones. Consumo: {energy_cost} Energía.",
   
   "skills.Main Vocal": "Aumenta en +{vocal} Vocal en esta sección. Costo: {relative_cost}% Energía.",
