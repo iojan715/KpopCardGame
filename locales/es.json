@@ -317,7 +317,7 @@
   "equip_item.select_idol_title": "Selecciona el idol",
   "equip_item.select_idol_desc": "Selecciona al idol que recibirá el **{slot_name}**",
   "equip_item.success": "✅ Objeto **{item_id}** equipado correctamente a **{idol_id}**.",
-  "equip_item.type_accesory": "accesorio",
+  "equip_item.type_accessory": "accesorio",
   "equip_item.type_mic": "micrófono",
   "equip_item.type_outfit": "outfit",
   "equip_item.type_consumable": "consumible",
