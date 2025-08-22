@@ -2698,7 +2698,7 @@ class CardGroup(app_commands.Group):
 
                 
                 card = await conn.fetchrow("SELECT * FROM user_idol_cards WHERE unique_id = $1", unique_id)
-                base_card_data = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", card_id)
+                base_card_data = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", row["card_id"])
                 idol_base_row = await conn.fetchrow("SELECT * FROM idol_base WHERE idol_id = $1", base_card_data['idol_id'])
                 
                 rarity=""
@@ -2895,7 +2895,7 @@ class CardGroup(app_commands.Group):
                 
                 image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{base_card_data['card_id']}.webp{version}"
                 embed.set_image(url=image_url)
-                embed.set_footer(text=f"{card_id}.{unique_id}")
+                embed.set_footer(text=f"{row["card_id"]}.{unique_id}")
 
             else:
                 # Buscar como ítem

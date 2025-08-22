@@ -1,8 +1,8 @@
 redeemable_id,name,type,effect,weight
-CONTR,Contract,redeem,ALL,0
+CONTR,Contract,redeem,ALL,1
 ORGAN,Organizer,boost,,0
-TCONT,Tactical Contract,effect,,0
-DBRWR,Double Reward,boost,,0
+TCONT,Tactical Contract,effect,,2
+DBRWR,Double Reward,boost,,5
 INVIT,Invitation,boost,,15
 BTFSN,Better Fusion,boost,,15
 EXCNT,Exclusive Content,effect,group,10
@@ -10,5 +10,8 @@ RECRT,Recruitment,redeem,RG1,20
 DISCN,Discount,boost,,15
 REHRS,Rehearsal,boost,,50
 SHOPS,Shop,redeem,item,120
-TRNNG,Training,redeem,p_card,200
-MDCNT,Media Content,effect,group,150
+TRNNG,Training,redeem,p_card,0
+MDCNT,Media Content,effect,group,250
+RERLL,Reroll Skills,redeem,skills,75
+UPGRD,Upgrade Card,redeem,upgrade,5
+MRCHB,Merchant Boost,boost,,0
