@@ -507,15 +507,15 @@ class PacksGroup(app_commands.Group):
             if w_idol > 0:
                 details.append(f"> 🃏 Puede incluir idol cards ({w_idol}%)")
             if w_regular > 0:
-                details.append(f"> - Regular {w_regular}%")
+                details.append(f"> • Regular {w_regular}%")
             if w_limited > 0:
-                details.append(f"> - Limited {w_limited}%")
+                details.append(f"> • Limited {w_limited}%")
             if w_fcr > 0:
-                details.append(f"> - FCR {w_fcr}%")
+                details.append(f"> • FCR {w_fcr}%")
             if w_pob > 0:
-                details.append(f"> - POB {w_pob}%")
+                details.append(f"> • POB {w_pob}%")
             if w_legacy > 0:
-                details.append(f"> - Legacy {w_legacy}%")
+                details.append(f"> • Legacy {w_legacy}%")
             if w_item > 0:
                 details.append(f"> 🧰 Puede incluir item cards ({w_item}%)")
             if w_performance > 0:

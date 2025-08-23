@@ -142,7 +142,7 @@ Esta actualización introduce nuevas formas de interacción entre jugadores, ade
 
 ----------------------------------
 
-## Versión 1.2 - ¡Llegan las misiones diarias y semanales! (2025-08-10)
+## Versión 1.2 - ¡Llegan las misiones diarias y semanales! (2025-08-11)
 
 Esta actualización introduce un sistema completamente nuevo de **misiones** que permitirá a los jugadores obtener recompensas adicionales cada día y semana.  
 Además, incluye diversas mejoras técnicas y ajustes internos para optimizar la experiencia de juego.
@@ -168,20 +168,56 @@ Además, incluye diversas mejoras técnicas y ajustes internos para optimizar la
 
 ----------------------------------
 
+## 📢 Versión 1.2.1 - Pequeño parche con mejoras (2025-08-12)
 
-## ¡Llegan las misiones diarias y semanales! 🎯 (Versión 1.2)
+🕒 Ahora las misiones muestran un **timestamp** que indica cuánto falta para el próximo reinicio y la posible generación de nuevas misiones. **Importante:** solo se asignarán misiones nuevas si **has completado ✅** o **cancelado ❌** las misiones que tenías en ese momento. Si una misión sigue activa durante el reinicio, **se conservará su progreso** y no será reemplazada — en ese caso **no** se generarán nuevas recompensas hasta que completes o canceles esa misión.
 
-A partir de esta actualización, los jugadores podrán disfrutar de un nuevo sistema de **misiones** que ofrece recompensas adicionales todos los días y semanas.  
+- 📈 Las misiones de nivel **medio** y **difícil** (slots 4 y 5) ahora piden más acciones, pero también aumentaron ligeramente las recompensas en 💵 y XP. 
+- ➕ Se arreglaron los timestamp de `/presentation list` para que muestre correctamente la fecha y hora de creación y último movimiento, de acuerdo al horario de cada jugador. 
+- 🛠️ Se corrigieron varios bugs y errores menores en distintos comandos.
 
-- Recibe hasta 5 misiones automáticamente:  
-  • 3 misiones diarias (fáciles y exploratorias)  
-  • 2 misiones semanales (de dificultad media y difícil)  
+### 🎵 Nueva canción añadida para presentaciones
+- **Sweet Juice** — *Purple Kiss*
 
-- Completa tus misiones para ganar XP, créditos, packs y cupones.  
+_Sigo en proceso de agregar aún más, principalmente de los sets o albums agregados de cada grupo._
 
-- Usa el nuevo comando `/missions list` para ver tus misiones activas, su progreso y para reclamar o cancelar misiones fácilmente.  
+----------------------------------
 
-¡Podrás avanzar más rápido y obtener mejores recompensas con este sistema!  
-Sigue jugando, cumpliendo retos y disfrutando del juego.  
+## 📢 Versión 1.2.2 - Colecciones con recompensas + nuevo grupo (2025-08-19)
 
-Gracias por tu apoyo continuo y sigue atento a las novedades.
+### 🗂️ Recompensas por colecciones  
+Al revisar tus colecciones con `/collections`, ahora tendrás la posibilidad de recibir **recompensas** automáticamente cuando completes una colección de un **set** o un **set + idol**.  
+- 🔑 Solo las colecciones que incluyen cartas de tipo **POB** o **FCR** entregan recompensas en esta primera implementación. Posteriormente se agregarán las cartas restantes de los sets ya integrados para su entrega de recompensas. 
+- 💡 El sistema verifica en el momento de la consulta si tu colección está completa y, de ser así, entrega la recompensa una sola vez.
+
+> Esto busca dar más valor a completar los sets, fomentar la colección y abrir la puerta a un sistema más amplio de logros y recompensas en el futuro.
+
+### 🌟 Nuevas cartas disponibles: ARTMS y Yves  
+Se añadió al juego el grupo **ARTMS** y a la solista **Yves**.
+
+### ⚙️ Mejoras y correcciones  
+- ⚡ Se optimizó la respuesta del bot para reducir la latencia que venía afectando algunos comandos en la última semana.  
+- 🛠️ Correcciones menores de bugs y ajustes internos para mayor estabilidad.  
+
+----------------------------------
+
+## 📢 Versión 1.2.3 - Cupones canjeables (2025-08-22)
+
+### 🎟️ Funciones y nuevos cupones  
+Se ha agregado e implementado el funcionamiento de varios cupones en el juego:  
+
+- **Training** → Ahora puedes canjear **Performance Cards** con el comando `/redeem p_card`, eligiendo la que desees.  
+- **🆕 Reroll Skills** → Usado con `/redeem skill_reroll`, permite regenerar las habilidades de una carta ingresando su `card_id`.  
+- **🆕 Upgrade Card** → Usado con `/redeem upgrade`, permite subir de nivel las cartas **Regular** hasta un máximo de nivel 3, ingresando su `card_id`.  
+
+_Todos los cupones pueden obtenerse (con baja probabilidad) en cualquier Pack (a menos que sea solo de cartas idol garantizadas, como Individual Pack, POB Pack, Star Pack o MiniStar Pack)_
+
+### ⚙️ Mejoras y correcciones  
+- 🖼️ Corregido un problema en `/cards view` que permitía mostrar la imagen de cualquier carta si se usaba un `unique_id` válido con un `card_id` de la carta que se quisiera ver. Aunque no afectaba el progreso ni se podía aprovechar en la práctica, se consideró un bug visual y fue arreglado.
+- 🌐 Ajustados errores en varios textos.  
+- 🛠️ Ahora los cupones que no se usan directamente desde el inventario incluyen en su descripción el comando con el que deben ser utilizados.  
+
+----------------------------------
+
+
+

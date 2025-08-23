@@ -6,6 +6,7 @@ from discord.ui import View, button, Button
 from utils.localization import get_translation
 from utils.language import get_user_language
 from db.connection import get_pool
+from commands.starter import version
 
 HELP_TOPICS = [
     "tutorial", "profile", "packs", "cards", "idols", "rarities",
@@ -79,10 +80,15 @@ class HelpGuide(commands.Cog):
                 f"Mostrando la última disponible (**{valid_page}**).\n\n"
             )
             valid_text = notice + valid_text
-
+        embed = discord.Embed(
+            title="",
+            description=valid_text
+        )
+        image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp/{key}.webp{version}"
+        embed.set_image(url=image_url)
         # 4) enviar con vista de paginación
         view = HelpPaginator(topic.value, lang, valid_page)
-        await interaction.response.send_message(valid_text, view=view, ephemeral=True)
+        await interaction.response.send_message(content="", embed=embed, view=view, ephemeral=True)
 
 
 MAX_SCAN = 20
@@ -102,7 +108,13 @@ class HelpPaginator(View):
     async def update_message(self, interaction: discord.Interaction):
         key = f"help.{self.topic}_{self.current}"
         text = get_translation(self.lang, key)
-        await interaction.response.edit_message(content=text, view=self)
+        embed = discord.Embed(
+            title="",
+            description=text
+        )
+        image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp/{key}.webp{version}"
+        embed.set_image(url=image_url)
+        await interaction.response.edit_message(content="", embed=embed, view=self)
 
     @button(label="⬅️ Anterior", style=discord.ButtonStyle.primary)
     async def previous(self, interaction: discord.Interaction, button: Button):
