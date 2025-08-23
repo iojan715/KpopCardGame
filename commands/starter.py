@@ -7,7 +7,7 @@ from utils.localization import get_translation
 from utils.language import get_user_language
 from asyncpg import Pool
 
-version = "?v=244"
+version = "?v=243"
 base = 200
 mult = 600
 reduct = 100000
