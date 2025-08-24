@@ -115,18 +115,20 @@ class PresentationGroup(app_commands.Group):
         async with pool.acquire() as conn:
             user_data = await conn.fetchrow("SELECT credits FROM users WHERE user_id = $1", user_id)
             
-            not_first = await conn.fetchval("SELECT 1 FROM presentations WHERE user_id = $1", user_id)
+            already_first = await conn.fetchval("SELECT 1 FROM presentations WHERE user_id = $1", user_id)
             
             disc_invitation = await conn.fetchval("SELECT amount FROM user_boosts WHERE user_id = $1 AND boost = 'INVIT'", user_id)
-            
-            if disc_invitation and ptype == "live" and not not_first:
+            if disc_invitation and ptype == "live" and already_first:
                 if disc_invitation >= 1:
                     active_discount = True
                     cost_desc = "GRATIS"
-            if not not_first:
+                    cost = 0
+            if not already_first:
                 cost = 0
                 cost_desc = "Primera Gratis"
+                
         if not user_data or user_data["credits"] < cost:
+            print(cost)
             await interaction.response.send_message(
                 get_translation(language,'presentation.not_enough_credits', cost=cost),
                 ephemeral=True
@@ -651,7 +653,7 @@ class ConfirmCreatePresentationView(discord.ui.View):
         async with pool.acquire() as conn:
             # Verificar de nuevo que tiene créditos
             user_data = await conn.fetchrow("SELECT credits FROM users WHERE user_id = $1", self.user_id)
-            if not user_data or user_data["credits"] < self.cost:
+            if not user_data or user_data["credits"] < cost:
                 await interaction.response.edit_message(
                     content="❌ No tienes créditos suficientes para crear la presentación.",
                     view=None
@@ -663,6 +665,7 @@ class ConfirmCreatePresentationView(discord.ui.View):
                 if disc_invitation >= 1:
                     cost = 0
                     await conn.execute("UPDATE user_boosts SET amount = amount - 1 WHERE user_id = $1 AND boost = 'INVIT'", self.user_id)
+            
             
             await conn.execute("""
                 INSERT INTO presentations (presentation_id, owner_id, user_id, presentation_type)
