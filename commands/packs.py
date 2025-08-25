@@ -15,7 +15,7 @@ class PacksGroup(app_commands.Group):
         super().__init__(name="packs", description="Comandos relacionados con sobres de cartas")
 
 
-    @app_commands.command(name="fcr", description="Recibe tu pack semanal de tipo FCR")
+    @app_commands.command(name="fanclub_reward", description="Recibe tu pack semanal de tipo FCR")
     @app_commands.describe(group="El grupo que deseas asignar al pack")
     async def fcr(self, interaction: discord.Interaction, group: str):
         user_id = interaction.user.id
