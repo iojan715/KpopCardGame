@@ -53,42 +53,42 @@ section_id,song_id,section_number,section_type,duration,lyrics,vocal,rap,dance,v
 0052,002,28,bridge,3,*Mm I just wanna continue my pace*,0,40,20,40,forced,,,,,,13400
 0053,002,29,chorus,10,*Dash I wanna dash I wanna run it (Run it)*\n*Dash I wanna dash I wanna (Run it run it dash)*\n*Mm uh (Run it) I wanna run some more*\n*Yeah make a dash hey I wanna (Run it run it)*,0,45,40,15,forced,cheering,10,,5,10,58600
 0054,002,30,ending,4,*Dash I wanna dash*\n*I wanna run it (Run it)*,0,45,30,25,forced,,,,,,17900
-0055,008,1,intro,10,*.*,0,0,10,90,optional,pose_sync,,,,15,48900
-0056,008,2,intro,8,*.*,0,0,75,25,optional,group_dance,,,15,,39100
-0057,008,3,intro,10,*.*,0,0,75,25,optional,group_dance,,,15,,48900
-0058,008,4,verse,8,*.*,40,0,35,25,forced,,,,,,34200
-0059,008,5,verse,10,*.*,40,0,40,20,optional,,,,,,42800
-0060,008,6,verse,8,*.*,40,0,35,25,optional,backup_dance,,,10,,37500
-0061,008,7,verse,9,*.*,35,0,40,25,optional,,,,,,38500
-0062,008,8,pre_chorus,9,*.*,35,10,30,25,forced,,,,,,39300
-0063,008,9,pre_chorus,8,*.*,40,10,35,15,forced,pose_sync,,,,15,40500
-0064,008,10,chorus,9,*.*,40,0,45,15,forced,group_dance,,,15,,45900
-0065,008,11,chorus,9,*.*,45,0,40,15,optional,,,,,,40400
-0066,008,12,chorus,9,*.*,40,0,45,15,optional,group_dance,,,17,,46600
-0067,008,13,chorus,9,*.*,40,0,40,20,optional,,,,,,40700
-0068,008,14,break,9,*.*,0,0,90,10,forced,,,,,,37100
-0069,008,15,verse,9,*.*,40,0,35,25,forced,,,,,,38900
-0070,008,16,verse,9,*.*,40,0,40,20,optional,,,,,,38900
-0071,008,17,pre_chorus,9,*.*,40,0,25,35,forced,,,,,,38500
-0072,008,18,pre_chorus,4,*.*,40,0,30,30,optional,,,,,,17400
-0073,008,19,pre_chorus,4,*.*,45,0,35,20,optional,pose_sync,,,,15,20200
-0074,008,20,chorus,9,*.*,40,0,45,15,forced,group_dance,,,15,,46200
-0075,008,21,chorus,9,*.*,45,0,40,15,optional,,,,,,40700
-0076,008,22,chorus,9,*.*,40,0,45,15,optional,group_dance,,,17,,47000
-0077,008,23,chorus,11,*.*,40,0,40,20,optional,,,,,,50200
-0078,008,24,bridge,4,*.*,35,0,30,35,forced,pose_sync,5,,10,15,22500
-0079,008,25,bridge,4,*.*,35,0,25,40,optional,backup_dance,,,15,5,21200
-0080,008,26,bridge,12,*.*,60,0,30,10,optional,group_dance,,,20,5,67100
-0081,008,27,chorus,5,*.*,45,0,40,15,forced,high_note,15,,5,,26900
-0082,008,28,chorus,4,*.*,50,0,40,10,locked,harmony,15,,10,,22300
-0083,008,29,chorus,5,*.*,45,0,40,15,optional,high_note,20,,5,,28100
-0084,008,30,chorus,3,*.*,45,0,45,10,locked,harmony,20,,10,,17600
-0085,008,31,chorus,5,*.*,45,0,45,10,optional,adlib,20,,,10,28900
-0086,008,32,chorus,5,*.*,45,0,40,15,locked,high_note,25,,5,5,30200
-0087,008,33,chorus,5,*.*,45,0,40,15,optional,harmony,20,,5,,27900
-0088,008,34,chorus,6,*.*,45,0,35,20,locked,,,,,,26900
-0089,008,35,ending,9,*.*,0,0,20,80,optional,pose_sync,,,,,38500
-0090,003,1,intro,9,**,0,0,10,90,optional,pose_sync,,,,15,46100
+0055,008,1,intro,10,*[music~]*,0,0,10,90,optional,pose_sync,,,,15,48900
+0056,008,2,intro,8,*[music~]*,0,0,75,25,optional,group_dance,,,15,,39100
+0057,008,3,intro,10,*[music~]*,0,0,75,25,optional,group_dance,,,15,,48900
+0058,008,4,verse,8,*jeonhae jugo sipeo seulpeun sigani*\n*da heuteojin hueya deullijiman*,40,0,35,25,forced,,,,,,34200
+0059,008,5,verse,10,*nuneul gamgo neukkyeo bwa umjigineun ma-eum*\n*neoreul hyanghan nae nunbicheul*,40,0,40,20,optional,,,,,,42800
+0060,008,6,verse,8,*teukbyeolhan gijeogeul gidariji ma*\n*nunapeseon uriui geochin gireun*,40,0,35,25,optional,backup_dance,,,10,,37500
+0061,008,7,verse,9,*al su eomneun miraewa byeok bakkuji ana*\n*pogihal su eopseo*,35,0,40,25,optional,,,,,,38500
+0062,008,8,pre_chorus,9,*byeonchi aneul sarang-euro jikyeo jwo*\n*sangcheo ibeun nae mamkkaji*,35,10,30,25,forced,,,,,,39300
+0063,008,9,pre_chorus,8,*siseon sogeseo mareun piryo eopseo*\n*meomchwojyeo beorin i sigan*,40,10,35,15,forced,pose_sync,,,,15,40500
+0064,008,10,chorus,9,*saranghae neol i neukkim idaero*\n*geuryeo watdeon hemaeimui kkeut*,40,0,45,15,forced,group_dance,,,15,,45900
+0065,008,11,chorus,9,*i sesang sogeseo banbokdoeneun*\n*seulpeum ijen annyeong*,45,0,40,15,optional,,,,,,40400
+0066,008,12,chorus,9,*sumaneun al su eomneun gil soge*\n*huimihan bicheul nan jjochaga*,40,0,45,15,optional,group_dance,,,17,,46600
+0067,008,13,chorus,9,*eonjekkajirado hamkkehaneun geoya*\n*dasi mannan naui segye*,40,0,40,20,optional,,,,,,40700
+0068,008,14,break,9,*[music~]*,0,0,90,10,forced,,,,,,37100
+0069,008,15,verse,9,*teukbyeolhan gijeogeul gidariji ma*\n*nunapeseon uriui geochin gireun*,40,0,35,25,forced,,,,,,38900
+0070,008,16,verse,9,*al su eomneun miraewa byeok bakkuji ana*\n*pogihal su eopseo*,40,0,40,20,optional,,,,,,38900
+0071,008,17,pre_chorus,9,*byeonchi aneul sarang-euro jikyeo jwo*\n*sangcheo ibeun nae mamkkaji*,40,0,25,35,forced,,,,,,38500
+0072,008,18,pre_chorus,4,*siseon sogeseo mareun piryo eopseo*,40,0,30,30,optional,,,,,,17400
+0073,008,19,pre_chorus,4,*meomchwojyeo beorin i sigan*,45,0,35,20,optional,pose_sync,,,,15,20200
+0074,008,20,chorus,9,*saranghae neol i neukkim idaero*\n*geuryeo watdeon hemaeimui kkeut*,40,0,45,15,forced,group_dance,,,15,,46200
+0075,008,21,chorus,9,*i sesang sogeseo banbokdoeneun*\n*seulpeum ijen annyeong*,45,0,40,15,optional,,,,,,40700
+0076,008,22,chorus,9,*sumaneun al su eomneun gil soge*\n*huimihan bicheul nan jjochaga*,40,0,45,15,optional,group_dance,,,17,,47000
+0077,008,23,chorus,11,*eonjekkajirado hamkkehaneun geoya*\n*dasi mannan uriui*,40,0,40,20,optional,,,,,,50200
+0078,008,24,bridge,4,*ireoke kkaman bam hollo neukkineun*,35,0,30,35,forced,pose_sync,5,,10,15,22500
+0079,008,25,bridge,4,*geudae-ui budeureoun sumgyeori*,35,0,25,40,optional,backup_dance,,,15,5,21200
+0080,008,26,bridge,12,*i sun-gan ttaseuhage gamgyeo one*\n*modeun naui tteollim jeonhallae*,60,0,30,10,optional,group_dance,,,20,5,67100
+0081,008,27,chorus,5,*saranghae neol i neukkim idaero*\n*(idaero~)*,45,0,40,15,forced,high_note,15,,5,,26900
+0082,008,28,chorus,4,*geuryeo watdeon hemaeimui kkeut*,50,0,40,10,locked,harmony,15,,10,,22300
+0083,008,29,chorus,5,*i sesang sogeseo banbokdoeneun*,45,0,40,15,optional,high_note,20,,5,,28100
+0084,008,30,chorus,3,*seulpeum ijen annyeong*,45,0,45,10,locked,harmony,20,,10,,17600
+0085,008,31,chorus,5,*neol saenggangman haedo nan ganghaejyeo*\n*(uh uh~ uh~)*,45,0,45,10,optional,adlib,20,,,10,28900
+0086,008,32,chorus,5,*ulji an-ge nareul dowajwo*\n*(dowajwo~)*,45,0,40,15,locked,high_note,25,,5,5,30200
+0087,008,33,chorus,5,*i sun-ganui neukkim hamkkehaneun geoya*,45,0,40,15,optional,harmony,20,,5,,27900
+0088,008,34,chorus,6,*dasi mannan uriui*,45,0,35,20,locked,,,,,,26900
+0089,008,35,ending,9,*[music~]*,0,0,20,80,optional,pose_sync,,,,,38500
+0090,003,1,intro,9,*[music~]*,0,0,10,90,optional,pose_sync,,,,15,46100
 0091,003,2,verse,4,*eodumeul kkae-ul i candle*\n*bureul buchyeo*,40,10,30,20,forced,,,,,,18000
 0092,003,3,verse,4,*deo isang chameul sun eopji?*\n*So do I*,40,10,30,20,optional,backup_dance,,,15,,20600
 0093,003,4,verse,4,*neomu oraetdong-an we've starvin'*\n*I'm out of control*,35,10,40,15,forced,,,,,,18000
