@@ -3803,6 +3803,7 @@ async def finalize_presentation(conn, presentation: dict) -> str:
     presentation_id = presentation["presentation_id"]
     user_id = presentation["user_id"]
     group_id = presentation["group_id"]
+    song_id = presentation["song_id"]
     ptype = presentation.get("presentation_type", "live")
     pool = get_pool()
     async with pool.acquire() as conn:
@@ -3833,6 +3834,7 @@ async def finalize_presentation(conn, presentation: dict) -> str:
             double = ""
             
             group_name = await conn.fetchval("SELECT name FROM groups WHERE group_id = $1", group_id)
+            song_name = await conn.fetchval("SELECT name FROM songs WHERE song_id = $1", song_id)
             double_reward = await conn.fetchval("SELECT amount FROM user_boosts WHERE user_id = $1 AND boost = 'DBRWR'", user_id)
             
             if double_reward:
@@ -3861,7 +3863,7 @@ async def finalize_presentation(conn, presentation: dict) -> str:
             )
 
             return (
-                f"## 🎉 ¡{group_name} ha finalizado una presentación!\n**Puntuación total:** {format(total_score,',')} _(Esperado: {format(int(average_score),',')})_\n> **Popularidad ganada:** {format(popularity,',')}{double}\n> **XP obtenida:** {xp}"
+                f"## 🎉 ¡`{group_name}` ha finalizado una presentación de `{song_name}`!\n**Puntuación total:** {format(total_score,',')} _(Esperado: {format(int(average_score),',')})_\n> **Popularidad ganada:** {format(popularity,',')}{double}\n> **XP obtenida:** {xp}"
             )
 
         else:
@@ -3886,7 +3888,7 @@ async def finalize_presentation(conn, presentation: dict) -> str:
                 presentation_id
             )
             return (
-                f"## ✅ {group_name} ha finalizado una práctica.\n**Puntuación total:** {format(total_score,',')}\n> _(no se ha recibido popularidad ni XP)_"
+                f"## ✅ `{group_name}` ha finalizado una práctica de `{song_name}`.\n**Puntuación total:** {format(total_score,',')}\n> _(no se ha recibido popularidad ni XP)_"
             )
 
 async def setup(bot):
