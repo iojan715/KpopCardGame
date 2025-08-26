@@ -1312,7 +1312,7 @@ class ItemCardDetailButton(discord.ui.Button):
             embed.add_field(name="Bonos:", value=bonus_str, inline=False)
 
         image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{self.item_id}.webp{version}"
-        embed.set_thumbnail(url=image_url)
+        #embed.set_thumbnail(url=image_url)
 
         view = ItemCardDetailView(
             row_data=self.row_data,
