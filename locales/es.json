@@ -169,7 +169,7 @@
   "skills.Fatigue": "+{pcond_extra_cost} al consumo de energía si la carta participó en la sección anterior.",
   "skills.Dazzling Smile": "+{pcond_hype}% Hype si el Visual de la carta supera el Visual de la sección.",
   "skills.Steady Tempo": "+{pcond_rap} Rap y +{pcond_dance} Dance si esta carta participó en la sección anterior.",
-  "skills.Confident Rhythm": "+{pcond_dance} Dance si la sección tiene menos de {cond_visual} Visual.",
+  "skills.Confident Rhythm": "+{pcond_dance} Dance si la sección tiene menos de {cond_visual} Vocal y Visual.",
   "skills.Silent Impact": "+{pcond_dance} Dance y +{pcond_visual} Visual si la sección tiene menos de {cond_vocal} Vocal y {cond_rap} Rap.",
   "skills.Encore Spirit": "{pcond_extra_cost} costo de energía si la carta tiene menos del {cond_energy}% de energía restante y no participó en la sección anterior.",
   "skills.Stage Fright": "No genera Hype si el total de Hype es menor a {cond_hype}%.",
@@ -294,6 +294,7 @@
   "skills.Energy Bloom": "+{visual} Visual.\nSi el Hype es menor a {cond_hype}, recupera +{pcond_energy} energía. Costo: {relative_cost}% energía",
   "skills.Adrenaline Spike": "+{dance} Dance.\nSi el Hype es {cond_hype} o más, gana +{pcond_score}% en la puntuación obtenida. Costo: {relative_cost}% energía",
   "skills.Steady Lead": "+{vocal} a todas las estadísticas.\nSi el Hype es mayor a {cond_hype}, +{pcond_vocal} adicional a todas las estadísticas. Costo: {relative_cost}% energía",
+  "skills.Sweet Voice": "Aumenta +{vocal} Vocal. Si la sección tiene menos de {pcond_dance} Dance y Rap, también aumenta +{cond_visual} Visual. Costo: {relative_cost}% energía",
   "skills.High Note": "+{vocal} Vocal.\nSi el Hype es {cond_hype} o más, +{pcond_visual} Visual adicional. Costo: {relative_cost}% energía",
   "skills.Backup Boost": "+{rap} Rap.\nSi el Hype es menor a {cond_hype}, +{pcond_hype}% de Hype obtenido. Costo: {relative_cost}% energía",
   
