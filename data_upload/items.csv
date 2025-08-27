@@ -1,26 +1,26 @@
 item_id,name,type,plus_vocal,plus_rap,plus_dance,plus_visual,plus_energy,max_durability,weight,value
-ACC001,Ring,accessory,0,4,0,4,0,2,150,180
-ACC002,Badge,accessory,0,0,0,2,6,2,150,180
-ACC003,Earrings,accessory,0,0,2,6,0,2,150,180
-ACC004,Choker,accessory,0,6,6,0,0,3,110,220
-ACC005,Bow Tie,accessory,2,2,0,6,2,3,110,220
-ACC006,Headband,accessory,0,0,6,4,2,3,110,220
-ACC007,Arm Band,accessory,2,4,2,0,2,3,120,200
-ACC008,Necklace,accessory,4,0,4,4,0,3,110,220
-CON001,Water Bottle,consumable,3,0,0,0,5,1,220,80
-CON002,Coffe,consumable,-2,0,4,0,10,1,185,120
-CON003,Sandwich,consumable,2,0,2,0,8,1,185,120
-CON004,Energy Bar,consumable,-2,4,4,-2,8,1,185,120
-CON005,Fruit Juice,consumable,0,0,0,4,8,1,185,120
-CON006,Mints,consumable,0,-2,0,4,6,1,220,80
-CON007,Yogurth Drink,consumable,0,0,0,0,10,1,200,100
-CON008,Rice Ball,consumable,0,0,4,0,6,1,200,100
-CON009,Smoothie,consumable,0,0,3,3,4,1,200,100
-FIT001,Training Outfit,outfit,0,0,4,0,4,3,160,230
-FIT002,Casual Outfit,outfit,0,0,4,2,2,3,160,230
-FIT003,Stage Outfit,outfit,0,0,4,6,2,3,130,270
-FIT004,Fan Meeting Outfit,outfit,0,0,4,4,4,3,130,270
-FIT005,Formal Outfit,outfit,0,0,-1,10,-1,3,160,230
-MIC001,Hand Mic,mic,7,7,-2,-2,0,5,320,150
-MIC002,Stand Mic,mic,8,0,-4,6,0,5,320,150
-MIC003,In Ear Mic,mic,0,6,4,0,0,5,320,150
+ACC001,Ring,accessory,0,4,0,4,0,2,150,80
+ACC002,Badge,accessory,0,0,0,2,6,2,150,80
+ACC003,Earrings,accessory,0,0,2,6,0,2,150,80
+ACC004,Choker,accessory,0,6,6,0,0,3,110,120
+ACC005,Bow Tie,accessory,2,2,0,6,2,3,110,120
+ACC006,Headband,accessory,0,0,6,4,2,3,110,120
+ACC007,Arm Band,accessory,2,4,2,0,2,3,120,100
+ACC008,Necklace,accessory,4,0,4,4,0,3,110,120
+CON001,Water Bottle,consumable,3,0,0,0,5,1,220,40
+CON002,Coffe,consumable,-2,0,4,0,10,1,185,60
+CON003,Sandwich,consumable,2,0,2,0,8,1,185,60
+CON004,Energy Bar,consumable,-2,4,4,-2,8,1,185,60
+CON005,Fruit Juice,consumable,0,0,0,4,8,1,185,60
+CON006,Mints,consumable,0,-2,0,4,6,1,220,40
+CON007,Yogurth Drink,consumable,0,0,0,0,10,1,200,50
+CON008,Rice Ball,consumable,0,0,4,0,6,1,200,50
+CON009,Smoothie,consumable,0,0,3,3,4,1,200,50
+FIT001,Training Outfit,outfit,0,0,4,0,4,3,200,80
+FIT002,Casual Outfit,outfit,0,0,4,2,2,3,200,80
+FIT003,Stage Outfit,outfit,0,0,4,6,2,3,165,120
+FIT004,Fan Meeting Outfit,outfit,0,0,4,4,4,3,165,120
+FIT005,Formal Outfit,outfit,0,0,-1,10,-1,3,200,80
+MIC001,Hand Mic,mic,7,7,-2,-2,0,5,250,100
+MIC002,Stand Mic,mic,8,0,-4,6,0,5,250,100
+MIC003,In Ear Mic,mic,0,6,4,0,0,5,250,100
