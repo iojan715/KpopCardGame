@@ -1382,7 +1382,7 @@ async def show_idol_switch_paginator(interaction: Interaction, presentation_id: 
         idols = await conn.fetch("""
             SELECT * FROM presentation_members
             WHERE presentation_id = $1
-            ORDER BY id ASC
+            ORDER BY idol_id ASC
         """, presentation_id)
 
     if not idols:

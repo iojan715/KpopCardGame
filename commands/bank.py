@@ -94,7 +94,7 @@ class ConfirmSendCreditsButton(discord.ui.Button):
             remit_agency = await conn.fetchval("SELECT agency_name FROM users WHERE user_id = $1", self.remit_id)
             remit_credits = await conn.fetchval("SELECT credits FROM users WHERE user_id = $1", self.remit_id)
 
-            fame = self.amount*1.05
+            fame = self.amount*0.05
             if fame < 50:
                 fame = 50
             
@@ -104,10 +104,19 @@ class ConfirmSendCreditsButton(discord.ui.Button):
             
             amount_to_pay = self.amount + fame
             
+            xp = fame // 100
+            
             await conn.execute(
                 "UPDATE users SET credits = credits + $1 WHERE user_id = $2", self.amount, self.dest_id)
             await conn.execute(
                 "UPDATE users SET credits = credits - $1 WHERE user_id = $2", amount_to_pay, self.remit_id)
+            
+            xp_gave = ""
+            if xp > 0:
+                await conn.execute(
+                    "UPDATE users SET xp = xp + $1 WHERE user_id = $2",
+                    xp, self.remit_id)
+                xp_gave = f"\n> XP: `+{int(xp)}`"
             
             dest_notif = await conn.fetchval("SELECT notifications FROM users WHERE user_id = $1", self.dest_id)
             
@@ -119,7 +128,7 @@ class ConfirmSendCreditsButton(discord.ui.Button):
                 except discord.Forbidden:
                     pass
             
-        await interaction.response.edit_message(content=f"## 💵`{format(self.amount,',')}` enviados correctamente a `{dest_agency}`",
+        await interaction.response.edit_message(content=f"## 💵`{format(self.amount,',')}` enviados correctamente a `{dest_agency}`{xp_gave}",
                                                     embed=None, view=None)
         
 
