@@ -18,6 +18,11 @@ class PacksGroup(app_commands.Group):
     @app_commands.command(name="fanclub_reward", description="Recibe tu pack semanal de tipo FCR")
     @app_commands.describe(group="El grupo que deseas asignar al pack")
     async def fcr(self, interaction: discord.Interaction, group: str):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         user_id = interaction.user.id
         language = await get_user_language(user_id)
         pool = get_pool()
@@ -61,6 +66,11 @@ class PacksGroup(app_commands.Group):
 
     @app_commands.command(name="open", description="Abrir uno de tus packs disponibles")
     async def open_pack(self, interaction: discord.Interaction):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         user_id = interaction.user.id
         pool = await get_pool()
 
@@ -329,6 +339,11 @@ class PacksGroup(app_commands.Group):
         gift_to="(opcional) Regala este pack a otro jugador"
     )
     async def buy(self, interaction: discord.Interaction, pack: str, amount:int = None, group: str = None, gift_to: str = None):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         user_id = interaction.user.id
         language = await get_user_language(user_id)
         pool = get_pool()
@@ -438,6 +453,11 @@ class PacksGroup(app_commands.Group):
 
     @app_commands.command(name="list", description="Ver todos los packs disponibles para compra")
     async def list_packs(self, interaction: discord.Interaction):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         user_id = interaction.user.id
         language = await get_user_language(user_id)
         pool = get_pool()

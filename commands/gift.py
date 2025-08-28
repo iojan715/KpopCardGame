@@ -114,6 +114,11 @@ class ConfirmGiftButton(discord.ui.Button):
         self.message = message
 
     async def callback(self, interaction: discord.Interaction):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         pool = get_pool()
         language = await get_user_language(interaction.user.id)
         

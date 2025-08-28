@@ -48,6 +48,12 @@ class AdminGroup(app_commands.Group):
     @app_commands.choices(content_type = CONTENT_CHOICES)
     async def upload_content(self, interaction: discord.Interaction, content_type: str):
         await interaction.response.defer(ephemeral=True, thinking=True)
+        
+        if interaction.guild is None:
+            return await interaction.edit_original_response(
+                content="❌ Este comando solo está disponible en servidores."
+            )
+            
         language = await get_user_language(interaction.user.id)
         ALLOWED_CONTENT_TYPES = ["packs",
                                  "levels",
@@ -615,6 +621,11 @@ class AdminGroup(app_commands.Group):
         item_id="ID base del ítem a entregar"
     )
     async def give_item_card(self, interaction: discord.Interaction, user: discord.User, item_id: str):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         pool = get_pool()
 
         async with pool.acquire() as conn:

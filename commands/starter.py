@@ -249,6 +249,11 @@ class StartCommand(commands.Cog):
 
     @app_commands.command(name="start", description="Begin your journey in the game.")
     async def start(self, interaction: discord.Interaction):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         user_id = interaction.user.id
         pool = await get_pool()
 
@@ -339,6 +344,11 @@ class SponsorCommand(commands.Cog):
 
     @app_commands.command(name="sponsor", description="Claim credits by sponsot / Reclama créditos por patrocinio.")
     async def sponsor(self, interaction: discord.Interaction):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         user_id = interaction.user.id
         now = datetime.now(timezone.utc)
         pool: Pool = get_pool()

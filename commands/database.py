@@ -32,6 +32,11 @@ class DatabaseCommands(commands.Cog):
         @app_commands.describe(table="Nombre de la tabla a eliminar")
         @app_commands.autocomplete(table=table_autocomplete)
         async def delete_table(self, interaction: discord.Interaction, table: str):
+            if interaction.guild is None:
+                return await interaction.response.send_message(
+                    "❌ Este comando solo está disponible en servidores.", 
+                    ephemeral=True
+                )
             # Reemplaza ID-DISCORD por tu ID real
             if interaction.user.id != 206937569307525122:
                 await interaction.response.send_message("❌ No tienes permiso para usar este comando.", ephemeral=True)
@@ -49,6 +54,11 @@ class DatabaseCommands(commands.Cog):
         @app_commands.describe(table="Tabla a exportar")
         @app_commands.autocomplete(table=table_autocomplete)
         async def export(self, interaction: discord.Interaction, table: str):
+            if interaction.guild is None:
+                return await interaction.response.send_message(
+                    "❌ Este comando solo está disponible en servidores.", 
+                    ephemeral=True
+                )
             import csv
             import io
 

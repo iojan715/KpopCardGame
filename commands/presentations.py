@@ -20,6 +20,11 @@ class PresentationGroup(app_commands.Group):
 
     @app_commands.command(name="list", description="Listar tus presentaciones")
     async def list_presentations(self, interaction: discord.Interaction):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         user_id = interaction.user.id
         pool = get_pool()
 
@@ -97,6 +102,11 @@ class PresentationGroup(app_commands.Group):
         interaction: discord.Interaction,
         type: app_commands.Choice[str]
     ):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         user_id = interaction.user.id
         pool = get_pool()
         language = await get_user_language(user_id)
@@ -151,6 +161,11 @@ class PresentationGroup(app_commands.Group):
     @app_commands.command(name="add_song", description="Asignar una canción a una de tus presentaciones en preparación")
     @app_commands.describe(song="ID de la canción que quieres asignar")
     async def add_song(self, interaction: Interaction, song: str):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         user_id = interaction.user.id
         pool = get_pool()
 
@@ -207,6 +222,11 @@ class PresentationGroup(app_commands.Group):
 
     @app_commands.command(name="add_group", description="Asignar un grupo a una de tus presentaciones en preparación")
     async def add_group(self, interaction: Interaction):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         user_id = interaction.user.id
         pool = get_pool()
 
@@ -246,6 +266,11 @@ class PresentationGroup(app_commands.Group):
 
     @app_commands.command(name="perform", description="Iniciar una presentación en preparación")
     async def perform(self, interaction: Interaction):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         await interaction.response.defer(ephemeral=True)
         user_id = interaction.user.id
         pool = get_pool()

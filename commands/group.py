@@ -17,6 +17,11 @@ class Group(app_commands.Group):
     @app_commands.command(name="list", description="Show groups")
     @app_commands.describe(agency="Agency")
     async def list_groups(self, interaction: discord.Interaction, agency:str = None):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         user_id = interaction.user.id
         i_user_id = user_id
         pool = get_pool()
@@ -61,6 +66,11 @@ class Group(app_commands.Group):
 
     @app_commands.command(name="create", description="Create new group")
     async def create_group(self, interaction: discord.Interaction):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         user_id = interaction.user.id
         pool = get_pool()
         language = await get_user_language(user_id)

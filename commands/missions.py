@@ -13,6 +13,11 @@ class MissionsGroup(app_commands.Group):
     @app_commands.command(name="list", description="Entregar recompensa a un jugador por reporte de error")
 
     async def missions(self, interaction:discord.Interaction):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         pool = get_pool()
         language = await get_user_language(interaction.user.id)
 

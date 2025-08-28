@@ -107,6 +107,10 @@ class InventoryGroup(app_commands.Group):
         await interaction.response.defer(
             ephemeral=True
         )
+        if interaction.guild is None:
+            return await interaction.edit_original_response(
+                content="❌ Este comando solo está disponible en servidores."
+            )
         user_id = interaction.user.id
         pool = get_pool()
         is_duplicated = False
@@ -317,6 +321,10 @@ class InventoryGroup(app_commands.Group):
         order: app_commands.Choice[str] = None
     ):
         await interaction.response.defer(ephemeral=True)
+        if interaction.guild is None:
+            return await interaction.edit_original_response(
+                content="❌ Este comando solo está disponible en servidores."
+            )
         user_id = interaction.user.id
         pool = get_pool()
 
@@ -401,6 +409,10 @@ class InventoryGroup(app_commands.Group):
     @app_commands.describe(agency="Agency")
     async def performance_cards(self, interaction: discord.Interaction, agency:str = None):
         await interaction.response.defer(ephemeral=True)
+        if interaction.guild is None:
+            return await interaction.edit_original_response(
+                content="❌ Este comando solo está disponible en servidores."
+            )
         pool = get_pool()
         
         async with pool.acquire() as conn:
@@ -455,6 +467,11 @@ class InventoryGroup(app_commands.Group):
         order_by: app_commands.Choice[str] = None,
         order: app_commands.Choice[str] = None
         ):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         user_id = interaction.user.id
         pool = get_pool()
         language = await get_user_language(user_id)
@@ -530,6 +547,10 @@ class InventoryGroup(app_commands.Group):
     @app_commands.describe(agency="Agency")
     async def badges(self, interaction: discord.Interaction, agency:str = None):
         await interaction.response.defer(ephemeral=True)
+        if interaction.guild is None:
+            return await interaction.edit_original_response(
+                content="❌ Este comando solo está disponible en servidores."
+            )
         await self.display_simple_inventory(
             interaction,
             agency=agency,
@@ -2669,6 +2690,11 @@ class CardGroup(app_commands.Group):
         card_id: str,
         public: str = None
     ):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         user_id = interaction.user.id
         language = await get_user_language(user_id)
         pool = get_pool()
@@ -2955,6 +2981,11 @@ class CardGroup(app_commands.Group):
     @app_commands.command(name="level_up", description="Combina dos cartas Regulares iguales para subir de nivel")
     @app_commands.describe(card_1="ej: IDLSETTR12.unique", card_2="ej: IDLSETTR12.unique")
     async def level_up(self, interaction: discord.Interaction, card_1: str, card_2: str):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         user_id = interaction.user.id
 
         if card_1 == card_2:
@@ -3016,6 +3047,11 @@ class CardGroup(app_commands.Group):
     @app_commands.command(name="fusion_check", description="Ver posibles fusiones que puedes hacer con tus cartas Regulares")
     @app_commands.describe(level="Nivel que quieres priorizar (1, 2 o 3)")
     async def fusion_check(self, interaction: discord.Interaction, level: int = None):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         user_id = interaction.user.id
         pool = await get_pool()
 
@@ -3092,6 +3128,11 @@ class CardGroup(app_commands.Group):
     @app_commands.command(name="fusion", description="Fusiona 3 cartas Regulares diferentes del mismo idol y set")
     @app_commands.describe(card_1="ej: IDLSETTR11.unique", card_2="ej: IDLSETTR21.unique", card_3="ej: IDLSETTR31.unique")
     async def fusion(self, interaction: discord.Interaction, card_1: str, card_2: str, card_3: str):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         user_id = interaction.user.id
         input_cards = [card_1, card_2, card_3]
         
@@ -3185,6 +3226,11 @@ class CardGroup(app_commands.Group):
     @app_commands.command(name="refund", description="Solicita un reembolso por una carta u objeto")
     @app_commands.describe(card="ID de la carta/objeto con formato ID.unique")
     async def refund(self, interaction: discord.Interaction, card: str):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         user_id = interaction.user.id
         try:
             uid = card.split(".")[1]

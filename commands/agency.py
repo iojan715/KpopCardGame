@@ -259,6 +259,11 @@ class AgencyCommand(commands.Cog):
     @app_commands.command(name="profile", description="Consulta y configura tu perfil de agencia.")
     @app_commands.describe(user="User")
     async def profile(self, interaction: discord.Interaction, user: discord.User = None):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         user_id = interaction.user.id
         owner = True
         if user and user.id != interaction.user.id:

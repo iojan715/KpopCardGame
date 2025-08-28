@@ -57,6 +57,11 @@ class CollectionCommand(commands.Cog):
     @app_commands.describe(set_name="Nombre del set", rarity="Rareza de cartas", idol="Nombre del idol", public="Public message")
     @app_commands.choices(rarity=RARITY_CHOICES, public=PUBLIC_CHOICES)
     async def collections(self, interaction: discord.Interaction, set_name: str = None, rarity: str = None, idol: str = None, public: str = None):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         user_id = interaction.user.id
         language = await get_user_language(user_id)
         pool = get_pool()

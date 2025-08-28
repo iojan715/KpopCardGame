@@ -40,6 +40,11 @@ class HelpGuide(commands.Cog):
         topic: app_commands.Choice[str],
         page: int = 1
     ):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         pool = get_pool()
         async with pool.acquire() as conn:
             await conn.execute("""

@@ -88,6 +88,11 @@ class ConfirmSendCreditsButton(discord.ui.Button):
         self.amount = amount
         
     async def callback(self, interaction: discord.Interaction):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         pool = get_pool()
         async with pool.acquire() as conn:
             dest_agency = await conn.fetchval("SELECT agency_name FROM users WHERE user_id = $1", self.dest_id)

@@ -20,6 +20,11 @@ class RedeemGroup(app_commands.Group):
     @app_commands.command(name="card", description="Canjea una carta idol o ítem usando un redeemable")
     @app_commands.describe(card_id="ID de la carta (idol o ítem) que deseas canjear")
     async def redeem_card(self, interaction: discord.Interaction, card_id: str):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         pool = get_pool()
 
         # Validación de ID
@@ -129,6 +134,11 @@ class RedeemGroup(app_commands.Group):
     @app_commands.command(name="p_card", description="Canjea una Performance Card usando un redeemable")
     @app_commands.describe(card="Nombre de la carta que deseas canjear",)
     async def redeem_p_card(self, interaction: discord.Interaction, card:str):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         pool = get_pool()
         user_id = interaction.user.id
 
@@ -209,6 +219,11 @@ class RedeemGroup(app_commands.Group):
     @app_commands.command(name="skill_reroll", description="Regenera las habilidades de una carta idol")
     @app_commands.describe(card_id="ID de la carta (idol) que deseas regenerar habilidades")
     async def redeem_skill(self, interaction: discord.Interaction, card_id: str):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         pool = get_pool()
 
         try:
@@ -293,6 +308,11 @@ class RedeemGroup(app_commands.Group):
     @app_commands.command(name="upgrade", description="Sube de nivel una carta Regular (max. Lv. 3)")
     @app_commands.describe(card_id="ID de la carta (idol) que deseas mejorar")
     async def redeem_upgrade(self, interaction: discord.Interaction, card_id: str):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         pool = get_pool()
 
         try:
