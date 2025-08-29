@@ -1,7 +1,8 @@
-import asyncio
+import asyncio, discord
 import datetime, random
 from db.connection import get_pool
 import logging
+from commands.starter import version
 
 EJECUCION_HORA_UTC = 5  # 05:00 UTC
 GRACE_DAYS = 50  # días de tolerancia para ejecución tardía
@@ -54,7 +55,7 @@ async def ejecutar_evento_si_corresponde(nombre_evento, funcion_callback):
                 return  # Día inválido para este mes (por ejemplo, 31 de febrero)
 
         elif tipo == 'frecuente':
-            frecuencia_minutos = 10  # puedes ajustarlo a lo que necesites
+            frecuencia_minutos = 5  # puedes ajustarlo a lo que necesites
             fecha_programada = last_applied + datetime.timedelta(minutes=frecuencia_minutos)
 
         if fecha_programada is None:
@@ -419,6 +420,115 @@ async def add_weekly_missions():
 
     logging.info("Misiones semanales agregadas correctamente.")
 
+async def giveaway_winner():
+    pool = get_pool()
+    now = datetime.datetime.now(datetime.timezone.utc)
+
+    async with pool.acquire() as conn:
+        # Buscar sorteos activos que ya vencieron
+        giveaways = await conn.fetch("""
+            SELECT * FROM giveaways
+            WHERE active = TRUE AND end_time <= $1
+        """, now)
+        
+        if not giveaways:
+            return
+
+        for g in giveaways:
+            giveaway_id = g["giveaway_id"]
+            guild_id = g["guild_id"]
+            channel_id = g["channel_id"]
+            message_id = g["message_id"]
+            prize_card = g["card_id"]
+
+            # Buscar participantes
+            participants = await conn.fetch("""
+                SELECT user_id FROM giveaway_entries
+                WHERE giveaway_id = $1
+            """, giveaway_id)
+
+            if not participants:
+                # No hubo participantes
+                await conn.execute(
+                    "UPDATE giveaways SET active = FALSE WHERE giveaway_id=$1",
+                    giveaway_id)
+
+                try:
+                    channel = BOT.get_channel(channel_id)
+                    if channel:
+                        msg = await channel.fetch_message(message_id)
+                        embed = msg.embeds[0] if msg.embeds else discord.Embed(title="🎉 Sorteo finalizado")
+                        embed.color = discord.Color.red()
+                        embed.add_field(name="Resultado", value="⚠️ Nadie participó en este sorteo.")
+                        await msg.edit(embed=embed, view=None)
+                except Exception as e:
+                    logging.error(f"No se pudo editar mensaje de sorteo vacío {giveaway_id}: {e}")
+
+                continue
+
+            # Elegir ganador
+            winner = random.choice(participants)["user_id"]
+            try:
+                row = await conn.fetchrow(
+                    "SELECT notifications FROM users WHERE user_id=$1",
+                    winner
+                )
+                if row and row["notifications"]:
+                    user = BOT.get_user(winner)
+                    if user is None:
+                        user = await BOT.fetch_user(winner)  # fallback si no está en caché
+                    if user:
+                        unique_id = prize_card
+                        card_id = await conn.fetchval("SELECT card_id FROM user_idol_cards WHERE unique_id = $1", unique_id)
+                        embed = discord.Embed(
+                            title="🎊 ¡Felicidades!",
+                            description=f"Has ganado la carta `{card_id}.{prize_card}` en un sorteo 🎁",
+                            color=discord.Color.gold()
+                        )
+                        embed.set_footer(text=f"{giveaway_id}")
+
+                        # Opcional: mostrar imagen de la carta
+                        image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{card_id}.webp{version}"
+                        embed.set_image(url=image_url)
+                        try:
+                            await user.send(embed=embed)
+                        except discord.Forbidden:
+                            logging.warning(f"No pude enviar DM a {winner}, tiene bloqueados los mensajes.")
+            except Exception as e:
+                logging.error(f"Error al intentar notificar al ganador {winner}: {e}")
+                
+
+            # Marcar en DB
+            await conn.execute(
+                "UPDATE giveaway_entries SET winner=TRUE WHERE giveaway_id=$1 AND user_id=$2",
+                giveaway_id, winner
+            )
+            await conn.execute(
+                "UPDATE giveaways SET active=FALSE WHERE giveaway_id=$1",
+                giveaway_id
+            )
+
+            # Transferir la carta
+            await conn.execute(
+                "UPDATE user_idol_cards SET user_id=$1, status='available', date_obtained=now() WHERE unique_id=$2",
+                winner, prize_card
+            )
+
+            # Editar mensaje original
+            try:
+                channel = BOT.get_channel(channel_id)
+                if channel:
+                    msg = await channel.fetch_message(message_id)
+                    embed = msg.embeds[0] if msg.embeds else discord.Embed(title="🎉 Sorteo finalizado")
+                    embed.color = discord.Color.gold()
+                    embed.add_field(name="Ganador", value=f"<@{winner}> 🎊", inline=False)
+                    embed.set_footer(text=f"{giveaway_id}")
+                    await msg.edit(embed=embed, view=None)
+            except Exception as e:
+                logging.error(f"No se pudo editar mensaje del sorteo {giveaway_id}: {e}")
+
+        if giveaways:
+            logging.info(f"Sorteos finalizados: {len(giveaways)}")
     
 async def remove_roles():
     guild_ids = [1395514643283443742, 1311186435054764032]
@@ -446,7 +556,7 @@ async def remove_roles():
                     print(f"❌ No pude quitar roles a {member.display_name}: {e}")
         print(f"✅ Limpieza completada en {guild.name}")
     pass
-    
+  
 
 async def events_loop(bot):
     global BOT
@@ -464,6 +574,7 @@ async def events_loop(bot):
         await ejecutar_evento_si_corresponde("remove_roles", remove_roles)
         await ejecutar_evento_si_corresponde("add_daily_mission", add_daily_missions)
         await ejecutar_evento_si_corresponde("add_weekly_mission", add_weekly_missions)
+        await ejecutar_evento_si_corresponde('giveaway_winner', giveaway_winner)
 
         await asyncio.sleep(300)  # revisa cada 5 minutos
 

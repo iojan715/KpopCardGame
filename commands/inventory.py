@@ -1926,6 +1926,8 @@ async def generate_idol_card_embeds(rows: list, pool, guild: discord.Guild, is_d
             c_status = "🔄"
         elif row['status'] == "on_sale":
             c_status = "💲"
+        elif row['status'] == "giveaway":
+            c_status = "🎁"
 
         RARITY_COLORS = {
             "Regular": discord.Color.light_gray(),
@@ -2008,6 +2010,12 @@ class CardDetailButton(discord.ui.Button):
         if card:
             if card['status'] == 'equipped':
                 status = "👥"
+            elif card['status'] == "trading":
+                status = "🔄"
+            elif card['status'] == "on_sale":
+                status = "💲"
+            elif card['status'] == "giveaway":
+                status = "🎁"
             
             RARITY_COLORS = {
                 "Regular": discord.Color.light_gray(),
@@ -2736,6 +2744,13 @@ class CardGroup(app_commands.Group):
                 status = ""
                 if card['status'] == 'equipped':
                     status = "👥"
+                elif card['status'] == "trading":
+                    status = "🔄"
+                elif card['status'] == "on_sale":
+                    status = "💲"
+                elif card['status'] == "giveaway":
+                    status = "🎁"
+            
                 
                 user_row = await conn.fetchrow("SELECT * FROM users WHERE user_id = $1", card['user_id'])    
                 propietario = f"\nAgencia: **{user_row['agency_name']}**\n> CEO: <@{card['user_id']}>"

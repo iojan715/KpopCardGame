@@ -36,7 +36,7 @@ H014,level_up,3,hard,HLV,UPGRD,2500,70
 H015,redeem_coupon,5,hard,BSC,DBRWR,2500,25
 H016,fusion,1,hard,LVL,UPGRD,5000,25
 H017,do_presentation,5,hard,HLV,UPGRD,7500,100
-H018,fusion,2,hard,HLV,CONTR,8000,45
+H018,fusion,3,hard,HLV,CONTR,8000,45
 M001,do_presentation,2,medium,BSC,MDCNT,2500,35
 M002,claim_sponsor,5,medium,SPP,DISCN,750,20
 M003,open_pack,5,medium,BSC,DISCN,1250,30
@@ -72,5 +72,4 @@ X014,view_redeemables,1,exploratory,GFT,RERLL,250,5
 X015,view_packs,1,exploratory,GFT,RERLL,250,5
 X016,view_collections,1,exploratory,GFT,RERLL,250,5
 X017,equip_card,1,exploratory,GFT,RECRT,250,5
-
 X018,view_fusion,1,exploratory,IND,RERLL,250,5

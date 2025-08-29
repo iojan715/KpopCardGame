@@ -34,6 +34,8 @@ async def create_all_tables():
     await create_trades_table()
     await create_missions_base_table()
     await create_user_missions_table()
+    await create_giveaways_table()
+    await create_giveaways_entries_table()
     await create_loop_events_table()
 
 async def create_users_table():
@@ -354,7 +356,8 @@ async def create_groups_table():
                 weekly_payment INT DEFAULT 100,
                 unpaid_weeks INT DEFAULT 0,
                 creation_date TIMESTAMPTZ DEFAULT now(),
-                comeback_motion INT DEFAULT 0
+                comeback_motion INT DEFAULT 0,
+                first_presentation BOOLEAN DEFAULT TRUE
             );
         """)
 
@@ -418,8 +421,8 @@ async def create_song_sections_table():
             );
         """)
 """
-ALTER TABLE song_sections
-ADD COLUMN lyrics TEXT NOT NULL DEFAULT '';
+ALTER TABLE table_name
+ADD COLUMN column_name TEXT NOT NULL DEFAULT '';
 """
 "help.{topic}_{page}"
 
@@ -607,6 +610,35 @@ async def create_user_missions_table():
             );
         """)
 
+async def create_giveaways_table():
+    pool = get_pool()
+    async with pool.acquire() as conn:
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS giveaways (
+                giveaway_id TEXT PRIMARY KEY,
+                guild_id BIGINT NOT NULL,
+                channel_id BIGINT NOT NULL,
+                message_id BIGINT NOT NULL,
+                host_id BIGINT NOT NULL,
+                card_id TEXT NOT NULL,
+                end_time TIMESTAMPTZ DEFAULT now(),
+                active BOOLEAN DEFAULT TRUE
+            );
+        """)
+
+async def create_giveaways_entries_table():
+    pool = get_pool()
+    async with pool.acquire() as conn:
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS giveaway_entries (
+                entry_id SERIAL PRIMARY KEY,
+                giveaway_id TEXT,
+                user_id BIGINT NOT NULL,
+                winner BOOLEAN DEFAULT FALSE,
+                UNIQUE (giveaway_id, user_id)
+            );
+        """)
+
 
 # - Loops table
 
@@ -633,7 +665,8 @@ async def create_loop_events_table():
             ('increase_payment','semanal', 0, None),
             ('remove_roles','semanal', 0, None),
             ('add_daily_mission', 'diaria', None, None),
-            ('add_weekly_mission', 'semanal', 0, None)
+            ('add_weekly_mission', 'semanal', 0, None),
+            ('giveaway_winner', 'frecuente', None, None)
         ]
 
         for event_name, tipo, dia_semana, dia_mes in eventos:

@@ -3868,6 +3868,17 @@ async def finalize_presentation(conn, presentation: dict) -> str:
                     popularity *= 2
                     double = " **(x2)**"
 
+            first_presentation = await conn.fetchval("SELECT first_presentation FROM groups WHERE group_id = $1", group_id)
+            first = ""
+            if first_presentation:
+                popularity *= 1.3
+                first = " `+30% Bonus por primera presentación semanal`"
+                await  conn.execute("UPDATE groups SET first_presentation = $1 WHERE group_id = $2", False, group_id)
+            
+            
+            popularity = int(popularity)
+            xp = int(xp)
+            
             await conn.execute(
                 "UPDATE users SET xp = xp + $1 WHERE user_id = $2",
                 xp, user_id
@@ -3888,7 +3899,7 @@ async def finalize_presentation(conn, presentation: dict) -> str:
             )
 
             return (
-                f"## 🎉 ¡`{group_name}` ha finalizado una presentación de `{song_name}`!\n**Puntuación total:** {format(total_score,',')} _(Esperado: {format(int(average_score),',')})_\n> **Popularidad ganada:** {format(popularity,',')}{double}\n> **XP obtenida:** {xp}"
+                f"## 🎉 ¡`{group_name}` ha finalizado una presentación de `{song_name}`!\n**Puntuación total:** {format(total_score,',')} _(Esperado: {format(int(average_score),',')})_\n> **Popularidad ganada:** {format(popularity,',')}{double}{first}\n> **XP obtenida:** {xp}"
             )
 
         else:
