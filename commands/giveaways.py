@@ -20,6 +20,11 @@ class GiveawaysGroup(commands.Cog):
     @app_commands.command(name="giveaway", description="Inicia un sorteo")
     @app_commands.describe(prize="ID de la carta a sortear", duration="Duración en horas")
     async def giveaway(self, interaction: discord.Interaction, prize: str, duration: int):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
         try:
             c_id, u_id = prize.split(".")
         except Exception:
@@ -43,15 +48,15 @@ class GiveawaysGroup(commands.Cog):
                 if not exist_id:
                     break
                 
-            end_time = datetime.now(timezone.utc) + timedelta(minutes=duration)
-
+            end_time = datetime.now(timezone.utc) + timedelta(hours=duration)
+            
             embed = discord.Embed(
                 title="🎉 Nuevo sorteo",
                 description=f"**Premio:** {prize}\n\nPulsa el botón para participar.",
                 color=discord.Color.gold()
             )
             embed.add_field(name="Host", value=interaction.user.mention)
-            embed.add_field(name="Duración", value=f"{duration} minutos")
+            embed.add_field(name="Finalización", value=f"<t:{int(end_time.timestamp())}:f> (±5 min)")
             embed.set_footer(text=f"{giveaway_id}")
             image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{c_id}.webp{version}"
             embed.set_thumbnail(url=image_url)
