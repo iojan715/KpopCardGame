@@ -8,6 +8,7 @@ from config import TOKEN
 from db.connection import create_pool
 from db.schema import create_all_tables
 from db.loop_events import events_loop
+from db.restore import restore_giveaways
 from keep_alive import keep_alive
 
 keep_alive()
@@ -28,7 +29,10 @@ bot = LudiBot(command_prefix="!", intents=intents)
 @bot.event
 async def on_ready():
     print(f"🟢 Bot conectado como {bot.user}")
+    
+    await restore_giveaways(bot)
     await bot.tree.sync()
+    
 
 @bot.tree.error
 async def on_app_command_error(interaction: discord.Interaction, error: discord.app_commands.AppCommandError):

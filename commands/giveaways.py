@@ -32,8 +32,8 @@ class GiveawaysGroup(commands.Cog):
         pool = await get_pool()
         if duration == 0:
             duration = 1
-        elif duration > 12:
-            duration = 12
+        elif duration > 24:
+            duration = 24
 
         async with pool.acquire() as conn:
             # buscar carta en inventario de usuario que lo inicia

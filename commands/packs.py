@@ -434,7 +434,7 @@ class PacksGroup(app_commands.Group):
     async def set_autocomplete(self, interaction: discord.Interaction, current: str):
         pool = get_pool()
         async with pool.acquire() as conn:
-            rows = await conn.fetch("SELECT * FROM packs WHERE price > 0")
+            rows = await conn.fetch("SELECT * FROM packs WHERE price > 0 ORDER BY pack_id ASC")
         return [
             app_commands.Choice(name=f"{row["name"]} (💵{row['price']}{" 👥" if row['can_group'] else ""}{" 🎁" if row['can_gift'] else ""}{" 🧩" if row['set_id'] else ""})",
                                 value=row["pack_id"])
