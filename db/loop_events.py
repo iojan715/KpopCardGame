@@ -76,6 +76,7 @@ async def reset_fcr_func():
     pool = get_pool()
     async with pool.acquire() as conn:
         await conn.execute("UPDATE users SET can_fcr = True")
+        await conn.execute("UPDATE groups SET first_presentation = True")
     logging.info("FCR reseteados")
 
 async def reducir_popularidad_func():
