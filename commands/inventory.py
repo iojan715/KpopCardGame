@@ -818,8 +818,7 @@ class RedeemButton(discord.ui.Button):
             
             view = discord.ui.View()
             for group in groups:
-                if row['redeemable_id'] not in ["EXCNT", "RERLL", "UPGRD"]:
-                    view.add_item(RedeemableGroupButton(self.row_data, self.paginator, group))
+                view.add_item(RedeemableGroupButton(row, self.paginator, group))
             
             view.add_item(BackToRedeemablesInventoryButton(self.paginator.base_query, self.paginator.query_params,self.paginator))
             
@@ -1107,6 +1106,23 @@ class ConfirmRedeemableGroupButton(discord.ui.Button):
                 desc = f"{desc_event}{desc_response}"
                 await interaction.followup.send(
                     content=desc, ephemeral=False
+                )
+            
+            elif row["redeemable_id"] == "EXCNT":
+                
+                popularity = int(self.group['popularity']) + int(self.group['permanent_popularity'])
+                
+                sponsor = base + mult*(popularity/(popularity+reduct))
+                sponsor = int(sponsor*24)
+                
+                await conn.execute(
+                    "UPDATE users SET credits = credits + $1 WHERE user_id = $2",
+                    sponsor, self.group['user_id']
+                )
+                
+                desc = f"## Has obtenido 💵 {format(sponsor,',')}"
+                await interaction.followup.send(
+                    content=desc, ephemeral=True
                 )
                 
                 

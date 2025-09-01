@@ -152,6 +152,7 @@ class SetNameButton(discord.ui.Button):
                 "Star Harmony",
                 "Peachy Pop",
                 "NANANA",
+                "LaLaLa",
                 "ReVERB",
                 "404 Stars",
                 "FirstWish",

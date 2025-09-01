@@ -219,5 +219,64 @@ _Todos los cupones pueden obtenerse (con baja probabilidad) en cualquier Pack (a
 
 ----------------------------------
 
+## 📢 Versión 1.2.4 - Nuevo contenido y mejoras (2025-08-25)
 
+### 🎶 Nuevas canciones disponibles  
+- Agregada **Into the New World** para usarse en presentaciones.  
 
+### 🃏 Nuevas cartas  
+- Se añadieron cartas **FCR** y **POB** de **Chuu**.  
+- Se añadieron cartas **FCR** y **POB** de todas las integrantes de **Loossemble**.  
+
+### ⚙️ Mejoras y correcciones  
+- 🎼 Ahora, al terminar una presentación, se muestra también el **nombre de la canción presentada**, junto con la **puntuación obtenida** y la **puntuación promedio esperada**.  
+
+----------------------------------
+
+## 📢 Versión 1.2.5 - Transferencias y cumpleaños (2025-08-26)
+
+### 💸 Nuevas funciones bancarias  
+Se agregó el comando **`/bank send_credits`** para enviar créditos a otros jugadores.  
+- Incluye una comisión del **5% FAME** (Fee for Artistic Monetary Exchange).  
+- Cada transacción aplica un **mínimo de 💵50 en FAME**, incluso si el monto enviado es menor.  
+- Si el jugador receptor tiene notificaciones activadas, recibirá un **DM automático** informándole del dinero recibido.  
+
+### 🎂 Función especial de cumpleaños  
+- Se añadió el comando **`/mod birthday`** para registrar cumpleaños.  
+- Durante agosto, quienes cumplan años favor de mencionarlo, pues podrán recibir **recompensas especiales** 👀.
+
+### ⚙️ Otros ajustes
+- Mejoras internas menores para asegurar un correcto funcionamiento de las nuevas funciones.  
+
+----------------------------------
+
+## 📢 Versión 1.2.6 - Sorteos y bonificación semanal (2025-08-27)
+
+### :tickets: Nuevo comando de sorteos
+Se agregó el comando **`/giveaways`**, inicialmente disponible solo para **moderadores y administradores**.  
+- Permite organizar **sorteos de cartas** en el servidor.  
+- Los jugadores podrán **unirse con un botón** y recibir la carta cuando termine el sorteo.  
+> :warning: Más adelante se abrirá para todos los jugadores, junto con otras opciones.
+
+### :sparkles: Bonificación semanal en presentaciones
+Al realizar una presentación con un **grupo por primera vez en la semana**, se obtiene **+30% de popularidad extra**.  
+- Cada grupo tiene disponible este **bono una vez por semana**.  
+- Incentiva a que los jugadores con varios grupos los usen activamente, en lugar de que solo generen gastos adicionales.
+
+### :gear: Otros cambios
+- Mejoras internas y ajustes de balance menores.
+
+----------------------------------
+
+## 📢 Parche 1.2.6.1 - Pequeñas mejoras y proyección semanal (2025-09-01)
+
+### 🎟️ Ticker de _Exclusive Content_
+Ahora es posible usar estos tickets para obtener dinero. Al usarlo, deberás elegir un grupo. La cantidad de dinero obtenida depende de la popularidad actual de ese grupo, _contando como 24h de sponsor únicamente con ese grupo._
+
+### ⚙️ Otros ajustes
+- Mejoras internas menores para asegurar un correcto funcionamiento de las nuevas funciones.  
+
+### Proyección a futuro
+De acuerdo a los resultados **preliminares** de la **encuesta** actual, durante la semana estaré enfocado en **agregar más grupos y canciones** nuevos. Por ello, es posible que no se agreguen nuevas mecánicas al juego en este tiempo. Sin embargo, todo lo planeado llegará eventualmente. Les agradezco muchísimo su participación durante este primer mes de juego, espero que poco a poco seamos más en esta comunidad. Sigo atento a sus comentarios, feedback, sugerencias, entre otras cosas.
+
+_Probablemente en este tiempo esté subiendo algunas imagenes de cartas a la cuenta de Insta  también jsjs_
