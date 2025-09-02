@@ -9,6 +9,7 @@ import random, string
 from commands.starter import version as v
 
 version = v
+group_rename_cost = 5000
 
 class Group(app_commands.Group):
     def __init__(self):
@@ -608,9 +609,9 @@ class GroupDetailButton(discord.ui.Button):
             view.add_item(RemoveMemberButton(self.group_id))
             view.add_item(PayGroupButton(self.group_id, disabled=disabled_payment, payment=total_payment))
             #view.add_item(StatusButton(self.group_id))
-            #view.add_item(RenameGroupButton(self.group_id))
+            view.add_item(RenameGroupButton(self.group_id))
         
-        await interaction.response.edit_message(embed=embed, view=view, attachments=[])
+        await interaction.response.edit_message(content="", embed=embed, view=view, attachments=[])
 
 # - Add member
 class AddMemberButton(discord.ui.Button):
@@ -620,7 +621,19 @@ class AddMemberButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         pool = get_pool()
+        language = await get_user_language(interaction.user.id)
         async with pool.acquire() as conn:
+            group_row = await conn.fetchrow("SELECT * FROM groups WHERE group_id = $1", self.group_id)
+            
+            if group_row['unpaid_weeks'] != 0:
+                view = discord.ui.View(timeout=120)
+                view.add_item(BackToDetailsButton(self.group_id, language))
+                return await interaction.response.edit_message(
+                    content=f"## ❌ No puedes modificar integrantes si el grupo tiene semanas de impago",
+                    embed=None,
+                    view=view
+                )
+            
             records = await conn.fetch(
                 "SELECT DISTINCT group_name FROM idol_group ORDER BY group_name"
             )
@@ -863,10 +876,20 @@ class RemoveMemberButton(discord.ui.Button):
         
     async def callback(self, interaction):
         user_id = interaction.user.id
-        language = await get_user_language(user_id)
-
+        language = await get_user_language(interaction.user.id)
         pool = get_pool()
         async with pool.acquire() as conn:
+            group_row = await conn.fetchrow("SELECT * FROM groups WHERE group_id = $1", self.group_id)
+            
+            if group_row['unpaid_weeks'] != 0:
+                view = discord.ui.View(timeout=120)
+                view.add_item(BackToDetailsButton(self.group_id, language))
+                return await interaction.response.edit_message(
+                    content=f"## ❌ No puedes modificar integrantes si el grupo tiene semanas de impago",
+                    embed=None,
+                    view=view
+                )
+                
             group_members = await conn.fetch(
                 "SELECT idol_id FROM groups_members WHERE group_id = $1 ORDER BY idol_id",
                 self.group_id
@@ -983,7 +1006,133 @@ class RenameGroupButton(discord.ui.Button):
         self.group_id = group_id
 
     async def callback(self, interaction):
-        await interaction.response.send_message("⚙️ Renombrar grupo (pendiente)", ephemeral=True)
+        pool=get_pool()
+        async with pool.acquire() as conn:
+            
+            def normalize(name):
+                return name.lower().replace(" ", "") if name else ""
+
+            # Umbral de similitud (0.9 = 90%)
+            SIMILARITY_THRESHOLD = 0.9
+            
+            groups = await conn.fetch("SELECT name FROM groups")
+            group_list = [
+                "Star Harmony",
+                "Peachy Pop",
+                "NANANA",
+                "LaLaLa",
+                "ReVERB",
+                "404 Stars",
+                "FirstWish",
+                "Honeybeat",
+                "Lovewave",
+                "PRiSM",
+                "Cherry Wish",
+                "Mint Crush",
+                "NovaX",
+                "BloomX",
+                "Youniverse",
+                "Pinkrush",
+                "RedMoon",
+                "ITZME",
+                "OrbitGirls",
+                "Starline",
+                "Fearless",
+                "NewGenZ",
+                "Starlight",
+                "Kizmi",
+                "Dream Kiss",
+                "Cherry Beat",
+                "Rocket Love",
+                "Moonie Pop",
+                "Sugar Light"
+            ]
+            used_names = [normalize(row["name"]) for row in groups if row["name"]]
+
+            # Filtrar los nombres de ejemplo que sean distintos y no demasiado parecidos
+            filtered_list = [
+                name for name in group_list
+                if name and all(
+                    difflib.SequenceMatcher(None, normalize(name), used).ratio() < SIMILARITY_THRESHOLD
+                    for used in used_names
+                )
+            ]
+
+            # Elegir uno al azar si quedan
+            if filtered_list:
+                group_name = random.choice(filtered_list)
+            else:
+                group_name = "Star Harmony"
+        
+        await interaction.response.send_modal(SetGroupNameModal(self.group_id, group_name))
+
+class SetGroupNameModal(discord.ui.Modal, title="Change name"):
+    def __init__(self, group_id, group_name):
+        super().__init__()
+        self.group_id = group_id
+        self.name_input = discord.ui.TextInput(label="New name:", placeholder=f"Ej: {group_name}", min_length=1, max_length=30)
+        self.add_item(self.name_input)
+        
+
+    async def on_submit(self, interaction: discord.Interaction):
+        new_name = self.name_input.value.strip()
+        pool = get_pool()
+        
+        async with pool.acquire() as conn:
+            group = await conn.fetchrow("SELECT * FROM groups WHERE group_id = $1", self.group_id)
+        
+        if new_name == group["name"]:
+            await interaction.response.edit_message(content="⚠️ El nombre es igual al actual.", view=None)
+            return
+
+        confirm_view = ConfirmGroupNameView(group["group_id"], new_name)
+        embed=discord.Embed(
+                description=f"¿Confirmas cambiar el nombre a **{new_name}**?\n⚠️ Esto borrará la popularidad permanente.\n> **Costo:** 💵5000",
+                color=discord.Color.orange()
+            )
+        await interaction.response.edit_message(
+            embed=embed,
+            view=confirm_view
+        )
+
+class ConfirmGroupNameButton(discord.ui.Button):
+    def __init__(self, group_id, new_name):
+        super().__init__(label=f"", emoji="✅", style=discord.ButtonStyle.primary)
+        self.group_id = group_id
+        self.new_name = new_name
+        
+    async def callback(self, interaction: discord.Interaction):
+        pool = get_pool()
+        language = await get_user_language(interaction.user.id)
+        user_id = interaction.user.id
+        cost = group_rename_cost
+        
+        async with pool.acquire() as conn:
+            await conn.execute("UPDATE users SET credits = credits - $1 WHERE user_id = $2", cost, user_id)
+            
+            await conn.execute("UPDATE groups SET name = $1, permanent_popularity = 0 WHERE group_id = $2", self.new_name, self.group_id)
+            
+            rows = await conn.fetch("""
+                SELECT group_id, name, popularity, permanent_popularity, status, unpaid_weeks, user_id,
+                    (SELECT COUNT(*) FROM groups_members WHERE group_id = g.group_id) AS member_count
+                FROM groups g
+                WHERE user_id = $1
+                ORDER BY creation_date DESC
+            """, user_id)
+        
+        button = GroupDetailButton(
+            group_id=self.group_id,
+            user_id=user_id,
+            group_name="",
+            paginator=GroupPaginator(rows, interaction=interaction, language=language),
+            language=language
+        )
+        await button.callback(interaction)
+    
+class ConfirmGroupNameView(discord.ui.View):
+    def __init__(self, group_id, new_name):
+        super().__init__(timeout=None)
+        self.add_item(ConfirmGroupNameButton(group_id, new_name))    
 
 # - Pay group
 class PayGroupButton(discord.ui.Button):
@@ -1472,38 +1621,7 @@ class CancelButtonStatus(discord.ui.Button):
         await regenerate_group_view(interaction, self.parent.group["group_id"], language, self.parent.paginator)
         
 # -
-class ChangeNameButton(discord.ui.Button):
-    def __init__(self, group, paginator):
-        super().__init__(label="📝", style=discord.ButtonStyle.secondary)
-        self.group = group
-        self.paginator = paginator
 
-    async def callback(self, interaction: discord.Interaction):
-        await interaction.response.send_modal(ChangeNameModal(self.group, self.paginator))
-
-class ChangeNameModal(discord.ui.Modal, title="Change group name"):
-    def __init__(self, group, paginator):
-        super().__init__()
-        self.group = group
-        self.paginator = paginator
-        self.name_input = discord.ui.TextInput(label="Nuevo nombre", min_length=2, max_length=30, placeholder="Ej: Moonlight Girls")
-        self.add_item(self.name_input)
-
-    async def on_submit(self, interaction: discord.Interaction):
-        new_name = self.name_input.value.strip()
-
-        if new_name == self.group["name"]:
-            await interaction.response.edit_message(content="⚠️ El nombre es igual al actual.", view=None)
-            return
-
-        confirm_view = ConfirmNameChangeView(self.group, new_name, self.paginator)
-        await interaction.response.edit_message(
-            embed=discord.Embed(
-                description=f"¿Confirmas cambiar el nombre a **{new_name}**?\n⚠️ Esto borrará la popularidad permanente.\n> **Costo:** 💵5000",
-                color=discord.Color.orange()
-            ),
-            view=confirm_view
-        )
 
 class ConfirmNameChangeView(discord.ui.View):
     def __init__(self, group, new_name, paginator):

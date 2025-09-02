@@ -10,7 +10,7 @@ RNFRC08,Duet Entry,reinforcement,duet,,1,,,60,150
 RNFRC09,High Note Entry,reinforcement,high_note,,1,,,35,150
 RNFRC10,Dance Backup,reinforcement,backup_dance,,1,,,40,150
 RNFRC11,Adlib Support,reinforcement,adlib,,1,,,35,150
-RNFRC12,Group Dance,reinforcement,group_dance,,1,,,45,150
+RNFRC12,Group Dance,reinforcement,group_dance,,1,,,50,150
 RNFRC13,Cheering Partners,reinforcement,cheering,,1,,,35,150
 RNFRC14,Harmony Layer,reinforcement,harmony,,1,,,35,150
 RNFRC15,Pose Sync Entry,reinforcement,pose_sync,,1,,,35,150

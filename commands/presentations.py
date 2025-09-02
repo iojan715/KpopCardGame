@@ -19,7 +19,8 @@ class PresentationGroup(app_commands.Group):
         super().__init__(name="presentation", description="Crear y gestionar presentaciones")
 
     @app_commands.command(name="list", description="Listar tus presentaciones")
-    async def list_presentations(self, interaction: discord.Interaction):
+    @app_commands.describe(agency="Agencia")
+    async def list_presentations(self, interaction: discord.Interaction, agency: str = None):
         if interaction.guild is None:
             return await interaction.response.send_message(
                 "❌ Este comando solo está disponible en servidores.", 
@@ -33,9 +34,13 @@ class PresentationGroup(app_commands.Group):
                 SELECT *
                 FROM presentations
                 WHERE user_id = $1
-                ORDER BY presentation_date DESC
                 """
         async with pool.acquire() as conn:
+            if agency:
+                user_id = await conn.fetchval("SELECT user_id FROM users WHERE agency_name = $1", agency)
+                base_query += " AND status = 'completed'"
+            
+            base_query += " ORDER BY presentation_date DESC"
             rows = await conn.fetch(
                 base_query,
                 user_id
@@ -88,6 +93,15 @@ class PresentationGroup(app_commands.Group):
         )
         await paginator.start()
 
+    @list_presentations.autocomplete("agency")
+    async def agency_autocomplete(self, interaction: discord.Interaction, current: str):
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("SELECT agency_name FROM users ORDER BY register_date DESC")
+        return [
+            app_commands.Choice(name=f"{row['agency_name']}", value=row['agency_name'])
+            for row in rows if current.lower() in f"{row['agency_name'].lower()}"
+        ][:25]
 
     PRESENTATION_CHOICES = [
         app_commands.Choice(name="Live", value="live"),
