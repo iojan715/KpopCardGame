@@ -1,7 +1,7 @@
 pcard_id,name,type,effect,duration,cooldown,match,match_value,weight,value
 RNFRC01,Solo Recovery,reinforcement,solo_recovery,,1,,,45,150
 RNFRC02,Group Recovery,reinforcement,group_recovery,,1,,,35,150
-RNFRC03,Cooldown Cut,reinforcement,cooldown_cut,,1,,,30,150
+RNFRC03,Cooldown Cut,reinforcement,cooldown_cut,,1,,,20,150
 RNFRC04,Lead Switch,reinforcement,lead_switch,,1,,,40,150
 RNFRC05,Clean Exit,reinforcement,clean_exit,,1,,,0,150
 RNFRC06,Quick Entry,reinforcement,quick_entry,,1,,,0,150
@@ -16,18 +16,18 @@ RNFRC14,Harmony Layer,reinforcement,harmony,,1,,,35,150
 RNFRC15,Pose Sync Entry,reinforcement,pose_sync,,1,,,35,150
 RNFRC16,Rap Backup,reinforcement,backup_rap,,1,,,35,150
 STAGE01,Confetti Rain,stage,confetti_rain,4,1,,,18,250
-STAGE02,Flame Cannon,stage,flame_cannon,2,1,,,20,250
+STAGE02,Flame Cannon,stage,flame_cannon,3,1,,,20,250
 STAGE03,Gentle Breeze,stage,gentle_breeze,3,1,,,19,250
-STAGE04,Multicolor Lights,stage,multicolor_lights,2,1,,,19,250
-STAGE05,Spotlight Beam,stage,spotlight_beam,2,1,,,20,250
+STAGE04,Multicolor Lights,stage,multicolor_lights,3,1,,,19,250
+STAGE05,Spotlight Beam,stage,spotlight_beam,3,1,,,20,250
 STAGE06,Max Volume,stage,max_volume,3,1,,,19,250
-STAGE07,Neon Pulse,stage,neon_pulse,3,1,,,19,250
+STAGE07,Neon Pulse,stage,neon_pulse,4,1,,,19,250
 STAGE08,Starlight Shower,stage,starlight_shower,3,1,,,18,250
-STAGE09,Smoke Burst,stage,smoke_burst,3,1,,,18,250
+STAGE09,Smoke Burst,stage,smoke_burst,4,1,,,18,250
 STAGE10,Midnight Echo,stage,midnight_echo,3,1,,,18,250
 STAGE11,Rhythm Sparks,stage,rhythm_sparks,3,1,,,18,250
 STAGE12,Mirror Spin,stage,mirror_spin,3,1,,,18,250
 STAGE13,Crystal Fade,stage,crystal_fade,3,1,,,18,250
 STAGE14,Galaxy Trail,stage,galaxy_trail,3,1,,,18,250
-STAGE15,Stage Link,stage,stage_link,2,1,,,18,250
+STAGE15,Stage Link,stage,stage_link,3,1,,,18,250
 STAGE16,Ocean Wave,stage,ocean_wave,5,1,,,18,250
