@@ -60,7 +60,7 @@ class GiveawaysGroup(commands.Cog):
             )
             embed.add_field(name="Host", value=interaction.user.mention)
             embed.add_field(name="Finalización", value=f"<t:{int(end_time.timestamp())}:f> (±5 min)")
-            embed.set_footer(text=f"`{giveaway_id}`")
+            embed.set_footer(text=f"{giveaway_id}")
             image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{c_id}.webp{version}"
             embed.set_thumbnail(url=image_url)
 

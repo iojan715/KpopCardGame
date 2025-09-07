@@ -1095,8 +1095,11 @@ class ConfirmRedeemableGroupButton(discord.ui.Button):
                 extra_pop = random.randint(1,15)
                 event_num = random.randint(1,14)
                 
+                idol_id = await conn.fetchval("SELECT idol_id FROM groups_members WHERE group_id = $1 ORDER BY RANDOM() LIMIT 1", self.group['group_id'])
+                idol_name = await conn.fetchval("SELECT name FROM idol_base WHERE idol_id = $1", idol_id)
+                
                 desc_response = get_translation(language, f"media_content.response_{extra_pop}", extra_pop=extra_pop)
-                desc_event = get_translation(language, f"media_content.event_{event_num}", idol_name="Alguien", group_name=self.group['name'])
+                desc_event = get_translation(language, f"media_content.event_{event_num}", idol_name=idol_name, group_name=self.group['name'])
                 
                 await conn.execute(
                     "UPDATE groups SET permanent_popularity = permanent_popularity + $1 WHERE group_id = $2",

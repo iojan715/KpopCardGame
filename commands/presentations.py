@@ -2767,7 +2767,18 @@ async def apply_ultimate_skill_if_applicable(conn, idol_row, section_row, presen
         else:
             bonus = apply_func(params)
     else:
-        return {}            
+        return {} 
+    
+    # -----------------------
+    # Costos de energía
+    # -----------------------
+    cost_type = skill["cost_type"]
+    energy_cost = skill["energy_cost"]
+
+    if cost_type == "relative":
+        bonus["relative_cost"] = energy_cost
+    elif cost_type == "fixed":
+        bonus["extra_cost"] = energy_cost         
 
     return bonus
 
