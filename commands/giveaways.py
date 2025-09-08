@@ -61,7 +61,7 @@ class GiveawaysGroup(commands.Cog):
             embed.add_field(name=f"**Premio:**", value=prize, inline=False)
             embed.add_field(name="Host", value=interaction.user.mention, inline=False)
             embed.add_field(name="Finalización", value=f"<t:{int(end_time.timestamp())}:f> (±5 min)", inline=False)
-            embed.set_footer(text=f"Pulsa el botón para participar\n{giveaway_id}")
+            embed.set_footer(text=f"Pulsa el botón para participar\nID: {giveaway_id}")
             image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{c_id}.webp{version}"
             embed.set_thumbnail(url=image_url)
 

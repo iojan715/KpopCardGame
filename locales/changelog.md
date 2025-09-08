@@ -280,3 +280,148 @@ Ahora es posible usar estos tickets para obtener dinero. Al usarlo, deberás ele
 De acuerdo a los resultados **preliminares** de la **encuesta** actual, durante la semana estaré enfocado en **agregar más grupos y canciones** nuevos. Por ello, es posible que no se agreguen nuevas mecánicas al juego en este tiempo. Sin embargo, todo lo planeado llegará eventualmente. Les agradezco muchísimo su participación durante este primer mes de juego, espero que poco a poco seamos más en esta comunidad. Sigo atento a sus comentarios, feedback, sugerencias, entre otras cosas.
 
 _Probablemente en este tiempo esté subiendo algunas imagenes de cartas a la cuenta de Insta  también jsjs_
+
+----------------------------------
+
+## 📢 Versión 1.2.6.2 - Cambios de gestión, ajustes y vistas públicas (2025-09-01)
+
+### 🏷️ Renombrar grupos (nueva función)
+- Se añadió la opción para **cambiar el nombre de un grupo** desde la gestión del mismo.  
+- **Costo:** 💵 **5000** por cambio.  
+- **Advertencia importante:** Al renombrar un grupo se **elimina toda la popularidad permanente** acumulada para ese grupo. (Hazlo con cuidado.)
+
+### 🔒 Bloqueo de cambios de idols si hay deudas
+- Los botones de **agregar/quitar idols** en un grupo **quedan deshabilitados** si la agencia tiene **pagos semanales pendientes** con ese grupo.  
+- Esto evita exploits donde un jugador remueve idols, paga solo a algunos y vuelve a agregarlos para evadir pagos completos.
+
+### 🃏 Ajustes en contenido y recompensas
+- Se agregaron **insignias faltantes** a sets que ya estaban completos.  
+- Se **ajustaron varias misiones** que resultaban excesivamente fáciles (especialmente las relacionadas con abrir Packs). _Éstas se verán reflejadas al reiniciar misiones nuevamente_.  
+- Se corrigieron descripciones de habilidades que mostraban efectos incorrectos respecto a su comportamiento real.  
+- Se revisaron y **ajustaron las recompensas por niveles** para mejorar la progresión de los jugadores.  
+- Se modificaron las **probabilidades de obtención de Performance Cards** para reducir la aparición de cartas poco utilizadas y mejorar la relevancia de los drops.
+
+### 👀 Presentaciones públicas
+- Se añadió la opción de **ver presentaciones completadas de otros jugadores** con el comando `/presentation list`.
+  - Solo se muestran presentaciones **completadas**.  
+  - No es posible ver presentaciones en creación, expiradas o no publicadas de terceros.
+
+### ⚙️ Otros arreglos
+- Mejoras internas y correcciones menores enfocadas en estabilidad y claridad de textos.  
+- _Si detectas algún comportamiento inesperado o textos que sigan sin coincidir con la mecánica, por favor repórtalo para poder corregirlo rápido._
+
+----------------------------------
+
+## 📢 Versión 1.2.7 - Ajustes breves y preparación para nuevos grupos (2025-09-03)
+
+### 💸 Economía
+Se han agregado nuevos objetos, obtenibles en cualquier tipo de packs que lo permita (al igual que los que ya existen):
+- 5 Accesorios
+- 9 Consumibles
+- 5 Outfits
+- 2 Micrófonos
+
+### 🎮 Cambios en gameplay / balance
+- :PassiveSkill: Encore Spirit ahora se activa al tener menos de 65% de energía restante, antes 55%
+- :PassiveSkill: Blinding Lights ahora se activa al llegar a 85 de Hype, antes 90
+- Se ha incrementado la duración de las **Performance Card** tipo `Stage`: _Flame Cannon_, _Multicolor Lights_, _Spotlight Beam_ y _Stage Link_, de 2 a 3, y de _Neon Pulse_ y _Smoke Burst_ de 3 a 4. 
+
+### 🃏 Cartas, idols y colecciones
+- Se han agregado las integrantes de **Twice** y **BlackPink** para su selección en grupos.
+
+### 🛠️ Correcciones y mejoras
+- Se ha cambiado el tipo de costo de energia de la habilidad **One More Time** a `relative` con valor `0` para que no consuma energía al usarse tal como dice su descripción.
+
+_Un parche pequeño pero que va dejando listo el terreno para los nuevos grupos y próximos contenidos. ¡Gracias por seguir participando y probando el juego cada día!_ :sparkles:
+
+----------------------------------
+
+## 📢 Versión 1.2.7.1 - Parche breves y avance de nuevos grupos (2025-09-05)
+
+### 🛠️ Correcciones y mejoras
+- Ahora al usar un cupón de `Media Content`, algunas veces se elige el nombre de alguna integrante del grupo elegido para que _"realice la acción"_.
+- Se han corregido errores menores con la interfaz de los Giveaways _(simbolos que no debian aparecer en el código del sorteo)_.
+
+### 🔮 Avance de próximos contenidos
+Se han terminado de crear completamente 2 sets de cartas de nuevos grupos, que estarán disponibles en la actualización de inicios de la próxima semana. Se espera poder finalizar al menos otro set adicional antes de ese momento. 
+
+📌 En esa misma actualización también llegará **Aespa**, con su FanClub y cartas POB. 
+
+----------------------------------
+
+## 📢 Versión 1.2.7.2 - Parche breve (2025-09-07)
+
+### 🛠️ Correcciones y mejoras
+- Ahora es posible seleccionar desde celular el ID de la carta premio de un Giveaway, solo manteniendo presionado el mismo. Esto para dar accesibilidad a los jugadores de ver la carta premio usando `/cards view` con el ID de la carta que se entregará.
+- Se ha arreglado un bug que negaba cualquier cálculo de energía de habilidades tipo **Ultimate** durante las presentaciones. `Esto provocaba que habilidades como _Hyper Rest_, _One More Time_ o _Inverse Vitality_ no negaran (o restaran) el consumo de energía, pero habilidades como _Last Breath_, _Solo Glory_ o _Final Statement_ tampoco lo aumentaban.`
+
+_Sigo trabajando para que salgan los nuevos grupos en la próxima actualización del domingo/lunes_
+
+----------------------------------
+
+## 📢 Versión 1.2.8 - [Título breve del parche] (AAAA-MM-DD) 
+
+### 🃏 Cartas, idols y colecciones
+Se han agregado los sets completos, incluyendo la posibilidad de unirse a los FanClubs, de los siguientes grupos:
+- **Twice:** _This is For_
+- **BlackPink:** _Jump_
+- **Babymonster:** _Drip_
+> Se han agregado las cartas `POB` y `FCR` del grupo **Aespa** del set `Armageddon`.
+
+### ✨ Nuevas funciones
+- Nuevo comando `/cards search`, que permite buscar por ID si alguna agencia tiene una carta específica. Esto puede servir para saber si otro jugador tiene una carta que necesitas, sin necesidad de buscar entre los inventarios uno por uno.
+
+
+### 🎮 Balance de habilidades de Hype
+- :UltimateSkill: **Audience Bond**: Aumento de Hype obtenido elevado de **x2.5** a **x3**
+- :UltimateSkill: **Hype Overflow**: Aumento de Hype obtenido elevado de **x1.5** a **x2**
+- :ActiveSkill: **Center Vibes**: Aumento de Hype obtenido elevado de **x1.1** a **x1.3**
+- :ActiveSkill: **Charming Wink**: Aumento de Hype obtenido elevado de **x1.3** a **x1.5**
+- :ActiveSkill: **Encore Push**: Aumento de Hype obtenido elevado de **x1.1** a **x1.2**
+- :PassiveSkill: **Peak Fit**: Aumento de Hype obtenido elevado de **x1.1** a **x1.2**
+
+✍️ _Notas del dev_  
+> Este parche se centra en poner al día el contenido de cartas y ajustar algunas habilidades para que tengan un impacto más notorio en las presentaciones. ¡Gracias por seguir apoyando el proyecto y divirtiéndose con él! 🚀
+
+----------------------------------
+`plantilla`
+
+## 📢 Versión X.Y.Z - [Título breve del parche] (AAAA-MM-DD)
+
+### ✨ Nuevas funciones
+- [Función 1] → [Breve descripción].  
+- [Función 2] → [Breve descripción].  
+
+### 🎮 Cambios en gameplay / balance
+- [Cambio 1] → de **X** a **Y**.  
+- [Cambio 2] → ahora [nueva mecánica o ajuste].  
+- [Cambio 3] → [buff/nerf de habilidad, ítem, stat, etc.].  
+
+### 🏷️ Misiones y recompensas
+- [Cambio en misiones: ajustes de dificultad, ejemplos].  
+- [Cambio en recompensas: XP, créditos, drops].  
+
+### 🃏 Cartas, idols y colecciones
+- [Cambio en sets/cartas: nuevas insignias, fusiones, probabilidades, etc.].  
+- [Corrección en stats, habilidades o descripciones].  
+
+### 👀 Presentaciones y conciertos
+- [Cambio 1: presentaciones públicas, ajustes en popularidad, etc.].  
+- [Cambio 2: balance en conciertos, pagos, tiempos].  
+
+### 💸 Economía
+- [Cambio en packs, banco, impuestos, drop rates, etc.].  
+- [XP o recompensas adicionales vinculadas a transacciones].  
+
+### 🛠️ Correcciones y mejoras
+- [Bugfix 1] → descripción breve.  
+- [Bugfix 2] → descripción breve.  
+- Mejoras internas para estabilidad / rendimiento / textos.  
+
+
+✍️ _Notas del dev (opcional)_  
+[Breve mensaje personal sobre foco de este parche, próximos pasos, agradecimientos].
+
+
+
+

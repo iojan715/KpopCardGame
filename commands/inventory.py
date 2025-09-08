@@ -3321,6 +3321,97 @@ class CardGroup(app_commands.Group):
 
             await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
+    @app_commands.command(name="search", description="Buscar agencias que tengan una carta específica")
+    @app_commands.describe(
+        card_id="ID de la carta a buscar"
+    )
+    async def search_card(
+        self,
+        interaction: discord.Interaction,
+        card_id: str
+    ):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
+        language = await get_user_language(interaction.user.id)
+        pool = get_pool()
+        guild = interaction.guild
+
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("""
+                SELECT * FROM user_idol_cards
+                WHERE card_id = $1
+            """, card_id)
+            base_card_data = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", card_id)
+            rarity=""
+            if base_card_data['rarity'] == "Regular":
+                rarity = f"{base_card_data['rarity']} {base_card_data['rarity_id'][1]} - Lvl.{base_card_data['rarity_id'][2]}"
+            else:
+                rarity = f"{base_card_data['rarity']}"
+
+            if not rows:
+                return await interaction.response.send_message("❌ No se encontró ninguna carta de este tipo", ephemeral=True)
+
+            embeds = []
+            
+            for card in rows:
+                
+                status = ""
+                if card['status'] == 'equipped':
+                    status = "👥"
+                elif card['status'] == "trading":
+                    status = "🔄"
+                elif card['status'] == "on_sale":
+                    status = "💲"
+                elif card['status'] == "giveaway":
+                    status = "🎁"
+                
+                if card['is_locked']:
+                    status += "🔐"
+            
+                
+                user_row = await conn.fetchrow("SELECT * FROM users WHERE user_id = $1", card['user_id'])    
+                propietario = f"\nAgencia: **{user_row['agency_name']}**"
+                
+                RARITY_COLORS = {
+                    "Regular": discord.Color.light_gray(),
+                    "Special": discord.Color.purple(),
+                    "Limited": discord.Color.yellow(),
+                    "FCR": discord.Color.orange(),
+                    "POB": discord.Color.blue(),
+                    "Legacy": discord.Color.dark_purple(),
+                }
+                embed_color = RARITY_COLORS.get(base_card_data['rarity'], discord.Color.default())
+                
+                skills = ""
+                if card['p_skill']:
+                    skills += f"{get_emoji(guild, "PassiveSkill")}"
+                if card['a_skill']:
+                    skills += f"{get_emoji(guild, "ActiveSkill")}"
+                if card['s_skill']:
+                    skills += f"{get_emoji(guild, "SupportSkill")}"
+                if card['u_skill']:
+                    skills += f"{get_emoji(guild, "UltimateSkill")}"
+                    
+                embed = discord.Embed(
+                    title=f"{skills} {base_card_data['idol_name']} - _{base_card_data['group_name']}_ {status}",
+                    description=f"{base_card_data['set_name']} `{rarity}`{propietario}",
+                    color=embed_color
+                )
+                
+                
+                
+                
+                
+                embed.set_footer(text=f"{card["card_id"]}.{card['unique_id']}")
+                embeds.append(embed)
+
+        paginator = Paginator(embeds)
+        await paginator.start(interaction)
+
+
 # refund
 class ConfirmRefundView(discord.ui.View):
     def __init__(self, user_id, unique_id, refund, xp, item_type):
