@@ -1,6 +1,6 @@
 redeemable_id,name,type,effect,weight
 ORGAN,Organizer,boost,,0
-EXCNT,Exclusive Content,effect,group,0
+EXCNT,Exclusive Content,effect,group,50
 MRCHB,Merchant Boost,boost,,0
 CONTR,Contract,redeem,ALL,1
 TCONT,Tactical Contract,effect,,2

@@ -852,7 +852,7 @@ class ConfirmRedeemableButton(discord.ui.Button):
         language = await get_user_language(interaction.user.id)
         pool = get_pool()
         
-        if row['type'] == "boost" and row['redeemable_id'] not in ["ORGAN", "REHRS"]:
+        if row['type'] == "boost" and row['redeemable_id'] not in ["ORGAN"]:
             async with pool.acquire() as conn:
                 await conn.execute("""
                     UPDATE user_missions um
@@ -3322,9 +3322,7 @@ class CardGroup(app_commands.Group):
             await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
     @app_commands.command(name="search", description="Buscar agencias que tengan una carta específica")
-    @app_commands.describe(
-        card_id="ID de la carta a buscar"
-    )
+    @app_commands.describe(card_id="ID de la carta a buscar")
     async def search_card(
         self,
         interaction: discord.Interaction,

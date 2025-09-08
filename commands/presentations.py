@@ -142,6 +142,7 @@ class PresentationGroup(app_commands.Group):
             already_first = await conn.fetchval("SELECT 1 FROM presentations WHERE user_id = $1", user_id)
             
             disc_invitation = await conn.fetchval("SELECT amount FROM user_boosts WHERE user_id = $1 AND boost = 'INVIT'", user_id)
+            disc_rehearsal = await conn.fetchval("SELECT amount FROM user_boosts WHERE user_id = $1 AND boost = 'REHRS'", user_id)
             if disc_invitation and ptype == "live" and already_first:
                 if disc_invitation >= 1:
                     active_discount = True
@@ -150,6 +151,11 @@ class PresentationGroup(app_commands.Group):
             if not already_first:
                 cost = 0
                 cost_desc = "Primera Gratis"
+            if disc_rehearsal and ptype == "practice" and already_first:
+                if disc_rehearsal >= 1:
+                    active_discount = True
+                    cost_desc = "GRATIS"
+                    cost = 0
                 
         if not user_data or user_data["credits"] < cost:
             print(cost)
@@ -704,7 +710,11 @@ class ConfirmCreatePresentationView(discord.ui.View):
                 if disc_invitation >= 1:
                     cost = 0
                     await conn.execute("UPDATE user_boosts SET amount = amount - 1 WHERE user_id = $1 AND boost = 'INVIT'", self.user_id)
-            
+            elif self.active_discount and self.presentation_type == "practice":
+                disc_rehearsal = await conn.fetchval("SELECT amount FROM user_boosts WHERE user_id = $1 AND boost = 'REHRS'", self.user_id)
+                if disc_rehearsal >= 1:
+                    cost = 0
+                    await conn.execute("UPDATE user_boosts SET amount = amount - 1 WHERE user_id = $1 AND boost = 'REHRS'", self.user_id)
             
             await conn.execute("""
                 INSERT INTO presentations (presentation_id, owner_id, user_id, presentation_type)
