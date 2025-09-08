@@ -1219,6 +1219,10 @@ class ConfirmPayWeeksButton(discord.ui.Button):
         user_id = interaction.user.id
         
         async with pool.acquire() as conn:
+            current_credits = await conn.fetchval("SELECT credits FROM users WHERE user_id = $1", user_id)
+            if current_credits < self.cost:
+                return await interaction.response.edit_message(content="## ❌ No tienes suficientes creditos para pagar")
+            
             await conn.execute("UPDATE users SET credits = credits - $1 WHERE user_id = $2", self.cost, user_id)
             
             await conn.execute("UPDATE groups SET unpaid_weeks = unpaid_weeks - $1 WHERE group_id = $2", self.weeks_to_pay, self.group_id)
