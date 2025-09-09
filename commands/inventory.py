@@ -546,19 +546,72 @@ class InventoryGroup(app_commands.Group):
     @app_commands.command(name="badges", description="Ver tus insignias")
     @app_commands.describe(agency="Agency")
     async def badges(self, interaction: discord.Interaction, agency:str = None):
-        await interaction.response.defer(ephemeral=True)
         if interaction.guild is None:
-            return await interaction.edit_original_response(
-                content="❌ Este comando solo está disponible en servidores."
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
             )
-        await self.display_simple_inventory(
-            interaction,
-            agency=agency,
-            table="user_badges",
-            id_field="badge_id",
-            quantity_field=None,
-            order_by="date_obtained"
+        user_id = interaction.user.id
+        pool = get_pool()
+        language = await get_user_language(user_id)
+
+        if agency:
+            async with pool.acquire() as conn:
+                user_id = await conn.fetchval("SELECT user_id FROM users WHERE agency_name = $1", agency)
+        
+        # Construcción dinámica del query
+        query = """
+            SELECT u.*, b.*
+            FROM user_badges u
+            JOIN badges b ON u.badge_id = b.badge_id
+            WHERE u.user_id = $1
+        """
+        params = [user_id]
+        idx = 2
+        
+        order_column = "u.date_obtained"
+        order_direction = None
+        
+        if order_column:
+            if order_column == "b.name" and not order_direction:
+                order_direction = "ASC"
+        
+        if not order_direction:
+            order_direction = "DESC"
+        
+        valid_columns = {"u.date_obtained": "u.date_obtained"}
+        order_clause = f" ORDER BY {valid_columns.get(order_column, 'u.date_obtained')} {order_direction}"
+        query += order_clause
+        
+        async with pool.acquire() as conn:
+            
+            rows = await conn.fetch(query, *params)
+            
+        if not rows:
+            await interaction.response.send_message("## No tienes insignias por ahora.", ephemeral=True)
+            return
+        
+        embeds = await generate_badges_embeds(rows, pool, interaction)
+        
+        paginator = BadgesInventoryEmbedPaginator(
+            embeds=embeds,
+            rows=rows,
+            interaction=interaction,
+            base_query=query,
+            query_params=tuple(params),
+            embeds_per_page=5
         )
+        await paginator.start()
+
+    @badges.autocomplete("agency")
+    async def agency_autocomplete(self, interaction: discord.Interaction, current: str):
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("SELECT agency_name FROM users ORDER BY register_date DESC")
+        return [
+            app_commands.Choice(name=f"{row['agency_name']}", value=row['agency_name'])
+            for row in rows if current.lower() in f"{row['agency_name'].lower()}"
+        ][:25]
 
     async def display_simple_inventory(self, interaction: discord.Interaction, agency, table, id_field, quantity_field, order_by):
         user_id = interaction.user.id
@@ -1198,6 +1251,233 @@ class BackToRedeemablesInventoryButton(discord.ui.Button):
         
         await new_paginator.restart(interaction, False)
 
+
+# badges
+async def generate_badges_embeds(rows: list[dict], pool, interaction) -> list[discord.Embed]:
+    embeds: list[discord.Embed] = []
+    language = await get_user_language(interaction.user.id)
+    
+    for row in rows:
+        is_selected = ""
+        if row['is_selected']:
+            is_selected = "✅ "
+        
+        embed = discord.Embed(
+            title=f"{is_selected}{row['name']}",
+            description=f"",
+            color=discord.Color.teal()
+        )
+
+        image_url = (
+            f"https://res.cloudinary.com/dyvgkntvd/image/upload/"
+            f"f_webp,d_no_image.jpg/{row['badge_id']}.webp{version}"
+        )
+        #embed.set_thumbnail(url=image_url)
+
+        embeds.append(embed)
+
+    return embeds
+
+class BadgesInventoryEmbedPaginator:
+    def __init__(
+        self,
+        embeds: list[discord.Embed],
+        rows: list[dict],
+        interaction: discord.Interaction,
+        base_query: str,
+        query_params: tuple,
+        embeds_per_page: int = 5
+    ):
+        self.all_embeds = embeds
+        self.all_rows = rows
+        self.interaction = interaction
+        self.embeds_per_page = embeds_per_page
+        self.current_page = 0
+        self.total_pages = (len(embeds) + embeds_per_page - 1) // embeds_per_page
+        self.current_page_embeds: list[discord.Embed] = []
+
+        self.base_query = base_query
+        self.query_params = query_params
+
+    def get_page_embeds(self):
+        start = self.current_page * self.embeds_per_page
+        end = start + self.embeds_per_page
+        page = self.all_embeds[start:end]
+        footer = discord.Embed(
+            description=f"**Página** {self.current_page+1}/{self.total_pages}",
+            color=discord.Color.dark_gray()
+        )
+        return [footer] + page
+
+    def get_view(self):
+        view = discord.ui.View(timeout=120)
+        start = self.current_page * self.embeds_per_page
+        end = start + self.embeds_per_page
+        rows_this_page = self.all_rows[start:end]
+
+        for row in rows_this_page:
+            if row['user_id'] == self.interaction.user.id:
+                view.add_item(BadgeButton(row, self))
+
+        view.add_item(PreviousPageButton(self))
+        view.add_item(NextPageButton(self))
+        return view
+
+    async def start(self):
+        self.current_page_embeds = self.get_page_embeds()
+        await self.interaction.response.send_message(
+            embeds=self.current_page_embeds,
+            view=self.get_view(),
+            ephemeral=True
+        )
+
+    async def restart(self, interaction: discord.Interaction, restart:bool):
+        self.current_page = 0
+        self.current_page_embeds = self.get_page_embeds()
+        if restart:
+            await interaction.followup.send(
+                embeds=self.current_page_embeds,
+                view=self.get_view(),
+                ephemeral=True
+            )
+        else:
+            await interaction.response.edit_message(
+                embeds=self.current_page_embeds,
+                view=self.get_view()
+            )
+
+    async def update(self, interaction: discord.Interaction):
+        self.current_page_embeds = self.get_page_embeds()
+        await interaction.response.edit_message(
+            embeds=self.current_page_embeds,
+            view=self.get_view()
+        )
+
+    async def previous_page(self, interaction: discord.Interaction):
+        self.current_page = (self.current_page - 1) % self.total_pages
+        await self.update(interaction)
+
+    async def next_page(self, interaction: discord.Interaction):
+        self.current_page = (self.current_page + 1) % self.total_pages
+        await self.update(interaction)
+
+class BadgeButton(discord.ui.Button):
+    def __init__(self, row_data: dict, paginator: "BadgesInventoryEmbedPaginator"):
+        self.row_data = row_data
+        self.paginator = paginator
+        super().__init__(label=row_data['name'], style=discord.ButtonStyle.primary)
+        
+    async def callback(self, interaction: discord.Interaction):
+        row = self.row_data
+        language = await get_user_language(interaction.user.id)
+        pool = get_pool()
+            
+        embed = discord.Embed(
+            title=f"¿Deseas mostrar esta insignia en tu perfil?",
+            description=f"{row['name']}",
+            color=discord.Color.teal()
+        )
+        
+        view = discord.ui.View()
+        view.add_item(ConfirmBadgeButton(self.row_data, self.paginator))
+        view.add_item(BackToBadgesInventoryButton(self.paginator.base_query, self.paginator.query_params,self.paginator))
+        
+        await interaction.response.edit_message(
+            embed=embed, view=view
+        )
+
+class ConfirmBadgeButton(discord.ui.Button):
+    def __init__(self, row_data: dict, paginator: "BadgesInventoryEmbedPaginator"):
+        self.row_data = row_data
+        self.paginator = paginator
+        super().__init__(label="Confirm", emoji="✅", style=discord.ButtonStyle.primary)
+    async def callback(self, interaction: discord.Interaction):
+        row = self.row_data
+        language = await get_user_language(interaction.user.id)
+        pool = get_pool()
+        
+        async with pool.acquire() as conn:
+            #await conn.execute("""
+            #    UPDATE user_missions um
+            #    SET obtained = um.obtained + 1,
+            #        last_updated = now()
+            #    FROM missions_base mb
+            #    WHERE um.mission_id = mb.mission_id
+            #    AND um.user_id = $1
+            #    AND um.status = 'active'
+            #    AND mb.mission_type = 'redeem_coupon'
+            #    """, interaction.user.id)
+            
+            await conn.execute("UPDATE user_badges SET is_selected = $1 WHERE user_id = $2",
+                               False, interaction.user.id)
+            
+            await conn.execute(
+                "UPDATE user_badges SET is_selected = $1 WHERE user_id = $2 AND badge_id = $3",
+                True, interaction.user.id, row['badge_id'])
+            
+        embed = discord.Embed(
+        title=f"✅ Insignia _{row['name']}_ asignada correctamente!",
+        description=f"",
+        color=discord.Color.dark_gray()
+        )
+        await interaction.response.edit_message(embed=embed, view=None)
+        
+        
+        
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(
+                self.paginator.base_query,
+                *self.paginator.query_params
+            )
+        embeds = await generate_badges_embeds(rows, pool, interaction)
+        new_paginator = BadgesInventoryEmbedPaginator(
+            embeds=embeds,
+            rows=rows,
+            interaction=interaction,
+            base_query=self.paginator.base_query,
+            query_params=self.paginator.query_params,
+            embeds_per_page=self.paginator.embeds_per_page
+        )
+        await new_paginator.restart(interaction, True)   
+              
+class BackToBadgesInventoryButton(discord.ui.Button):
+    def __init__(
+        self,
+        base_query: str,
+        query_params: list,
+        paginator: "BadgesInventoryEmbedPaginator"
+    ):
+        super().__init__(label="Volver", style=discord.ButtonStyle.secondary, row=2)
+        self.base_query = base_query
+        self.query_params = query_params
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(
+                self.paginator.base_query,
+                *self.paginator.query_params
+            )
+
+        if not rows:
+            return await interaction.response.edit_message(
+                content="⚠️ No se encontraron cupones con estos filtros.",
+                embed=None,
+                view=None
+            )
+
+        embeds = await generate_badges_embeds(rows, pool, interaction)
+        new_paginator = BadgesInventoryEmbedPaginator(
+            embeds=embeds,
+            rows=rows,
+            interaction=interaction,
+            base_query=self.paginator.base_query,
+            query_params=self.paginator.query_params,
+            embeds_per_page=self.paginator.embeds_per_page
+        )
+        
+        await new_paginator.restart(interaction, False)
 
 # - item_cards
 async def generate_item_card_embeds(rows: list[dict], pool) -> list[discord.Embed]:

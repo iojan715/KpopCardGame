@@ -276,9 +276,19 @@ class AgencyCommand(commands.Cog):
             if not user_data:
                 return await interaction.response.send_message("❌ Este usuario no está registrado.", ephemeral=True)
             level_data = await conn.fetchrow("SELECT * FROM level_rewards WHERE level = $1", user_data["level"] + 1)
-
+            selected_badge = await conn.fetchrow("SELECT * FROM user_badges WHERE user_id = $1 AND is_selected = $2", user_id, True)
+            badge_shown = ""
+            if selected_badge:
+                badge_shown = "🏅 "
+                badge_name = await conn.fetchval("SELECT name FROM badges WHERE badge_id = $1", selected_badge['badge_id'])
+                badge_shown += f"{badge_name}"
+        
+        
         lang_name = LANGUAGES.get(user_data["language"], user_data["language"])
-        embed = discord.Embed(title=f"🏢 Agencia: {user_data['agency_name'] or 'Sin nombre'}", color=discord.Color.blue())
+        embed = discord.Embed(
+            title=f"🏢 Agencia: {user_data['agency_name'] or 'Sin nombre'}",
+            description=f"{badge_shown}",
+            color=discord.Color.blue())
         embed.add_field(name="Créditos", value=f"{user_data['credits']:,} 💰", inline=True)
         embed.add_field(name=f"Nivel {user_data['level']}", value=f"{user_data['xp']}/{level_data['xp_needed']} XP", inline=True)
         embed.add_field(name="Idioma", value=lang_name, inline=True)
