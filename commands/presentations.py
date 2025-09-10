@@ -2136,7 +2136,7 @@ class ConfirmUsePerformanceCardButton(discord.ui.Button):
                             SELECT pm.*, ib.name FROM presentation_members pm
                             JOIN idol_base ib ON pm.idol_id = ib.idol_id
                             WHERE pm.presentation_id = $1
-                            ORDER BY pm.id ASC
+                            ORDER BY pm.idol_id ASC
                         """, self.presentation_id)
 
                     p = PerformanceIdolPaginator(
@@ -2158,7 +2158,7 @@ class ConfirmUsePerformanceCardButton(discord.ui.Button):
                             SELECT pm.*, ib.name FROM presentation_members pm
                             JOIN idol_base ib ON pm.idol_id = ib.idol_id
                             WHERE pm.presentation_id = $1
-                            ORDER BY pm.id ASC
+                            ORDER BY pm.idol_id ASC
                         """, self.presentation_id)
                     p = PerformanceIdolPaginator(
                         interaction=interaction,
@@ -2272,7 +2272,7 @@ class PerformanceIdolPaginator:
                 inline=False
             )
             # energy %
-            energy_left = idol['max_energy'] - idol['used_energy']
+            energy_left = round(idol['max_energy'] - idol['used_energy'], 1)
             energy_pct = round((energy_left / idol['max_energy']) * 100, 1)
             embed.add_field(
                 name="⚡ Energy",
@@ -2688,6 +2688,7 @@ async def perform_section_action(conn, presentation_id: str, idol_row, song_sect
     if effect: Hg *= effect["hype_mod"]
     if s_effect: Hg *= s_effect["hype_mod"]
 
+    Hg = round(Hg,2)
     await conn.execute("UPDATE presentations SET total_hype = LEAST(100, GREATEST(0, total_hype + $1)) WHERE presentation_id = $2", Hg, presentation_id)
     await conn.execute("UPDATE presentation_sections SET hype_got = $1 WHERE presentation_id = $2 AND section = $3", Hg, presentation_id, current_section)
 
@@ -3947,6 +3948,17 @@ async def finalize_presentation(conn, presentation: dict) -> str:
                 AND um.user_id = $1
                 AND um.status = 'active'
                 AND mb.mission_type = 'do_practice'
+                """, user_id)
+            
+            await conn.execute("""
+                UPDATE user_missions um
+                SET obtained = um.obtained + 1,
+                    last_updated = now()
+                FROM missions_base mb
+                WHERE um.mission_id = mb.mission_id
+                AND um.user_id = $1
+                AND um.status = 'active'
+                AND mb.mission_type = 'do_presentation'
                 """, user_id)
             
             await conn.execute(
