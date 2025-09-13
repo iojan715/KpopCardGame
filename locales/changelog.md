@@ -384,6 +384,42 @@ Se han agregado los sets completos, incluyendo la posibilidad de unirse a los Fa
 > Este parche se centra en poner al día el contenido de cartas y ajustar algunas habilidades para que tengan un impacto más notorio en las presentaciones. ¡Gracias por seguir apoyando el proyecto y divirtiéndose con él! 🚀
 
 ----------------------------------
+
+## 📢 Versión 1.2.8.1 - Parche breve a cupon (2025-09-08) 
+
+### 🛠️ Correcciones y mejoras
+- El cupón **Rehearsal** que permite crear una presentación tipo *Practice* Gratis ahora funciona, pues no se habia agregado su ejecución en el sistema. Ahora al usar uno, funciona de la misma manera que el resto de cupones, consumiendose hasta que sea creada una presentación de ese tipo. También recordar que esas presentaciones no otorgan **Popularidad** ni **XP**, pero pueden ser *publicadas* desde `/packs list` pagando el 80% del costo de la presentación, y obteniendo la misma proporción de recompensas.
+
+----------------------------------
+
+## 📢 Versión 1.2.8.2 - Insignias (2025-09-09)
+
+### ✨ Nuevas funciones
+- Ahora es posible seleccionar una de tus insignias desde `/inventory badges`, para mostrarla cada que tú o alguien vea tu perfil desde `/profile`.
+
+Las insignias se obtienen principalmente al subir de nivel o completar alguna colección de una idol o un grupo. Posteriormente se agregarán más insignias que puedan ser obtenidas de diversas maneras, como logros o recompensas de eventos.
+
+----------------------------------
+
+## 📢 Versión 1.2.8.3 - Pequeño parche (2025-09-10)
+
+### 🛠️ Correcciones y mejoras a las presentaciones
+- Ahora las misiones de hacer una presentación también se pueden completar al realizar una **Practica**, aún si ésta no es publicada.
+- Corregido un error que en algunas ocasiones mostraba obtención de Hype o energía restante con muchísimos dígitos.
+- Ahora, al seleccionar idol para aplicar una Performance Card durante las presentaciones, se utiliza el mismo orden por `idol_id` como en el resto de situaciones (Cambiar de idol activa o Equipar una carta desde el inventario)
+
+----------------------------------
+
+## 📢 Versión 1.2.8.4 - Nueva canción (2025-09-13)
+
+### 🎤 Presentaciones
+Se ha agregado la nueva canción **Are You Alive** del grupo _tripleS_. La canción ya podrá ser usada en presentaciones, y cuenta con 34 secciones en total.
+
+### 🛠️ Correcciones
+La habilidad :PassiveSkill: _Balanced Performance_ tenía un pequeño error de datos, mostrando erroneamente su descripción, pero ya ha sido resuelto
+
+----------------------------------
+
 `plantilla`
 
 ## 📢 Versión X.Y.Z - [Título breve del parche] (AAAA-MM-DD)

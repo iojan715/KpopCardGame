@@ -119,3 +119,37 @@ section_id,song_id,section_number,section_type,duration,lyrics,vocal,rap,dance,v
 0118,003,29,chorus,3,*I want some sweet juice*,50,0,30,20,optional,,,,,,14100
 0119,003,30,ending,8,*We through yeah-yeah geutorok kkumkkwoon sun-gan*\n*Sweet juice ttara oh ma-eumkkeot*,0,40,30,30,forced,group_dance,,,15,5,44100
 0120,003,31,ending,9,*We through yeah-yeah geutorok kkumkkwoon sun-gan*\n*Sweet juice ttara oh ma-eumkkeot*,0,40,20,40,optional,,,,,,41000
+0121,006,1,intro,3,*Are you alive?*,0,10,0,90,optional,pose_sync,,,,10,14600
+0122,006,2,intro,9,*La-la-la la-la-la-la la-la-la la-la*\n*La-la-la la-la-la-la la-la-la la-la*,0,20,20,60,optional,,,,,,40400
+0123,006,3,intro,9,*La-la-la la-la-la-la la-la-la la-la*\n*La-la-la la-la-la-la la-la-la la-la*,0,20,60,20,optional,group_dance,,,10,5,46700
+0124,006,4,verse,5,*jeogi kkamppagineun bulbit*\n*sone japijil ana*,35,0,35,30,forced,,,,,,22400
+0125,006,5,verse,5,*ttaeron huimang ttaeron jeolmang*\n*geu sai eogeunnan chaero yeah*,35,0,30,25,optional,backup_dance,,,10,,22400
+0126,006,6,pre_chorus,5,*Do it*\n*sesang-eun jeomjeom deo hwaryeohage binna*,40,0,40,10,forced,harmony,10,,,,22400
+0127,006,7,pre_chorus,5,*geunde wae deo sumi cha?*\n*(deo ttwieodo kkumeun deo meoreojyeo)*,45,0,20,30,optional,duet,,20,,,25700
+0128,006,8,chorus,9,*La-la-la la-la-la-la la-la-la la-la*\n*(kkae-eona ije)*\n*La-la-la la-la-la-la la-la-la la-la*,0,20,60,20,forced,adlib,10,,10,,49100
+0129,006,9,chorus,5,*sasil nan haengbokago sipeun geol nuguboda deo*,40,0,40,20,optional,group_dance,,,15,,26200
+0130,006,10,chorus,5,*La-la-la la-la-la-la la-la-la la-la*,0,20,30,50,optional,pose_sync,,,5,10,26400
+0131,006,11,verse,5,*Ah bonikka neodo huh*\n*nal dalmeun geot gata uh*,0,35,30,35,forced,,,,,,22700
+0132,006,12,verse,4,*neomeojigo seulpeodo geujeo neon naesaekjocha an hane*,0,45,35,20,optional,,,,,,18100
+0133,006,13,verse,5,*uri geunyang domangchija amudo nal chatji motage*,40,0,50,10,forced,group_dance,,,10,,25100
+0134,006,14,verse,5,*deo jiteobeorin kkumeuro choran nal deo sumgyeo*,45,0,40,15,optional,,,,,,22900
+0135,006,15,pre_chorus,4,*Do it*\n*gwanggo sok hwaryeohan jeo sesang-eul hyanghae*,40,0,35,25,forced,harmony,10,,,,20200
+0136,006,16,pre_chorus,5,*geunde wae deo sumi cha?*\n*(deo ttwieodo kkumeun deo sarajyeo)*,35,0,30,35,optional,duet,5,15,,,27200
+0137,006,17,chorus,9,*La-la-la la-la-la-la la-la-la la-la*\n*(kkae-eona ije)*\n*La-la-la la-la-la-la la-la-la la-la*,0,20,60,20,forced,adlib,10,,10,,49900
+0138,006,18,chorus,5,*sasil nan haengbokago yeppeun geol nuguboda deo*,40,0,40,20,optional,group_dance,,,15,,26800
+0139,006,19,chorus,5,*La-la-la la-la-la-la la-la-la la-la uh*,0,20,35,45,optional,pose_sync,,,,15,26600
+0140,006,20,break,10,*La la-la la la la la*\n*La la-la la la*\n*deo ttwieodo kkumeun deo meoreojyeo*,0,10,70,20,forced,group_dance,,,15,,53700
+0141,006,21,break,5,*La-la-la la-la-la-la la-la-la la-la*\n*(yeah yeah)*,0,20,75,5,optional,high_note,15,,5,,28100
+0142,006,22,break,4,*La-la-la la-la-la-la la-la-la la-la*\n*(we gonna run away)*,0,20,65,15,locked,,,,,,18800
+0143,006,23,bridge,7,*Ooh ah ulji ma da angmong-il ppuniya nae sesang-eun*,50,0,10,40,forced,harmony,20,,,,38800
+0144,006,24,bridge,3,*kkumeseo kkae-udeon haetsal oh*,40,0,10,50,locked,,,,,,14000
+0145,006,25,bridge,5,*You finally realize nuneul tteumyeon haengbok da yeogi itdan geol*,0,35,15,50,forced,,,,,,23100
+0146,006,26,bridge,4,*binnago isseo urin yeogiseo we so alive*\n*yeah~*,50,0,10,40,optional,high_note,10,,,10,22100
+0147,006,27,chorus,5,*La-la-la la-la-la-la la-la-la la-la*\n*(kkae-eona ije)*,0,20,50,30,forced,adlib,10,,10,,28100
+0148,006,28,chorus,4,*La-la-la la-la-la-la la-la-la la-la*,0,20,45,35,locked,group_dance,,,15,,21600
+0149,006,29,chorus,6,*sasil nan haengbokago sipeun geol nuguboda deo*,40,0,40,20,forced,group_dance,,,15,,32400
+0150,006,30,chorus,4,*La-la-la la-la-la-la la-la-la la-la*\n*(ah yeah yeah yeah)*,0,20,30,50,optional,,,,,,19000
+0151,006,31,ending,5,*deo keun kkumeul hyanghae dallyeoga jom deo deo nopi*\n*(ooh woah)*,25,10,15,50,forced,pose_sync,,,5,15,28300
+0152,006,32,ending,5,*deo keun jeolmang hyanghae tteoreojyeo jom deo gipsugi*\n*(sasil nan)*,25,10,15,50,optional,harmony,10,,10,,28300
+0153,006,33,ending,5,*naeil nuneul tteumyeon modeun ge kkume dakireul*\n*(haengbokago yeppeun geol nugubodado)*,25,10,35,30,optional,adlib,10,,10,,28300
+0154,006,34,ending,5,*La-la-la la-la-la-la la-la-la la-la*\n*kkumeseo kkaemyeon*,0,20,15,65,optional,pose_sync,,,,15,26200

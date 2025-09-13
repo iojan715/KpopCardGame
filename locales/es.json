@@ -164,7 +164,7 @@
 
   "skills.Peak Fit": "+{pcond_hype}% Hype obtenido si tiene más del {cond_energy}% de energía restante.",
   "skills.Group Synergy": "+{pcond_vocal} a todas las estadísticas si otro idol del mismo grupo participa en la sección.",
-  "skills.Balanced Performance": "{pcond_extra_cost} costo de energía si la sección tiene todas las estadísticas por encima de {cond_stat}.",
+  "skills.Balanced Performance": "{pcond_extra_cost} costo de energía si la sección tiene todas las estadísticas por encima de {cond_vocal}.",
   "skills.Visual Mastery": "+{pcond_visual} Visual si la sección contiene más Visual que cualquier otro stat.",
   "skills.Fatigue": "+{pcond_extra_cost} al consumo de energía si participó en la sección anterior.",
   "skills.Dazzling Smile": "+{pcond_hype}% Hype si el Visual de la idol supera el Visual de la sección.",
