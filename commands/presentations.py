@@ -3800,7 +3800,6 @@ class BasicActionButton(discord.ui.Button):
                 SELECT * FROM song_sections
                 WHERE song_id = $1 AND section_number = $2
             """, song_id, current_section)
-            print(f"section number: {song_section['section_number']}")
 
             if not song_section:
                 return await interaction.followup.send(content="Sección no encontrada.", ephemeral=True)
@@ -3876,7 +3875,10 @@ async def finalize_presentation(conn, presentation: dict) -> str:
         total_score = await conn.fetchval(
             "SELECT total_score FROM presentations WHERE presentation_id = $1",
             presentation_id)
-    
+        
+        group_name = await conn.fetchval("SELECT name FROM groups WHERE group_id = $1", group_id)
+        song_name = await conn.fetchval("SELECT name FROM songs WHERE song_id = $1", song_id)
+        
         if ptype == "live":
             popularity = int(1000 * (total_score / average_score))
             xp = popularity // 10
@@ -3894,8 +3896,7 @@ async def finalize_presentation(conn, presentation: dict) -> str:
             
             double = ""
             
-            group_name = await conn.fetchval("SELECT name FROM groups WHERE group_id = $1", group_id)
-            song_name = await conn.fetchval("SELECT name FROM songs WHERE song_id = $1", song_id)
+        
             double_reward = await conn.fetchval("SELECT amount FROM user_boosts WHERE user_id = $1 AND boost = 'DBRWR'", user_id)
             
             if double_reward:

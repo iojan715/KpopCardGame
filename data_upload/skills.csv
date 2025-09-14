@@ -31,7 +31,7 @@ Steady Lead,active,hype_above,"{""hype"":60}",stat_boost,"{""vocal"":2,""rap"":2
 Sweet Voice,active,section_stat_below,"{""dance"":30,""rap"":30}",stat_boost,"{""visual"":10}",,,1.4,relative,stat_boost,"{""vocal"":15}",
 Tactic Focus,active,,"{}",,"{}",,,-2,fixed,stat_boost,"{""hype"":0}",
 Backup Star,passive,idol_active,"{""value"":false}",stat_boost,"{""score"":1.1}",,,,,,"{}",
-Balanced Performance,passive,section_stat_above,"{""vocal"":15,""rap"":15,""dance"":15,""visual"":15}",extra_cost,"{""energy"":-3}",,,,,,"{}",
+Balanced Performance,passive,section_stat_above,"{""vocal"":10,""rap"":10,""dance"":10,""visual"":10}",extra_cost,"{""energy"":-3}",,,,,,"{}",
 Balanced Rhythm,passive,section_stat_above,"{""rap"":35,""dance"":35}",stat_boost,"{""rap"":10,""dance"":10}",,,,,,"{}",
 Blinding Lights,passive,hype_above,"{""hype"":85}",stat_boost,"{""visual"":-20}",,,,,,"{}",
 Catch-up Mode,passive,idol_participated,"{""value"":false}",relative_cost,"{""energy"":0.8}",,,,,,"{}",

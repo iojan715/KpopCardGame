@@ -420,6 +420,32 @@ La habilidad :PassiveSkill: _Balanced Performance_ tenía un pequeño error de d
 
 ----------------------------------
 
+## 📢 Versión 1.2.8.5 - Mejora del comando `/cards search` (2025-09-14) 
+
+### ✨ Mejoras
+Ahora el comando `/cards search` no requiere que ingreses un **ID** para buscar cartas. En su lugar, puedes usar filtros igual al comando `/inventory idol_cards` para buscar cualquier carta que cumpla con esos filtros entre las que tenga cualquier jugador. Los filtros que pueden usarse son:
+- **idol:** Puedes buscar cartas de una idol específica.
+- **set_name:** Puedes buscar cartas que sean de un mismo Set de cartas.
+- **group:** Para buscar cartas de un mismo grupo.
+- **rarity:** Filtra cartas de una misma rareza, como Regular, POB, Limited, etc.
+- **nivel:** Permite filtrar cartas por un nivel. *Solo aplicable a cartas Regular*.
+- **status:** Puedes buscar solo cartas que estén disponibles, equipadas, en venta, en sorteo, etc.
+- **is_locked:** Por el momento las cartas no se bloquean de ninguna manera, pero este filtro ayudará cuando ocurra.
+- **order** y **order_by:** Permite elegir el parámetro para ordenar las cartas mostradas, ya sea por nombre de idol, fecha de obtención, rareza, etc.
+Las cartas mostradas indicarán a qué Agencia pertenecen y su ID, de manera que puedes buscarlas y, si así lo deseas, comunicarte con su agencia para un posible trade o compra-venta. Este cambio busca mejorar el proceso de interacción entre agencias para la comercialización y colección de cartas entre jugadores.
+
+----------------------------------
+
+## 📢 Versión 1.2.8.5b - Pequeño parche (2025-09-14)
+
+### 🛠️ Correcciones
+- Se ha arreglado un error que al finalizar una práctica, no mostraba correctamente los resultados obtenidos, aunque sí finalizaba la presentación en el sistema.
+- La habilidad :PassiveSkill: _Solo Core_ mostraba erroneamente su descripción.
+- Se ha reducido la condición de la habilidad :PassiveSkill: _Balanced Performance_. Ahora todas las estadísticas de una sección deben ser mayores a 10 para su activación, requiriendo anteriormente que sean mayores a 15 (pues no había ninguna sección que cumpliera con estas condiciones en las canciones actuales).
+
+
+----------------------------------
+
 `plantilla`
 
 ## 📢 Versión X.Y.Z - [Título breve del parche] (AAAA-MM-DD)

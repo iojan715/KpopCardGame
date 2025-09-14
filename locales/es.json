@@ -179,7 +179,7 @@
   "skills.Overthinking": "{pcond_vocal} a todas las estadísticas si la sección tiene al menos {cond_vocal} en cada estadística.",
   "skills.Solo Act": "{pcond_relative_cost}% energía si fue la idol activa en la sección anterior y tiene la mayor energía restante del grupo.",
   "skills.Backup Star": "+{pcond_score}% puntuación obtenida si no fue activa en la sección anterior.",
-  "skills.Solo Core": "{pcond_relative_cost}% energía y +{pcond_score}% puntuación si esta carta tiene la menor puntuación acumulada del grupo.",
+  "skills.Solo Core": "-60% costo energía y +{pcond_score}% puntuación si esta carta tiene la menor puntuación acumulada del grupo.",
   "skills.Catch-up Mode": "Reduce en {pcond_relative_cost}% el costo de energía si esta carta no fue usada en la sección anterior.",
   "skills.Peak Turn": "Aumenta +{pcond_vocal} Vocal y +{pcond_dance} Dance si esta carta tiene la mayor energía restante del grupo.",
   "skills.Stage Pulse": "Aumenta +{pcond_rap} Rap si el Hype actual está por encima de {cond_hype}.",
