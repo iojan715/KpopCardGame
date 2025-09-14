@@ -15,56 +15,58 @@ from commands.starter import base, mult, reduct
 
 version = v
 
+RARITY_CHOICES = [
+    app_commands.Choice(name="Regular", value="Regular"),
+    app_commands.Choice(name="Special", value="SPC"),
+    app_commands.Choice(name="Limited", value="LMT"),
+    app_commands.Choice(name="FCR", value="FCR"),
+    app_commands.Choice(name="POB", value="POB"),
+]
+
+STATUS_CHOICES = [
+    app_commands.Choice(name="Available", value="available"),
+    app_commands.Choice(name="Equipped", value="equipped"),
+    app_commands.Choice(name="On sale", value="on_sale"),
+    app_commands.Choice(name="Trading", value="trading"),
+]
+
+IS_LOCKED_CHOICES = [
+    app_commands.Choice(name="✅", value="✅"),
+    app_commands.Choice(name="❌", value="❌"),
+]
+
+ORDER_BY_CHOICES = [
+    app_commands.Choice(name="Fecha de obtención", value="uc.date_obtained"),
+    app_commands.Choice(name="Nombre", value="ci.idol_name"),
+    app_commands.Choice(name="Idol ID", value="uc.idol_id"),
+    app_commands.Choice(name="Set ID", value="uc.set_id"),
+    app_commands.Choice(name="Rareza", value="uc.rarity_id"),
+    app_commands.Choice(name="Estado", value="uc.status"),
+    app_commands.Choice(name="Bloqueada", value="uc.is_locked"),
+]
+
+ORDER_CHOICES = [
+    app_commands.Choice(name="⏫", value="ASC"),
+    app_commands.Choice(name="⏬", value="DESC"),
+]
+
+PUBLIC_CHOICES = [
+    app_commands.Choice(name="✅", value="✅"),
+    app_commands.Choice(name="❌", value="❌"),
+]
+
+DETAIL_CHOICES = [
+    app_commands.Choice(name="❌", value="❌"),
+    app_commands.Choice(name="✅", value="✅"),
+]
+    
+
 # --- /inventory
 class InventoryGroup(app_commands.Group):
     def __init__(self):
         super().__init__(name="inventory", description="Ver tu inventario de cartas y objetos")
     
-    RARITY_CHOICES = [
-        app_commands.Choice(name="Regular", value="Regular"),
-        app_commands.Choice(name="Special", value="SPC"),
-        app_commands.Choice(name="Limited", value="LMT"),
-        app_commands.Choice(name="FCR", value="FCR"),
-        app_commands.Choice(name="POB", value="POB"),
-    ]
 
-    STATUS_CHOICES = [
-        app_commands.Choice(name="Available", value="available"),
-        app_commands.Choice(name="Equipped", value="equipped"),
-        app_commands.Choice(name="On sale", value="on_sale"),
-        app_commands.Choice(name="Trading", value="trading"),
-    ]
-
-    IS_LOCKED_CHOICES = [
-        app_commands.Choice(name="✅", value="✅"),
-        app_commands.Choice(name="❌", value="❌"),
-    ]
-
-    ORDER_BY_CHOICES = [
-        app_commands.Choice(name="Fecha de obtención", value="uc.date_obtained"),
-        app_commands.Choice(name="Nombre", value="ci.idol_name"),
-        app_commands.Choice(name="Idol ID", value="uc.idol_id"),
-        app_commands.Choice(name="Set ID", value="uc.set_id"),
-        app_commands.Choice(name="Rareza", value="uc.rarity_id"),
-        app_commands.Choice(name="Estado", value="uc.status"),
-        app_commands.Choice(name="Bloqueada", value="uc.is_locked"),
-    ]
-
-    ORDER_CHOICES = [
-        app_commands.Choice(name="⏫", value="ASC"),
-        app_commands.Choice(name="⏬", value="DESC"),
-    ]
-    
-    PUBLIC_CHOICES = [
-        app_commands.Choice(name="✅", value="✅"),
-        app_commands.Choice(name="❌", value="❌"),
-    ]
-    
-    DETAIL_CHOICES = [
-        app_commands.Choice(name="❌", value="❌"),
-        app_commands.Choice(name="✅", value="✅"),
-    ]
-    
     @app_commands.command(name="idol_cards", description="Ver tus cartas de idol")
     @app_commands.describe(
         agency="Target agency's inventory",
@@ -3602,40 +3604,122 @@ class CardGroup(app_commands.Group):
             await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
     @app_commands.command(name="search", description="Buscar agencias que tengan una carta específica")
-    @app_commands.describe(card_id="ID de la carta a buscar")
+    @app_commands.describe(
+        idol="Filter by idol",
+        set_name="Filter by set",
+        group="Filter by group",
+        rarity="Filter by rarity",
+        nivel="Filter by level (1-3)",
+        status="Filter by status",
+        is_locked="(✅/❌)",
+        order_by="Sort by parameter",
+        order="Sort direction (⏫/⏬)")
+    @app_commands.choices(
+        rarity=RARITY_CHOICES,
+        status=STATUS_CHOICES,
+        is_locked=IS_LOCKED_CHOICES,
+        order_by=ORDER_BY_CHOICES,
+        order=ORDER_CHOICES
+    )
     async def search_card(
         self,
         interaction: discord.Interaction,
-        card_id: str
+        idol: str = None,
+        set_name: str = None,
+        group: str = None,
+        rarity: app_commands.Choice[str] = None,
+        nivel: int = None,
+        status: app_commands.Choice[str] = None,
+        is_locked: app_commands.Choice[str] = None,
+        order_by: app_commands.Choice[str] = None,
+        order: app_commands.Choice[str] = None,
     ):
         if interaction.guild is None:
             return await interaction.response.send_message(
                 "❌ Este comando solo está disponible en servidores.", 
                 ephemeral=True
             )
-        language = await get_user_language(interaction.user.id)
+        user_id = interaction.user.id
+        language = await get_user_language(user_id)
         pool = get_pool()
         guild = interaction.guild
 
-        async with pool.acquire() as conn:
-            rows = await conn.fetch("""
-                SELECT * FROM user_idol_cards
-                WHERE card_id = $1
-            """, card_id)
-            base_card_data = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", card_id)
-            rarity=""
-            if base_card_data['rarity'] == "Regular":
-                rarity = f"{base_card_data['rarity']} {base_card_data['rarity_id'][1]} - Lvl.{base_card_data['rarity_id'][2]}"
+        base_query = """
+            SELECT uc.*, ci.* FROM user_idol_cards uc
+            JOIN cards_idol ci ON uc.card_id = ci.card_id
+        """
+        params = []
+        idx = 1
+        
+        if idol:
+            base_query += f" AND uc.idol_id = ${idx}"
+            params.append(idol)
+            idx += 1
+
+        if set_name:
+            base_query += f" AND uc.set_id = ${idx}"
+            params.append(set_name)
+            idx += 1
+
+        if group:
+            base_query += f" AND ci.group_name = ${idx}"
+            params.append(group)
+            idx += 1
+        
+        if rarity:
+            if rarity.value == "Regular":
+                base_query += f" AND uc.rarity_id LIKE 'R__'"
             else:
-                rarity = f"{base_card_data['rarity']}"
+                base_query += f" AND uc.rarity_id = ${idx}"
+                params.append(rarity.value.upper())
+                idx += 1
+
+        if nivel and (not rarity or rarity == "Regular"):
+            base_query += f" AND RIGHT(uc.rarity_id, 1) = ${idx}"
+            params.append(str(nivel))
+            idx += 1
+
+        if status:
+            base_query += f" AND uc.status = ${idx}"
+            params.append(status.value.lower())
+            idx += 1
+
+        if is_locked:
+            boolean_value = is_locked.value == "✅"
+            base_query += f" AND uc.is_locked = ${idx}"
+            params.append(boolean_value)
+            idx += 1
+        
+        valid_order_by = ["uc.idol_id", "ci.idol_name", "uc.set_id", "uc.rarity_id", "uc.status", "uc.is_locked"]
+        order_column = "uc.date_obtained"
+        if order_by:
+            if order_by.value in valid_order_by:
+                order_column = order_by.value
+        order_dir = "ASC"
+        if order:
+            order_dir = order.value
+        if not order and not order_by:
+            order_dir = "DESC"
+        base_query += f" ORDER BY {order_column} {order_dir}"
+        
+        
+        
+        
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(base_query, *params)
+
 
             if not rows:
                 return await interaction.response.send_message("❌ No se encontró ninguna carta de este tipo", ephemeral=True)
 
             embeds = []
-            
             for card in rows:
-                
+                c_rarity=""
+                if card['rarity'] == "Regular":
+                    c_rarity = f"{card['rarity']} {card['rarity_id'][1]} - Lvl.{card['rarity_id'][2]}"
+                else:
+                    c_rarity = f"{card['rarity']}"
+                    
                 status = ""
                 if card['status'] == 'equipped':
                     status = "👥"
@@ -3661,7 +3745,7 @@ class CardGroup(app_commands.Group):
                     "POB": discord.Color.blue(),
                     "Legacy": discord.Color.dark_purple(),
                 }
-                embed_color = RARITY_COLORS.get(base_card_data['rarity'], discord.Color.default())
+                embed_color = RARITY_COLORS.get(card['rarity'], discord.Color.default())
                 
                 skills = ""
                 if card['p_skill']:
@@ -3674,13 +3758,14 @@ class CardGroup(app_commands.Group):
                     skills += f"{get_emoji(guild, "UltimateSkill")}"
                     
                 embed = discord.Embed(
-                    title=f"{skills} {base_card_data['idol_name']} - _{base_card_data['group_name']}_ {status}",
-                    description=f"{base_card_data['set_name']} `{rarity}`{propietario}",
+                    title=f"{skills} {card['idol_name']} - _{card['group_name']}_ {status}",
+                    description=f"{card['set_name']} `{c_rarity}`{propietario}",
                     color=embed_color
                 )
                 
                 
-                
+                image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{card['card_id']}.webp{version}"
+                embed.set_thumbnail(url=image_url)
                 
                 
                 embed.set_footer(text=f"{card["card_id"]}.{card['unique_id']}")
@@ -3688,6 +3773,36 @@ class CardGroup(app_commands.Group):
 
         paginator = Paginator(embeds)
         await paginator.start(interaction)
+
+    @search_card.autocomplete("idol")
+    async def idol_autocomplete(self, interaction: discord.Interaction, current: str):
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("SELECT idol_id, name FROM idol_base ORDER BY name ASC")
+        return [
+            app_commands.Choice(name=f"{row['name']} ({row['idol_id']})", value=row['idol_id'])
+            for row in rows if current.lower() in f"{row['name'].lower()} ({row['idol_id'].lower()})"
+        ][:25]
+
+    @search_card.autocomplete("set_name")
+    async def set_autocomplete(self, interaction: discord.Interaction, current: str):
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("SELECT DISTINCT set_id, set_name FROM cards_idol ORDER BY set_name ASC")
+        return [
+            app_commands.Choice(name=row["set_name"], value=row["set_id"])
+            for row in rows if current.lower() in row["set_name"].lower()
+        ][:25]
+    
+    @search_card.autocomplete("group")
+    async def set_autocomplete(self, interaction: discord.Interaction, current: str):
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("SELECT DISTINCT group_name FROM cards_idol ORDER BY group_name ASC")
+        return [
+            app_commands.Choice(name=row["group_name"], value=row["group_name"])
+            for row in rows if current.lower() in row["group_name"].lower()
+        ][:25]
 
 
 # refund
