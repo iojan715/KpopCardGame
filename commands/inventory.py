@@ -3735,7 +3735,7 @@ class CardGroup(app_commands.Group):
             
                 
                 user_row = await conn.fetchrow("SELECT * FROM users WHERE user_id = $1", card['user_id'])    
-                propietario = f"\nAgencia: **{user_row['agency_name']}**"
+                propietario = f"\nAgencia: **{user_row['agency_name']}**\nCEO: <@{user_row['user_id']}>"
                 
                 RARITY_COLORS = {
                     "Regular": discord.Color.light_gray(),

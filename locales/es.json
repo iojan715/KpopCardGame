@@ -312,7 +312,7 @@
   "skills.Silent Recovery": "Recupera {extra_cost} de energía y aumenta en +{visual} Visual y +{dance} Dance.",
   "skills.Radiant Finale": "Aumenta en +{vocal} a todas las estadísticas y en +{score}% la puntuación obtenida en esta sección. Costo: {relative_cost}% energía",
   "skills.Final Statement": "Aumenta +{vocal} a todas las estadísticas en esta sección. Costo: {relative_cost}% Energía",
-  "skills.Adaptative Blast": "Aumenta en +{value} la estadística más alta de la sección.",
+  "skills.Adaptive Blast": "Aumenta en +{value} la estadística más alta de la sección.",
   
   "equip_item.not_found": "❌ No se encontró una carta de objeto válida con ese ID.",
   "equip_item.unavailable": "⚠️ Este objeto no se puede equipar actualmente.",

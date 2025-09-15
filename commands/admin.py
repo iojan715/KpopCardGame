@@ -153,12 +153,12 @@ class AdminGroup(app_commands.Group):
                             await conn.execute("""
                                 INSERT INTO cards_idol (
                                     card_id, idol_id, set_id, rarity_id, idol_name, group_name, set_name,
-                                    rarity, theme, vocal, rap, dance, visual, energy, p_skill,
-                                    a_skill, s_skill, u_skill, weight, value
+                                    rarity, theme, vocal, rap, dance, visual, energy,
+                                    weight, value
                                 ) VALUES (
                                     $1, $2, $3, $4, $5, $6, $7,
                                     $8, $9, $10, $11, $12, $13, $14,
-                                    $15, $16, $17, $18, $19, $20
+                                    $15, $16
                                 )
                                 ON CONFLICT (card_id) DO UPDATE SET
                                     idol_id = EXCLUDED.idol_id,
@@ -174,19 +174,15 @@ class AdminGroup(app_commands.Group):
                                     dance = EXCLUDED.dance,
                                     visual = EXCLUDED.visual,
                                     energy = EXCLUDED.energy,
-                                    p_skill = EXCLUDED.p_skill,
-                                    a_skill = EXCLUDED.a_skill,
-                                    s_skill = EXCLUDED.s_skill,
-                                    u_skill = EXCLUDED.u_skill,
                                     weight = EXCLUDED.weight,
                                     value = EXCLUDED.value;
                             """, 
                             row["card_id"], row["idol_id"], row["set_id"], row["rarity_id"],
                             row["idol_name"], row["group_name"], row["set_name"], row["rarity"], row.get("theme"),
                             int(row["vocal"]), int(row["rap"]), int(row["dance"]), int(row["visual"]),
-                            int(row["energy"]), row.get("p_skill"), row.get("a_skill"),row.get("s_skill"),
-                            row.get("u_skill"), int(row["weight"]), int(row["value"]))
+                            int(row["energy"]), int(row["weight"]), int(row["value"]))
                             inserted += 1
+                            print(row['card_id'])
                     inserted_total += inserted
                     inserted = 0
                 

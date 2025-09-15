@@ -446,6 +446,32 @@ Las cartas mostradas indicarán a qué Agencia pertenecen y su ID, de manera que
 
 ----------------------------------
 
+## 📢 Versión 1.2.9 - Nuevo Grupo (2025-09-15)
+
+### 🃏 Cartas, idols y colecciones
+- Se han agregado las cartas del grupo **ifeye** para su set *Sweet Tang*, así como su FanClub y todas las funciones. Ya pueden ser obtenidas en Packs de cualquier tipo.
+
+### 🛠️ Correcciones y mejoras
+- Se ha corregido un error que evitaba mostrar los tipos de habilidades de una carta al buscarlas con `/cards search`.
+- Ahora, al buscar cartas con el mismo comando, se muestra tambien el usuario/CEO de la agencia que tiene cada carta.
+- Se ha agregado la descripción faltante a la habilidad :UltimateSkill: _Adaptative Blast_: `Aumenta en +30 la estadística más alta de la sección.`
+
+### 💸 Economía
+Se ha reducido los costos de envío a la mitad:
+- Regular Lv.1: 💵200
+- Regular Lv.2: 💵350
+- Regular Lv.3: 💵500
+- FCR, POB, Limited y Special: 💵1000
+Sin embargo, también se han reducido a la mitad los créditos obtenidos al reembolsar una carta:
+- Regular Lv.1: 💵500
+- Regular Lv.2: 💵875
+- Regular Lv.3: 💵1250
+- FCR, POB, Limited y Specia: 💵2500
+
+### 🎮 Cambios menores en balance
+Se ha aumentado la cantidad de XP otorgada por algunas misiones
+----------------------------------
+
 `plantilla`
 
 ## 📢 Versión X.Y.Z - [Título breve del parche] (AAAA-MM-DD)
