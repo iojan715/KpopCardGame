@@ -178,112 +178,6 @@ class PresentationGroup(app_commands.Group):
             ephemeral=True
         )
 
-    @app_commands.command(name="add_song", description="Asignar una canción a una de tus presentaciones en preparación")
-    @app_commands.describe(song="ID de la canción que quieres asignar")
-    async def add_song(self, interaction: Interaction, song: str):
-        if interaction.guild is None:
-            return await interaction.response.send_message(
-                "❌ Este comando solo está disponible en servidores.", 
-                ephemeral=True
-            )
-        user_id = interaction.user.id
-        pool = get_pool()
-
-        async with pool.acquire() as conn:
-            song_row = await conn.fetchrow("SELECT * FROM songs WHERE song_id = $1", song)
-            if not song_row:
-                await interaction.response.send_message("❌ No se encontró ninguna canción con ese ID.", ephemeral=True)
-                return
-
-            pres_rows = await conn.fetch("""
-                SELECT presentation_id, presentation_date, song_id, group_id
-                FROM presentations
-                WHERE user_id = $1 AND status = 'preparation'
-                ORDER BY presentation_date DESC
-            """, user_id)
-
-            if not pres_rows:
-                await interaction.response.send_message("❌ No tienes presentaciones en preparación.", ephemeral=True)
-                return
-
-            descr = ""
-        
-            for row in pres_rows:
-                song_name = "n/a"
-                if row['song_id']:
-                    songrow = await conn.fetchrow("SELECT name, original_artist FROM songs WHERE song_id = $1", row['song_id'])
-                    song_name = f"{songrow['name']} - {songrow['original_artist']}"
-                
-                group_name = "n/a"
-                if row['group_id']:
-                    grouprow = await conn.fetchrow("SELECT name FROM groups WHERE group_id = $1", row['group_id'])
-                    group_name = grouprow['name']
-                
-                descr += f"**ID:** `{row['presentation_id']}`\n> Group: `{group_name}`\n> Song: `{song_name}`\n"
-            
-        embed = discord.Embed(
-            title="Elige a cuál presentación deseas asignar esta canción:",
-            description=descr,
-            color=discord.Color.blue()
-        )
-
-        await interaction.response.send_message(embed=embed, view=PresentationAddSongView(interaction, song, pres_rows), ephemeral=True)
-
-    @add_song.autocomplete("song")
-    async def set_autocomplete(self, interaction: discord.Interaction, current: str):
-        pool = get_pool()
-        async with pool.acquire() as conn:
-            rows = await conn.fetch("SELECT * FROM songs")
-        return [
-            app_commands.Choice(name=f"{row["name"]} - {row['original_artist']}",
-                                value=row["song_id"])
-            for row in rows if current.lower() in f"{row["name"]} - {row['original_artist']}".lower()
-        ][:25] 
-
-    @app_commands.command(name="add_group", description="Asignar un grupo a una de tus presentaciones en preparación")
-    async def add_group(self, interaction: Interaction):
-        if interaction.guild is None:
-            return await interaction.response.send_message(
-                "❌ Este comando solo está disponible en servidores.", 
-                ephemeral=True
-            )
-        user_id = interaction.user.id
-        pool = get_pool()
-
-        async with pool.acquire() as conn:
-            pres_rows = await conn.fetch("""
-                SELECT presentation_id, song_id, group_id, presentation_date
-                FROM presentations
-                WHERE user_id = $1 AND status = 'preparation'
-                ORDER BY presentation_date DESC
-            """, user_id)
-
-            if not pres_rows:
-                await interaction.response.send_message("❌ No tienes presentaciones en preparación.", ephemeral=True)
-                return
-
-            descr = ""
-            for row in pres_rows:
-                song_info = "n/a"
-                if row['song_id']:
-                    song_row = await conn.fetchrow("SELECT name, original_artist FROM songs WHERE song_id = $1", row['song_id'])
-                    song_info = f"{song_row['name']} - {song_row['original_artist']}" if song_row else "n/a"
-                
-                group_name = "n/a"
-                if row['group_id']:
-                    group_row = await conn.fetchrow("SELECT name FROM groups WHERE group_id = $1", row['group_id'])
-                    group_name = group_row["name"] if group_row else "n/a"
-
-                descr += f"**ID:** `{row['presentation_id']}`\n> Group: `{group_name}`\n> Song: `{song_info}`\n\n"
-
-        embed = discord.Embed(
-            title="Selecciona la presentación a la que deseas asignar un grupo:",
-            description=descr,
-            color=discord.Color.green()
-        )
-
-        await interaction.response.send_message(embed=embed, view=PresentationAddGroupView(interaction, pres_rows), ephemeral=True)
-
     @app_commands.command(name="perform", description="Iniciar una presentación en preparación")
     async def perform(self, interaction: Interaction):
         if interaction.guild is None:
@@ -492,6 +386,12 @@ class ConfirmPublishPracticeView(discord.ui.View):
         # 5) Volver a la lista actualizada
         async with pool.acquire() as conn:
             rows = await conn.fetch(self.paginator.base_query, *self.paginator.query_params)
+            
+            published_presentation = await conn.fetchrow("SELECT * FROM presentations WHERE presentation_id = $1", self.presentation_id)
+            published_group = await conn.fetchval("SELECT name FROM groups WHERE group_id = $1", published_presentation['group_id'])
+            published_song = await conn.fetchval("SELECT name FROM songs WHERE song_id = $1", published_presentation['song_id'])
+            published_average_score = await conn.fetchval("SELECT average_score FROM songs WHERE song_id = $1", published_presentation['song_id'])
+            
         if not rows:
             return await interaction.response.edit_message(
                 content="⚠️ No se encontraron presentaciones.",
@@ -528,6 +428,10 @@ class ConfirmPublishPracticeView(discord.ui.View):
         
         new_p = PresentationListPaginator(embeds, rows, interaction, self.paginator.base_query, self.paginator.query_params)
         await new_p.restart(interaction)
+        
+        await interaction.followup.send(
+            content=f"## 🎉 ¡`{published_group}` ha publicado una Práctica de `{published_song}`!\n**Puntuación total:** {format(published_presentation['total_score'],',')} _(Esperado: {format(int(published_average_score),',')})_\n> **Popularidad ganada:** {format(self.popularity,',')}\n> **XP obtenida:** {self.xp}"
+        )
 
     @discord.ui.button(label="✖ Cancelar", style=discord.ButtonStyle.danger)
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -792,6 +696,138 @@ class PresentationButton(ui.Button):
             content="## ✅ Canción asignada exitosamente a la presentación.\nAsigna un grupo a tu presentación con `/presentations add_group` o inicia la presentación con `/presentation perform`.",
             view=None, embed=None)
 
+
+class SongSelectionPaginator:
+    def __init__(self, interaction: Interaction, presentation_id: str, songs: list, embeds_per_page: int = 4):
+        self.interaction = interaction
+        self.presentation_id = presentation_id
+        self.songs = songs
+        self.embeds_per_page = embeds_per_page
+        self.current_page = 0
+        self.total_pages = (len(songs) + embeds_per_page - 1) // embeds_per_page
+
+    def get_page_items(self):
+        start = self.current_page * self.embeds_per_page
+        end = start + self.embeds_per_page
+        return self.songs[start:end]
+
+    async def build_embeds_and_view(self):
+        embeds = []
+        view = discord.ui.View(timeout=300)
+        pool = get_pool()
+
+        async with pool.acquire() as conn:
+            for row in self.get_page_items():
+                section_rows = await conn.fetch("SELECT * FROM song_sections WHERE song_id = $1", row['song_id'])
+
+                descr=""
+                duration = row['total_duration']
+                sections = row['total_sections']
+                vocal=rap=dance=visual=0
+                for section in section_rows:
+                    vocal += section['vocal']*section['duration']
+                    rap += section['rap']*section['duration']
+                    dance += section['dance']*section['duration']
+                    visual += section['visual']*section['duration']
+                
+                d_vocal = round(vocal/(duration),2)
+                d_rap = round(rap/(duration),2)
+                d_dance = round(dance/(duration),2)
+                d_visual = round(visual/(duration),2)
+                
+                descr = f"**Secciones:** {sections}\n**Estadísticas promedio:**\n> 🎤{d_vocal}% - 🎶{d_rap}% - 💃{d_dance}% - ✨{d_visual}%"
+
+                embed = discord.Embed(
+                    title=f"{row["name"]} - *{row['original_artist']}*",
+                    description=descr,
+                    color=discord.Color.purple()
+                )
+                embeds.append(embed)
+
+                # Botón por grupo (mismo nombre visible)
+                view.add_item(SongAssignButton(self.presentation_id, row["song_id"], row["name"]))
+
+        # Footer de página
+        footer = discord.Embed(
+            description=f"Página {self.current_page + 1}/{self.total_pages}",
+            color=discord.Color.dark_gray()
+        )
+        embeds.append(footer)
+
+        view.add_item(PreviousSongPageButton(self))
+        view.add_item(NextSongPageButton(self))
+
+        return embeds, view
+
+    async def start(self):
+        embeds, view = await self.build_embeds_and_view()
+        await self.interaction.response.edit_message(
+            content="🎤 Elige el grupo que quieres asignar a esta presentación:",
+            embeds=embeds,
+            view=view
+        )
+
+    async def update(self, interaction: Interaction):
+        embeds, view = await self.build_embeds_and_view()
+        await interaction.response.edit_message(embeds=embeds, view=view)
+
+class PreviousSongPageButton(discord.ui.Button):
+    def __init__(self, paginator: SongSelectionPaginator):
+        super().__init__(label="◀️", style=discord.ButtonStyle.secondary, row=2)
+        self.paginator = paginator
+
+    async def callback(self, interaction: Interaction):
+        self.paginator.current_page = (self.paginator.current_page - 1) % self.paginator.total_pages
+        await self.paginator.update(interaction)
+
+class NextSongPageButton(discord.ui.Button):
+    def __init__(self, paginator: SongSelectionPaginator):
+        super().__init__(label="▶️", style=discord.ButtonStyle.secondary, row=2)
+        self.paginator = paginator
+
+    async def callback(self, interaction: Interaction):
+        self.paginator.current_page = (self.paginator.current_page + 1) % self.paginator.total_pages
+        await self.paginator.update(interaction)
+
+class SongAssignButton(ui.Button):
+    def __init__(self, presentation_id: str, song_id: str, name: str):
+        super().__init__(label=name, style=discord.ButtonStyle.success, row=1)
+        self.presentation_id = presentation_id
+        self.song_id = song_id
+
+    async def callback(self, interaction: Interaction):
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            can_select = await conn.fetchval("SELECT can_select_song FROM presentations WHERE presentation_id = $1", self.presentation_id)
+            
+            view = ConfirmStartPresentationView(self.presentation_id, interaction.user.id)
+            
+            if can_select:
+                await conn.execute("""
+                    UPDATE presentations
+                    SET song_id = $1, last_action = $2
+                    WHERE presentation_id = $3
+                """, self.song_id, datetime.now(timezone.utc), self.presentation_id)
+                
+                embed, already_active = await get_presentation_embed(pool, self.presentation_id, interaction.user.id)
+                
+                await interaction.response.edit_message(
+                    content=f"✅ Canción asignada exitosamente a la presentación `{self.presentation_id}`.",
+                    embed=embed,
+                    view=view
+                )
+                
+            else:
+                embed, already_active = await get_presentation_embed(pool, self.presentation_id, interaction.user.id)
+                await interaction.response.edit_message(
+                    content=f"❌ La presentación `{self.presentation_id}` no permite cambiar la canción.",
+                    embed=embed,
+                    view=view
+                )
+                
+
+
+
 # --- add group
 class PresentationAddGroupView(ui.View):
     def __init__(self, interaction: Interaction, presentations):
@@ -888,30 +924,9 @@ class NextPageButton(discord.ui.Button):
         self.paginator.current_page = (self.paginator.current_page + 1) % self.paginator.total_pages
         await self.paginator.update(interaction)
 
-class GroupAssignButton(discord.ui.Button):
-    def __init__(self, presentation_id: str, group_id: str, name: str):
-        super().__init__(label=name, style=discord.ButtonStyle.success)
-        self.presentation_id = presentation_id
-        self.group_id = group_id
-
-    async def callback(self, interaction: Interaction):
-        pool = get_pool()
-        async with pool.acquire() as conn:
-            await conn.execute("""
-                UPDATE presentations
-                SET group_id = $1, last_action = $2
-                WHERE presentation_id = $3
-            """, self.group_id, datetime.now(timezone.utc), self.presentation_id)
-
-        await interaction.response.edit_message(
-            content=f"## ✅ Grupo asignado exitosamente a la presentación `{self.presentation_id}`\nAsigna una canción con `/presentation add_song` o inicia la presentación con `/presentation perform`.",
-            embed=None,
-            view=None
-        )
-
 class GroupSelectPresentationButton(ui.Button):
     def __init__(self, presentation_id: str):
-        super().__init__(label=presentation_id, style=discord.ButtonStyle.primary)
+        super().__init__(label="➕ Group", style=discord.ButtonStyle.success)
         self.presentation_id = presentation_id
 
     async def callback(self, interaction: Interaction):
@@ -956,11 +971,16 @@ class GroupAssignButton(ui.Button):
                 SET group_id = $1, last_action = $2
                 WHERE presentation_id = $3
             """, self.group_id, datetime.now(timezone.utc), self.presentation_id)
-
+            
+        
+        view = ConfirmStartPresentationView(self.presentation_id, interaction.user.id)
+        
+        embed, already_active = await get_presentation_embed(pool, self.presentation_id, interaction.user.id)
+        
         await interaction.response.edit_message(
             content=f"✅ Grupo asignado exitosamente a la presentación `{self.presentation_id}`.",
-            embed=None,
-            view=None
+            embed=embed,
+            view=view
         )
 
 # --- PERFORM
@@ -981,38 +1001,7 @@ class PerformPresentationButton(ui.Button):
     async def callback(self, interaction: Interaction):
         user_id = interaction.user.id
         pool = get_pool()
-
-        # Verificar si ya hay una activa (de nuevo por seguridad)
-        async with pool.acquire() as conn:
-            already_active = await conn.fetchval("""
-                SELECT 1 FROM presentations
-                WHERE user_id = $1 AND status = 'active'
-            """, user_id)
-            presentation = await conn.fetchrow(
-                "SELECT * FROM presentations WHERE presentation_id = $1",
-                self.presentation_id
-            )
-
-            group_name = song_name = "`n/a`"
-            if presentation['group_id']:
-                group_name = await conn.fetchval(
-                    "SELECT name FROM groups WHERE group_id = $1",
-                    presentation['group_id'])
-                
-            if presentation['song_id']:
-                song_name = await conn.fetchval(
-                    "SELECT name FROM songs WHERE song_id = $1",
-                    presentation['song_id'])
-        
-        desc = f"**Tipo:** {presentation['presentation_type'].capitalize().replace("_"," ")}\n"
-        desc += f"**Grupo:** {group_name}\n"
-        desc += f"**Canción:** {song_name}"
-        
-        embed = discord.Embed(
-            title=f"🎬 Presentación `{self.presentation_id}`",
-            description=desc,
-            color=discord.Color.dark_blue()
-        )
+        embed, already_active = await get_presentation_embed(pool, self.presentation_id, user_id)
         
         if already_active:
             await interaction.response.edit_message(
@@ -1020,20 +1009,59 @@ class PerformPresentationButton(ui.Button):
                 embed=None,
                 view=None
             )
-            return
+            
+        
+        view = ConfirmStartPresentationView(self.presentation_id, user_id)
 
         await interaction.response.edit_message(
             content="",
             embed=embed,
-            view=ConfirmStartPresentationView(self.presentation_id, user_id)
+            view=view
         )
+
+async def get_presentation_embed(pool, presentation_id, user_id):
+    pool = get_pool()
+
+    # Verificar si ya hay una activa (de nuevo por seguridad)
+    async with pool.acquire() as conn:
+        already_active = await conn.fetchval("""
+            SELECT 1 FROM presentations
+            WHERE user_id = $1 AND status = 'active'
+        """, user_id)
+        presentation = await conn.fetchrow(
+            "SELECT * FROM presentations WHERE presentation_id = $1",
+            presentation_id
+        )
+
+        group_name = song_name = "`n/a`"
+        if presentation['group_id']:
+            group_name = await conn.fetchval(
+                "SELECT name FROM groups WHERE group_id = $1",
+                presentation['group_id'])
+            
+        if presentation['song_id']:
+            song_name = await conn.fetchval(
+                "SELECT name FROM songs WHERE song_id = $1",
+                presentation['song_id'])
+    
+    desc = f"**Tipo:** {presentation['presentation_type'].capitalize().replace("_"," ")}\n"
+    desc += f"**Grupo:** {group_name}\n"
+    desc += f"**Canción:** {song_name}"
+    
+    embed = discord.Embed(
+        title=f"🎬 Presentación `{presentation_id}`",
+        description=desc,
+        color=discord.Color.dark_blue()
+    )
+    return embed, already_active
+
 
 class ConfirmStartPresentationView(ui.View):
     def __init__(self, presentation_id: str, user_id: int):
         super().__init__(timeout=60)
         self.presentation_id = presentation_id
         self.user_id = user_id
-
+    
     @ui.button(label="✅ Iniciar", style=discord.ButtonStyle.primary)
     async def confirm(self, interaction: Interaction, button: ui.Button):
         await interaction.response.defer()
@@ -1051,9 +1079,10 @@ class ConfirmStartPresentationView(ui.View):
             """, self.presentation_id)
 
             if not pres or not pres["group_id"] or not pres["song_id"]:
+                view = ConfirmStartPresentationView(self.presentation_id, interaction.user.id)
                 await interaction.edit_original_response(
                     content="❌ La presentación no tiene grupo y canción asignados.",
-                    view=None
+                    view=view
                 )
                 return
 
@@ -1156,18 +1185,50 @@ class ConfirmStartPresentationView(ui.View):
             
         await show_current_section_view(interaction, self.presentation_id, edit=True)
 
-class placeholderView(ui.View):
-    def __init__(self, presentation_id: str, user_id: int):
-        super().__init__(timeout=60)
+    @ui.button(label="➕ Group", style=discord.ButtonStyle.success)
+    async def add_group(self, interaction: Interaction, button:ui.Button):
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            group_rows = await conn.fetch("""
+                SELECT group_id, name, popularity
+                FROM groups
+                WHERE user_id = $1 AND status = 'active'
+            """, interaction.user.id)
+            
 
-    @ui.button(label="➕ Grupo", style=discord.ButtonStyle.success)
-    async def add_group(self, interaction: Interaction, button: ui.Button):
-        pass
-    
+        if not group_rows:
+            await interaction.response.edit_message(
+                content="❌ No tienes grupos disponibles.",
+                view=None,
+                embed=None
+            )
+            return
+        
+        paginator = GroupSelectionPaginator(interaction, self.presentation_id, group_rows)
+        await paginator.start()
+
+
     @ui.button(label="➕ Canción", style=discord.ButtonStyle.success)
     async def add_song(self, interaction: Interaction, button: ui.Button):
-        pass
-
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            song_rows = await conn.fetch("SELECT * FROM songs ORDER BY name")
+            
+        if not song_rows:
+            await interaction.response.edit_message(
+                content="❌ No tienes grupos disponibles.",
+                view=None,
+                embed=None
+            )
+            return
+        
+        paginator = SongSelectionPaginator(interaction, self.presentation_id, song_rows)
+        await paginator.start()
+        
+class placeholderView(ui.View):
+    def __init__(self, presentation_id: str, user_id: int):
+        super().__init__(timeout=60)   
+         
     @ui.button(label="❌ Cancelar", style=discord.ButtonStyle.danger)
     async def cancel(self, interaction: Interaction, button: ui.Button):
         await interaction.response.edit_message(content="❌ Inicio de presentación cancelado.", view=None)

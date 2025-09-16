@@ -123,9 +123,9 @@ section_id,song_id,section_number,section_type,duration,lyrics,vocal,rap,dance,v
 0122,006,2,intro,9,*La-la-la la-la-la-la la-la-la la-la*\n*La-la-la la-la-la-la la-la-la la-la*,0,20,20,60,optional,,,,,,40400
 0123,006,3,intro,9,*La-la-la la-la-la-la la-la-la la-la*\n*La-la-la la-la-la-la la-la-la la-la*,0,20,60,20,optional,group_dance,,,10,5,46700
 0124,006,4,verse,5,*jeogi kkamppagineun bulbit*\n*sone japijil ana*,35,0,35,30,forced,,,,,,22400
-0125,006,5,verse,5,*ttaeron huimang ttaeron jeolmang*\n*geu sai eogeunnan chaero yeah*,35,0,30,25,optional,backup_dance,,,10,,22400
-0126,006,6,pre_chorus,5,*Do it*\n*sesang-eun jeomjeom deo hwaryeohage binna*,40,0,40,10,forced,harmony,10,,,,22400
-0127,006,7,pre_chorus,5,*geunde wae deo sumi cha?*\n*(deo ttwieodo kkumeun deo meoreojyeo)*,45,0,20,30,optional,duet,,20,,,25700
+0125,006,5,verse,5,*ttaeron huimang ttaeron jeolmang*\n*geu sai eogeunnan chaero yeah*,35,0,35,30,optional,backup_dance,,,10,,24600
+0126,006,6,pre_chorus,5,*Do it*\n*sesang-eun jeomjeom deo hwaryeohage binna*,40,0,40,20,forced,harmony,10,,,,24600
+0127,006,7,pre_chorus,5,*geunde wae deo sumi cha?*\n*(deo ttwieodo kkumeun deo meoreojyeo)*,45,0,25,30,optional,duet,,20,,,26800
 0128,006,8,chorus,9,*La-la-la la-la-la-la la-la-la la-la*\n*(kkae-eona ije)*\n*La-la-la la-la-la-la la-la-la la-la*,0,20,60,20,forced,adlib,10,,10,,49100
 0129,006,9,chorus,5,*sasil nan haengbokago sipeun geol nuguboda deo*,40,0,40,20,optional,group_dance,,,15,,26200
 0130,006,10,chorus,5,*La-la-la la-la-la-la la-la-la la-la*,0,20,30,50,optional,pose_sync,,,5,10,26400

@@ -446,7 +446,7 @@ Las cartas mostradas indicarán a qué Agencia pertenecen y su ID, de manera que
 
 ----------------------------------
 
-## 📢 Versión 1.2.9 - Nuevo Grupo (2025-09-15)
+## 📢 Versión 1.2.9 - Nuevo Grupo y mejoras generales (2025-09-15)
 
 ### 🃏 Cartas, idols y colecciones
 - Se han agregado las cartas del grupo **ifeye** para su set *Sweet Tang*, así como su FanClub y todas las funciones. Ya pueden ser obtenidas en Packs de cualquier tipo.
@@ -469,7 +469,19 @@ Sin embargo, también se han reducido a la mitad los créditos obtenidos al reem
 - FCR, POB, Limited y Specia: 💵2500
 
 ### 🎮 Cambios menores en balance
-Se ha aumentado la cantidad de XP otorgada por algunas misiones
+Se ha aumentado la cantidad de XP y dinero otorgados por algunas misiones.
+
+----------------------------------
+
+## 📢 Versión 1.2.9.1 - Cambios generales y mejoras (2025-09-16)
+
+### 🎤 Presentaciones
+Se ha actualizado el sistema de presentaciones para *reducir la cantidad de comandos necesarios* para configurar una presentación. Ahora solo se debe crear la presentación de su elección con `/presentation create`, y posteriormente elegirla y configurarla con `/presentation perform`, donde aparecerán botones para **Agregar Grupo** y **Agregar canción**, adicionales al ya existente **Iniciar**. Al elegir canción, también podrán ver las **estadísticas promedio** de cada canción, así como su duración.
+Ahora 
+
+### 💃 Prácticas
+Ahora, al publicar una práctica desde `/presentation list`, se envía un mensaje público de la misma manera que cuando se completa una presentación normal.
+
 ----------------------------------
 
 `plantilla`
