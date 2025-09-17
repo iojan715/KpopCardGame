@@ -484,6 +484,17 @@ Ahora, al publicar una práctica desde `/presentation list`, se envía un mensaj
 
 ----------------------------------
 
+## 📢 Versión 1.2.9.2 - Cambios a sorteos (2025-09-17)
+
+### ✨ Nuevas funciones
+- Ahora los **jugadores** también pueden crear sus propios sorteos en el canal #giveaways
+- También es posible *sortear objetos*. Para ello se han separado los comandos de sorteo en:
+  - **/giveaway card**: Para sortear cartas idol
+  - **giveaway item**: Para sortear objetos
+- El límite de tiempo de sorteo se ha expandido hasta un máximo de **72 horas**.
+
+----------------------------------
+
 `plantilla`
 
 ## 📢 Versión X.Y.Z - [Título breve del parche] (AAAA-MM-DD)

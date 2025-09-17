@@ -104,10 +104,6 @@ async def create_cards_idol_table():
                 dance INTEGER DEFAULT 0,
                 visual INTEGER DEFAULT 0,
                 energy INTEGER DEFAULT 0,
-                p_skill TEXT,
-                a_skill TEXT,
-                s_skill TEXT,
-                u_skill TEXT,
                 weight INTEGER DEFAULT 0,
                 value INTEGER DEFAULT 0
             );
@@ -288,6 +284,7 @@ async def create_inventory_badges_table():
                 user_id BIGINT NOT NULL,
                 badge_id TEXT NOT NULL,
                 date_obtained TIMESTAMPTZ DEFAULT now(),
+                is_selected BOOLEAN DEFAULT FALSE,
                 PRIMARY KEY (user_id, badge_id)
             );
         """)
@@ -622,7 +619,8 @@ async def create_giveaways_table():
                 host_id BIGINT NOT NULL,
                 card_id TEXT NOT NULL,
                 end_time TIMESTAMPTZ DEFAULT now(),
-                active BOOLEAN DEFAULT TRUE
+                active BOOLEAN DEFAULT TRUE,
+                type TEXT DEFAULT 'idol'
             );
         """)
 
@@ -660,9 +658,8 @@ async def create_loop_events_table():
             ('reset_fcr',        'semanal', 0, None),
             ('reduce_popularity','semanal',  0, None),
             ('reduce_influence', 'semanal', 0, None),
-            ('change_limited_set','mensual', None, 1),
             ('cancel_presentation','frecuente', None, None),
-            ('increase_payment','semanal', 0, None),
+            ('increase_payment','semanal', 1, None),
             ('remove_roles','semanal', 0, None),
             ('add_daily_mission', 'diaria', None, None),
             ('add_weekly_mission', 'semanal', 0, None),

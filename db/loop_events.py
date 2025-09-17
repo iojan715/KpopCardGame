@@ -453,6 +453,16 @@ async def giveaway_winner():
                 await conn.execute(
                     "UPDATE giveaways SET active = FALSE WHERE giveaway_id=$1",
                     giveaway_id)
+                if g['type'] == 'idol':
+                    await conn.execute(
+                        "UPDATE user_idol_cards SET user_id=$1, status='available', date_obtained=now() WHERE unique_id=$2",
+                        winner, prize_card
+                    )
+                elif g['type'] == 'item':
+                    await conn.execute(
+                        "UPDATE user_item_cards SET user_id=$1, status='available', date_obtained=now() WHERE unique_id=$2",
+                        winner, prize_card
+                    )
 
                 try:
                     channel = BOT.get_channel(channel_id)
@@ -480,17 +490,28 @@ async def giveaway_winner():
                         user = await BOT.fetch_user(winner)  # fallback si no está en caché
                     if user:
                         unique_id = prize_card
-                        card_id = await conn.fetchval("SELECT card_id FROM user_idol_cards WHERE unique_id = $1", unique_id)
-                        embed = discord.Embed(
-                            title="🎊 ¡Felicidades!",
-                            description=f"Has ganado la carta `{card_id}.{prize_card}` en un sorteo 🎁",
-                            color=discord.Color.gold()
-                        )
-                        embed.set_footer(text=f"{giveaway_id}")
+                        
+                        if g['type'] == 'idol':
+                            card_id = await conn.fetchval("SELECT card_id FROM user_idol_cards WHERE unique_id = $1", unique_id)
+                            embed = discord.Embed(
+                                title="🎊 ¡Felicidades!",
+                                description=f"Has ganado la carta `{card_id}.{prize_card}` en un sorteo 🎁",
+                                color=discord.Color.gold()
+                            )
+                            embed.set_footer(text=f"{giveaway_id}")
+                            image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{card_id}.webp{version}"
+                            embed.set_image(url=image_url)
+                            
+                        elif g['type'] == 'item':
+                            card_id = await conn.fetchval("SELECT item_id FROM user_item_cards WHERE unique_id = $1", unique_id)
+                            item_name = await conn.fetchval("SELECT name FROM cards_item WHERE item_id = $1", card_id)
+                            embed = discord.Embed(
+                                title="🎊 ¡Felicidades!",
+                                description=f"Has ganado el objeto **{item_name}** (ID: `{card_id}.{prize_card}`) en un sorteo 🎁",
+                                color=discord.Color.gold()
+                            )
+                            embed.set_footer(text=f"{giveaway_id}")
 
-                        # Opcional: mostrar imagen de la carta
-                        image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{card_id}.webp{version}"
-                        embed.set_image(url=image_url)
                         try:
                             await user.send(embed=embed)
                         except discord.Forbidden:
@@ -510,10 +531,16 @@ async def giveaway_winner():
             )
 
             # Transferir la carta
-            await conn.execute(
-                "UPDATE user_idol_cards SET user_id=$1, status='available', date_obtained=now() WHERE unique_id=$2",
-                winner, prize_card
-            )
+            if g['type'] == 'idol':
+                await conn.execute(
+                    "UPDATE user_idol_cards SET user_id=$1, status='available', date_obtained=now() WHERE unique_id=$2",
+                    winner, prize_card
+                )
+            elif g['type'] == 'item':
+                await conn.execute(
+                    "UPDATE user_item_cards SET user_id=$1, status='available', date_obtained=now() WHERE unique_id=$2",
+                    winner, prize_card
+                )
 
             # Editar mensaje original
             try:
