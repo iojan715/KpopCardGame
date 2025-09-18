@@ -131,6 +131,120 @@ class RedeemGroup(app_commands.Group):
             view = RedeemableView(card_id, is_idol_card, matching)
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
+    @redeem_card.autocomplete("card_id")
+    async def redeem_card_autocomplete(self, interaction: discord.Interaction, current: str):
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("SELECT * FROM cards_idol ORDER BY card_id ASC")
+        return [
+            app_commands.Choice(name=f"{row['card_id']}", value=row['card_id'])
+            for row in rows if current.lower() in f"{row['card_id'].lower()}"
+        ][:25]
+
+    @app_commands.command(name="item", description="Canjea una carta idol o ítem usando un redeemable")
+    @app_commands.describe(item="Item que deseas canjear")
+    async def redeem_item(self, interaction: discord.Interaction, item: str):
+        if interaction.guild is None:
+            return await interaction.response.send_message(
+                "❌ Este comando solo está disponible en servidores.", 
+                ephemeral=True
+            )
+        pool = get_pool()
+        item_id = item
+        user_id = interaction.user.id
+
+        # Buscar si es idol card
+        async with pool.acquire() as conn:
+            
+            item_data = await conn.fetchrow(
+                "SELECT * FROM cards_item WHERE item_id = $1", item_id
+            )
+            if not item_data:
+                return await interaction.response.send_message(content="❌ El ID ingresado no corresponde a ninguna carta o ítem.", ephemeral=True)
+
+            is_idol_card = False
+
+
+            # Buscar redeemables disponibles del usuario
+            redeemables = await conn.fetch("""
+                SELECT r.redeemable_id, r.name, r.effect
+                FROM user_redeemables ur
+                JOIN redeemables r ON r.redeemable_id = ur.redeemable_id
+                WHERE ur.user_id = $1
+                AND ur.quantity > 0
+                ORDER BY r.redeemable_id ASC
+            """, user_id)
+            
+            a_red = await conn.fetch(
+                "SELECT * FROM redeemables ORDER BY redeemable_id ASC"
+            )
+
+        matching = []
+        all_redeemables =[]
+        
+        for r in redeemables:
+            if r["effect"] == "item":
+                matching.append({
+                    "redeemable_id": r["redeemable_id"],
+                    "name": r["name"],
+                    "effect": r["effect"]
+                })
+        for ar in a_red:
+            if ar["effect"] == "item":
+                all_redeemables.append({
+                    "redeemable_id": ar["redeemable_id"],
+                    "name": ar["name"],
+                    "effect": ar["effect"]
+                })
+
+        image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{item_id}.webp{version}"
+
+        embed = discord.Embed(
+            title="🎁 Canjear carta",
+            description=f"Selecciona un redeemable para canjear **{item_data['name']}**.",
+            color=discord.Color.purple()
+        )
+        stats = [
+            ("Vocal", item_data["plus_vocal"]),
+            ("Rap", item_data["plus_rap"]),
+            ("Dance", item_data["plus_dance"]),
+            ("Visual", item_data["plus_visual"]),
+            ("Energy", item_data["plus_energy"]),
+        ]
+        bonus_str = "\n".join(f"**{f'+{v}' if v > 0 else v}** {k}" for k, v in stats if v != 0)
+
+        if bonus_str:
+            embed.add_field(name="Bonos:", value=bonus_str, inline=False)
+
+            
+        for r in all_redeemables:
+            cantidad=0
+            for m in matching:
+                if r['redeemable_id'] == m['redeemable_id']:
+                    async with pool.acquire() as conn:
+                        q = await conn.fetchrow("""
+                            SELECT quantity FROM user_redeemables
+                            WHERE user_id = $1 AND redeemable_id = $2
+                        """, user_id, m["redeemable_id"])
+                        if q:
+                            cantidad = q['quantity']
+            embed.add_field(name=r["name"], value=f"Tienes: **{cantidad}**", inline=True)
+        view=discord.ui.View()
+        if matching:
+            view = RedeemableView(item_id, is_idol_card, matching)
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+
+    @redeem_item.autocomplete("item")
+    async def item_autocomplete(self, interaction: discord.Interaction, current: str):
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("SELECT name, item_id FROM cards_item ORDER BY name ASC")
+        return [
+            app_commands.Choice(name=f"{row['name']}", value=row['item_id'])
+            for row in rows if current.lower() in f"{row['name'].lower()}"
+        ][:25]
+
+
     @app_commands.command(name="p_card", description="Canjea una Performance Card usando un redeemable")
     @app_commands.describe(card="Nombre de la carta que deseas canjear",)
     async def redeem_p_card(self, interaction: discord.Interaction, card:str):

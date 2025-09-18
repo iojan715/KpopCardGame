@@ -66,7 +66,7 @@ class GiveawaysGroup(app_commands.Group):
             embed.set_thumbnail(url=image_url)
 
             view = GiveawayButton(giveaway_id, pool)
-            message = await interaction.channel.send(content="@CEO", embed=embed, view=view)
+            message = await interaction.channel.send(content="@everyone", embed=embed, view=view)
             
             await conn.execute("UPDATE user_idol_cards SET status = 'giveaway' WHERE unique_id = $1", u_id)
 
@@ -135,7 +135,7 @@ class GiveawaysGroup(app_commands.Group):
             #embed.set_thumbnail(url=image_url)
 
             view = GiveawayButton(giveaway_id, pool)
-            message = await interaction.channel.send(content="@CEO", embed=embed, view=view)
+            message = await interaction.channel.send(content="@everyone", embed=embed, view=view)
             
             await conn.execute("UPDATE user_item_cards SET status = 'giveaway' WHERE unique_id = $1", u_id)
 
