@@ -456,12 +456,12 @@ async def giveaway_winner():
                 if g['type'] == 'idol':
                     await conn.execute(
                         "UPDATE user_idol_cards SET user_id=$1, status='available', date_obtained=now() WHERE unique_id=$2",
-                        winner, prize_card
+                        g['host_id'], prize_card
                     )
                 elif g['type'] == 'item':
                     await conn.execute(
                         "UPDATE user_item_cards SET user_id=$1, status='available', date_obtained=now() WHERE unique_id=$2",
-                        winner, prize_card
+                        g['host_id'], prize_card
                     )
 
                 try:
