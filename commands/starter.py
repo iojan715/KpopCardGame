@@ -7,7 +7,7 @@ from utils.localization import get_translation
 from utils.language import get_user_language
 from asyncpg import Pool
 
-version = "?v=242"
+version = "?v=241"
 base = 200
 mult = 600
 reduct = 100000
@@ -422,5 +422,4 @@ class SponsorCommand(commands.Cog):
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(StartCommand(bot))
-
     await bot.add_cog(SponsorCommand(bot))
