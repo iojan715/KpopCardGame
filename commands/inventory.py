@@ -10,10 +10,9 @@ from db.connection import get_pool
 from datetime import datetime
 from utils.paginator import Paginator, NextButton, PreviousButton
 from collections import Counter, defaultdict
-from commands.starter import version as v
+from commands.starter import version
 from commands.starter import base, mult, reduct
 
-version = v
 
 RARITY_CHOICES = [
     app_commands.Choice(name="Regular", value="Regular"),
