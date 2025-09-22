@@ -309,6 +309,7 @@ class PublishPracticeButton(discord.ui.Button):
                 "SELECT average_score FROM songs WHERE song_id = $1",
                 self.rowdata["song_id"]
             ) or 1.0
+            u_credits = await conn.fetchval("SELECT credits FROM users WHERE user_id = $1", interaction.user.id)
 
         # cálculo al 80%
         raw_pop = 1000 * (total_score / avg)
@@ -330,6 +331,7 @@ class PublishPracticeButton(discord.ui.Button):
             ),
             color=discord.Color.blurple()
         )
+        embed.set_footer(text=f"Tienes 💵{format(u_credits,',')}")
         view = ConfirmPublishPracticeView(
             user_id=interaction.user.id,
             presentation_id=self.rowdata["presentation_id"],
@@ -353,10 +355,15 @@ class ConfirmPublishPracticeView(discord.ui.View):
     @discord.ui.button(label="✅ Confirmar", style=discord.ButtonStyle.success)
     async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user.id != self.user_id:
-            return await interaction.response.send_message("❌ No puedes usar este botón.", ephemeral=True)
+            return await interaction.response.send_message("## ❌ No puedes usar este botón.", ephemeral=True)
 
         pool = get_pool()
         async with pool.acquire() as conn:
+            u_credits = await conn.fetchval("SELECT credits FROM users WHERE user_id = $1", interaction.user.id)
+            if u_credits < 2000:
+                print("❌")
+                return await interaction.response.send_message("## ❌ No tienes suficientes créditos.", ephemeral=True)
+            
             # 1) Cobrar 2000 créditos
             await conn.execute(
                 "UPDATE users SET credits = credits - $1 WHERE user_id = $2",
