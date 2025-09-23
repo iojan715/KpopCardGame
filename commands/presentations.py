@@ -205,11 +205,10 @@ class PresentationGroup(app_commands.Group):
 
         # Buscar presentaciones en preparación
         async with pool.acquire() as conn:
-            pres_rows = await conn.fetch("""
-                SELECT * FROM presentations
+            base_query = """SELECT * FROM presentations
                 WHERE user_id = $1 AND status = 'preparation'
-                ORDER BY presentation_date DESC
-            """, user_id)
+                ORDER BY presentation_date DESC"""
+            pres_rows = await conn.fetch(base_query, user_id)
 
         if not pres_rows:
             await interaction.edit_original_response(
@@ -235,12 +234,15 @@ class PresentationGroup(app_commands.Group):
             )
             embeds.append(embed)
 
-        # Mostrar lista para seleccionar una presentación
-        await interaction.edit_original_response(
-            content="## 🎬 Selecciona una presentación:",
+        # 3) Arrancar el paginador
+        paginator = PresentationPerformancePaginator(
             embeds=embeds,
-            view=PresentationSelectToPerformView(interaction, pres_rows)
+            rows=pres_rows,
+            interaction=interaction,
+            base_query=base_query,
+            query_params=(user_id,)
         )
+        await paginator.start()
 
 
 # --- list
@@ -807,7 +809,7 @@ class SongAssignButton(ui.Button):
         async with pool.acquire() as conn:
             can_select = await conn.fetchval("SELECT can_select_song FROM presentations WHERE presentation_id = $1", self.presentation_id)
             
-            view = ConfirmStartPresentationView(self.presentation_id, interaction.user.id)
+            view = ConfirmStartPresentationView(self.presentation_id, interaction.user.id, PresentationPerformancePaginator)
             
             if can_select:
                 await conn.execute("""
@@ -980,7 +982,7 @@ class GroupAssignButton(ui.Button):
             """, self.group_id, datetime.now(timezone.utc), self.presentation_id)
             
         
-        view = ConfirmStartPresentationView(self.presentation_id, interaction.user.id)
+        view = ConfirmStartPresentationView(self.presentation_id, interaction.user.id, PresentationPerformancePaginator)
         
         embed, already_active = await get_presentation_embed(pool, self.presentation_id, interaction.user.id)
         
@@ -989,6 +991,8 @@ class GroupAssignButton(ui.Button):
             embed=embed,
             view=view
         )
+
+
 
 # --- PERFORM
 
@@ -999,11 +1003,150 @@ class PresentationSelectToPerformView(ui.View):
         self.interaction = interaction
         for row in presentations:
             self.add_item(PerformPresentationButton(row["presentation_id"]))
+      
+class BackToPresentationPerformanceButton(discord.ui.Button):
+    def __init__(self, paginator: "PresentationListPaginator"):
+        super().__init__(label="🔙 Volver", style=discord.ButtonStyle.secondary, row=2)
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        # re-ejecutar la consulta
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(self.paginator.base_query, *self.paginator.query_params)
+        if not rows:
+            return await interaction.response.edit_message(
+                content="⚠️ No se encontraron presentaciones.",
+                embed=None, view=None
+            )
+            
+        STATUS_MAP = {
+            "preparation":    ("🛠️", "Preparación"),
+            "active":         ("▶️", "En curso"),
+            "completed":      ("🎉", "Completada"),
+            "finished":       ("⌛", "Finalizada"),
+            "cancelled":      ("❌", "Cancelada"),
+            "expired":        ("⏰", "Expirada"),
+        }
+        # regenerar embeds
+        embeds = []
+        for r in rows:
+            async with pool.acquire() as conn:
+                group_name = await conn.fetchval("SELECT name FROM groups WHERE group_id = $1", r['group_id'])
+                song_name = await conn.fetchval("SELECT name FROM songs WHERE song_id = $1", r['song_id'])
+            
+            emoji, label = STATUS_MAP.get(r["status"], ("❓", r["status"].capitalize()))
+            status = f"{emoji} {label}"
+            
+            e = discord.Embed(
+                title=f"🎬 Presentación {r['presentation_id']}",
+                color=discord.Color.blurple()
+            )
+            e.add_field(name=f"**Tipo:** {r["presentation_type"].capitalize()}", value=f"**Estado:** {status}", inline=False)
+            e.add_field(name=f"**Grupo:** {group_name if group_name else "`n/a`"}", value=f"**Canción:** {song_name if song_name else "`n/a`"}", inline=False)
+            e.add_field(name=f"Creación: <t:{int(r['presentation_date'].timestamp())}:f>", value="", inline=False)
+            e.set_footer(text=f"{r['presentation_id']}")
+            embeds.append(e)
+
+        new_p = PresentationPerformancePaginator(
+            embeds=embeds,
+            rows=rows,
+            interaction=interaction,
+            base_query=self.paginator.base_query,
+            query_params=self.paginator.query_params,
+            embeds_per_page=self.paginator.embeds_per_page
+        )
+        await new_p.restart(interaction)
+
+class PresentationPerformancePaginator:
+    def __init__(
+        self,
+        embeds: list[discord.Embed],
+        rows: list[dict],
+        interaction: discord.Interaction,
+        base_query: str,
+        query_params: tuple,
+        embeds_per_page: int = 3
+    ):
+        self.all_embeds = embeds
+        self.all_rows = rows
+        self.interaction = interaction
+        self.embeds_per_page = embeds_per_page
+        self.current_page = 0
+        self.total_pages = (len(embeds) + embeds_per_page - 1) // embeds_per_page
+        self.base_query = base_query
+        self.query_params = query_params
+
+    def get_page_embeds(self):
+        start = self.current_page * self.embeds_per_page
+        end = start + self.embeds_per_page
+        page = self.all_embeds[start:end]
+        footer = discord.Embed(
+            description=f"Página {self.current_page+1}/{self.total_pages} • Total: {len(self.all_embeds)}",
+            color=discord.Color.dark_gray()
+        )
+        return [footer] + page
+
+    def get_view(self):
+        view = discord.ui.View(timeout=120)
+        start = self.current_page * self.embeds_per_page
+        end = start + self.embeds_per_page
+        for row in self.all_rows[start:end]:
+            view.add_item(PerformPresentationButton(presentation_id=row['presentation_id'], paginator=self))
+        view.add_item(PreviousPerformancePageButton(self))
+        view.add_item(NextPerformancePageButton(self))
+        return view
+
+    async def start(self):
+        await self.interaction.edit_original_response(
+            content="",
+            embeds=self.get_page_embeds(),
+            view=self.get_view()
+        )
+
+    async def restart(self, interaction: discord.Interaction):
+        self.current_page = 0
+        await interaction.response.edit_message(
+            embeds=self.get_page_embeds(),
+            view=self.get_view()
+        )
+
+    async def update(self, interaction: discord.Interaction):
+        await interaction.response.edit_message(
+            embeds=self.get_page_embeds(),
+            view=self.get_view()
+        )
+
+    async def previous_page(self, interaction: discord.Interaction):
+        self.current_page = (self.current_page - 1) % self.total_pages
+        await self.update(interaction)
+
+    async def next_page(self, interaction: discord.Interaction):
+        self.current_page = (self.current_page + 1) % self.total_pages
+        await self.update(interaction)
+
+class PreviousPerformancePageButton(discord.ui.Button):
+    def __init__(self, paginator: PresentationPerformancePaginator):
+        super().__init__(label="⬅️", style=discord.ButtonStyle.secondary, row=2)
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        await self.paginator.previous_page(interaction)
+
+class NextPerformancePageButton(discord.ui.Button):
+    def __init__(self, paginator: PresentationPerformancePaginator):
+        super().__init__(label="➡️", style=discord.ButtonStyle.secondary, row=2)
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        await self.paginator.next_page(interaction)
+
 
 class PerformPresentationButton(ui.Button):
-    def __init__(self, presentation_id: str):
+    def __init__(self, presentation_id: str, paginator: "PresentationListPaginator"):
         super().__init__(label=f"{presentation_id}", style=discord.ButtonStyle.primary)
         self.presentation_id = presentation_id
+        self.paginator = paginator
 
     async def callback(self, interaction: Interaction):
         user_id = interaction.user.id
@@ -1018,7 +1161,7 @@ class PerformPresentationButton(ui.Button):
             )
             
         
-        view = ConfirmStartPresentationView(self.presentation_id, user_id)
+        view = ConfirmStartPresentationView(self.presentation_id, user_id, self.paginator)
 
         await interaction.response.edit_message(
             content="",
@@ -1064,10 +1207,11 @@ async def get_presentation_embed(pool, presentation_id, user_id):
 
 
 class ConfirmStartPresentationView(ui.View):
-    def __init__(self, presentation_id: str, user_id: int):
+    def __init__(self, presentation_id: str, user_id: int, paginator: "PresentationListPaginator"):
         super().__init__(timeout=60)
         self.presentation_id = presentation_id
         self.user_id = user_id
+        self.paginator = paginator
     
     @ui.button(label="✅ Iniciar", style=discord.ButtonStyle.primary)
     async def confirm(self, interaction: Interaction, button: ui.Button):
@@ -1232,13 +1376,52 @@ class ConfirmStartPresentationView(ui.View):
         paginator = SongSelectionPaginator(interaction, self.presentation_id, song_rows)
         await paginator.start()
         
-class placeholderView(ui.View):
-    def __init__(self, presentation_id: str, user_id: int):
-        super().__init__(timeout=60)   
-         
     @ui.button(label="❌ Cancelar", style=discord.ButtonStyle.danger)
     async def cancel(self, interaction: Interaction, button: ui.Button):
-        await interaction.response.edit_message(content="❌ Inicio de presentación cancelado.", view=None)
+        pool = get_pool()
+        user_id = interaction.user.id
+        async with pool.acquire() as conn:
+            base_query = """SELECT * FROM presentations
+                WHERE user_id = $1 AND status = 'preparation'
+                ORDER BY presentation_date DESC"""
+            pres_rows = await conn.fetch(base_query, user_id)
+
+        if not pres_rows:
+            await interaction.edit_original_response(
+                content="❌ No tienes presentaciones en preparación."
+            )
+            return
+        
+        embeds = []
+        
+        for row in pres_rows:
+            async with pool.acquire() as conn:
+                group_name = await conn.fetchval("SELECT name FROM groups WhERE group_id = $1", row['group_id'])
+                song_name = await conn.fetchval("SELECT name FROM songs WHERE song_id = $1", row['song_id'])
+            
+            desc = f"**Tipo:** {row['presentation_type'].capitalize().replace("_"," ")}\n"
+            desc += f"**Grupo:** {group_name if group_name else "`n/a`"}\n"
+            desc += f"**Canción:** {song_name if song_name else "`n/a`"}"
+            
+            embed = discord.Embed(
+                title=f"Presentación `{row['presentation_id']}`",
+                description=desc,
+                color=discord.Color.blue()
+            )
+            embeds.append(embed)
+        
+        base_query = """SELECT * FROM presentations
+                WHERE user_id = $1 AND status = 'preparation'
+                ORDER BY presentation_date DESC"""
+                
+        new_p = PresentationPerformancePaginator(
+            embeds=embeds,
+            rows=pres_rows,
+            interaction=interaction,
+            base_query=base_query,
+            query_params=interaction.user.id
+        )
+        await new_p.restart(interaction)
 
 
 

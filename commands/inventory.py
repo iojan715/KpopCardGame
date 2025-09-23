@@ -3934,10 +3934,10 @@ class ConfirmFusionView(discord.ui.View):
                     
                 roll = random.randint(1, 100)
                 print(chance,roll)
-                emoji = "\n✅" if roll <= chance else "\n❌"
+                emoji = f"\n✅ `{roll}/{chance}`" if roll <= chance else f"\n❌ `{roll}/{chance}`"
                 result += f"{emoji} "
                 
-                if emoji == "\n❌":
+                if "❌" in emoji:
                     success = False
                 await interaction.edit_original_response(content=result)
                 await asyncio.sleep(0.6)
