@@ -1,0 +1,4 @@
+event_id,event_type,base_name,weight,can_song,can_set,goal_type,difficulty
+EVNT001,live_showcase,Live Showcase,100,FALSE,TRUE,,
+EVNT002,live_showcase,Music Show,50,TRUE,FALSE,,
+EVNT003,live_showcase,Cover Stage,200,FALSE,FALSE,,

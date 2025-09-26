@@ -40,7 +40,10 @@ class AdminGroup(app_commands.Group):
         app_commands.Choice(name="Groups", value="idol_group"),
         app_commands.Choice(name="songs", value="songs"),
         app_commands.Choice(name="Song sections", value="song_sections"),
-        app_commands.Choice(name="Missions", value="missions")
+        app_commands.Choice(name="Missions", value="missions"),
+        app_commands.Choice(name="Events", value="events"),
+        app_commands.Choice(name="Event Rewards", value="event_rewards"),
+        
     ]
 
     @app_commands.command(name="upload_content", description="Sube datos desde un archivo CSV")
@@ -68,7 +71,9 @@ class AdminGroup(app_commands.Group):
                                  "idol_group",
                                  "songs",
                                  "song_sections",
-                                 "missions"
+                                 "missions",
+                                 "events",
+                                 "event_rewards"
                                  ]
         if content_type != "all" and content_type not in ALLOWED_CONTENT_TYPES:
             contenido = ', '.join(ALLOWED_CONTENT_TYPES)
@@ -106,21 +111,19 @@ class AdminGroup(app_commands.Group):
                         for row in reader:
                             await conn.execute("""
                                 INSERT INTO packs (
-                                    pack_id, name, card_amount, can_idol, can_group, set_id, theme,
+                                    pack_id, name, card_amount, can_idol, can_group,
                                     can_gift, price, w_idol, w_regular, w_limited, w_fcr, w_pob,
                                     w_legacy, w_item, w_performance, w_redeemable, base_price
                                 ) VALUES (
                                     $1, $2, $3, $4, $5, $6, $7,
                                     $8, $9, $10, $11, $12, $13, $14,
-                                    $15, $16, $17, $18, $19
+                                    $15, $16, $17
                                 )
                                 ON CONFLICT (pack_id) DO UPDATE SET
                                     name = EXCLUDED.name,
                                     card_amount = EXCLUDED.card_amount,
                                     can_idol = EXCLUDED.can_idol,
                                     can_group = EXCLUDED.can_group,
-                                    set_id = EXCLUDED.set_id,
-                                    theme = EXCLUDED.theme,
                                     can_gift = EXCLUDED.can_gift,
                                     price = EXCLUDED.price,
                                     w_idol = EXCLUDED.w_idol,
@@ -137,7 +140,6 @@ class AdminGroup(app_commands.Group):
                             row["pack_id"], row["name"], int(row["card_amount"]),
                             row["can_idol"].lower() == "true",
                             row["can_group"].lower() == "true",
-                            row.get("set_id"), row.get("theme"),
                             row["can_gift"].lower() == "true", int(row["price"]),
                             int(row["w_idol"]), int(row["w_regular"]), int(row["w_limited"]),
                             int(row["w_fcr"]), int(row["w_pob"]), int(row["w_legacy"]),
@@ -182,7 +184,7 @@ class AdminGroup(app_commands.Group):
                             int(row["vocal"]), int(row["rap"]), int(row["dance"]), int(row["visual"]),
                             int(row["energy"]), int(row["weight"]), int(row["value"]))
                             inserted += 1
-                            print(row['card_id'])
+                            #print(row['card_id'])
                     inserted_total += inserted
                     inserted = 0
                 
@@ -599,7 +601,83 @@ class AdminGroup(app_commands.Group):
                             inserted += 1
                     inserted_total += inserted
                     inserted = 0
-        
+
+                elif ct == "events":
+                    import json
+                    with open(file_path, newline='', encoding='utf-8') as csvfile:
+                        reader = csv.DictReader(csvfile)
+                        for row in reader:
+                            await conn.execute(
+                                """
+                                INSERT INTO events (
+                                    event_id, event_type, base_name, weight,
+                                    can_song, can_set, goal_type, difficulty
+                                ) VALUES (
+                                    $1, $2, $3, $4, $5, $6, $7, $8
+                                )
+                                ON CONFLICT (event_id) DO UPDATE SET
+                                    event_type = EXCLUDED.event_type,
+                                    base_name = EXCLUDED.base_name,
+                                    weight = EXCLUDED.weight,
+                                    can_song = EXCLUDED.can_song,
+                                    can_set = EXCLUDED.can_set,
+                                    goal_type = EXCLUDED.goal_type,
+                                    difficulty = EXCLUDED.difficulty;
+                                """,
+                                row["event_id"],
+                                row.get("event_type"),
+                                row.get("base_name"),
+                                int(row.get("weight", 0)),
+                                row.get("can_song") in ("true", "True", "1", True),
+                                row.get("can_set") in ("true", "True", "1", True),
+                                row.get("goal_type"),
+                                row.get("difficulty")
+                            )
+                            inserted += 1
+                    inserted_total += inserted
+                    inserted = 0
+
+                elif ct == "event_rewards":
+                    import json
+                    with open(file_path, newline='', encoding='utf-8') as csvfile:
+                        reader = csv.DictReader(csvfile)
+                        for row in reader:
+                            await conn.execute(
+                                """
+                                INSERT INTO event_rewards (
+                                    reward_id, event_id, rank_min, rank_max,
+                                    credits, pack_id, is_ranked, redeemable_id, badge_id, boost
+                                ) VALUES (
+                                    $1, $2, $3, $4,
+                                    $5, $6, $7, $8, $9, $10
+                                )
+                                ON CONFLICT (reward_id) DO UPDATE SET
+                                    event_id = EXCLUDED.event_id,
+                                    rank_min = EXCLUDED.rank_min,
+                                    rank_max = EXCLUDED.rank_max,
+                                    credits = EXCLUDED.credits,
+                                    pack_id = EXCLUDED.pack_id,
+                                    is_ranked = EXCLUDED.is_ranked,
+                                    redeemable_id = EXCLUDED.redeemable_id,
+                                    badge_id = EXCLUDED.badge_id,
+                                    boost = EXCLUDED.boost;
+                                """,
+                                int(row["reward_id"]),
+                                row["event_id"],
+                                int(row["rank_min"]),
+                                int(row["rank_max"]),
+                                int(row.get("credits") or 0),
+                                row.get("pack_id"),
+                                row.get("is_ranked") in ("true", "True", "1", True),
+                                row.get("redeemable_id"),
+                                row.get("badge_id"),
+                                float(row['boost'])
+                            )
+                            inserted += 1
+                    inserted_total += inserted
+                    inserted = 0
+
+
         
         if content_type == "all":
             succesfull = get_translation(language, "upload_content.succesfull_all", inserted=inserted_total)

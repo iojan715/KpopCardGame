@@ -36,6 +36,10 @@ async def create_all_tables():
     await create_user_missions_table()
     await create_giveaways_table()
     await create_giveaways_entries_table()
+    await create_events_table()
+    await create_event_rewards_table()
+    await create_event_instances_table()
+    await create_event_participation_table()
     await create_loop_events_table()
 
 async def create_users_table():
@@ -285,6 +289,7 @@ async def create_inventory_badges_table():
                 badge_id TEXT NOT NULL,
                 date_obtained TIMESTAMPTZ DEFAULT now(),
                 is_selected BOOLEAN DEFAULT FALSE,
+                event_number INTEGER DEFAULT 1,
                 PRIMARY KEY (user_id, badge_id)
             );
         """)
@@ -638,6 +643,78 @@ async def create_giveaways_entries_table():
         """)
 
 
+# - events
+async def create_events_table():
+    pool = get_pool()
+    async with pool.acquire() as conn:
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS events (
+                event_id TEXT PRIMARY KEY,
+                event_type TEXT NOT NULL,       -- ej. "star_hunt", "live_showcase"
+                base_name TEXT NOT NULL,        -- ej. "Star Hunt"
+                weight INT DEFAULT 0,
+                can_song BOOLEAN DEFAULT FALSE,
+                can_set BOOLEAN DEFAULT FALSE,
+                goal_type TEXT,
+                difficulty TEXT
+            );
+        """)
+
+async def create_event_rewards_table():
+    pool = get_pool()
+    async with pool.acquire() as conn:
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS event_rewards (
+                reward_id INT PRIMARY KEY,
+                event_id TEXT NOT NULL,
+                rank_min INT NOT NULL,             -- ej. 1
+                rank_max INT NOT NULL,             -- ej. 3
+                credits INT DEFAULT 0,
+                pack_id TEXT,
+                is_ranked BOOLEAN DEFAULT FALSE,
+                redeemable_id TEXT,
+                badge_id TEXT,
+                boost FLOAT NOT NULL
+            );
+        """)
+ 
+async def create_event_instances_table():
+    pool = get_pool()
+    async with pool.acquire() as conn:
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS event_instances (
+                instance_id SERIAL PRIMARY KEY,
+                event_id TEXT NOT NULL,
+                event_number INT NOT NULL,
+                set_id TEXT,
+                song_id TEXT,
+                theme TEXT,
+                token_name TEXT,
+                start_date TIMESTAMPTZ NOT NULL,
+                end_date TIMESTAMPTZ NOT NULL,
+                status TEXT DEFAULT 'scheduled',   -- scheduled, active, finished, rewards_distributed
+                UNIQUE (event_id, event_number)    -- evita dos "Star Hunt 3" distintos
+            );
+        """)
+
+async def create_event_participation_table():
+    pool = get_pool()
+    async with pool.acquire() as conn:
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS event_participation (
+                participation_id SERIAL PRIMARY KEY,
+                instance_id INT NOT NULL,
+                user_id BIGINT NOT NULL,
+                performance_id BIGINT,
+                normal_score INT,
+                ranking INT DEFAULT 0,
+                created_at TIMESTAMPTZ DEFAULT now(),
+                UNIQUE (instance_id, user_id)
+            );
+        """)
+
+
+
 # - Loops table
 
 async def create_loop_events_table():
@@ -663,7 +740,8 @@ async def create_loop_events_table():
             ('remove_roles','semanal', 0, None),
             ('add_daily_mission', 'diaria', None, None),
             ('add_weekly_mission', 'semanal', 0, None),
-            ('giveaway_winner', 'frecuente', None, None)
+            ('giveaway_winner', 'frecuente', None, None),
+            ('change_event','semanal',0,None)
         ]
 
         for event_name, tipo, dia_semana, dia_mes in eventos:

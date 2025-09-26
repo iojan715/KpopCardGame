@@ -1802,7 +1802,6 @@ class SelectGroupItemButton(discord.ui.Button):
             view.add_item(SelectMemberItemButton(self.row_data, self.group, m, self.paginator))
         # volver & cancelar
         view.add_item(BackToItemInventoryButton(self.paginator.base_query,self.paginator.query_params,self.paginator))
-        view.add_item(CancelItemEquipButton(self.paginator))
 
         await interaction.response.edit_message(embed=embed, view=view)
 

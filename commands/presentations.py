@@ -4189,7 +4189,45 @@ async def finalize_presentation(conn, presentation: dict) -> str:
             return (
                 f"## 🎉 ¡`{group_name}` ha finalizado una presentación de `{song_name}`!\n**Puntuación total:** {format(total_score,',')} _(Esperado: {format(int(average_score),',')})_\n> **Popularidad ganada:** {format(popularity,',')}{double}{first}\n> **XP obtenida:** {xp}"
             )
+        
+        elif ptype == "event":
+            popularity = int(1000 * (total_score / average_score))
+            xp = popularity // 10
+            
+            await conn.execute("""
+                UPDATE user_missions um
+                SET obtained = um.obtained + 1,
+                    last_updated = now()
+                FROM missions_base mb
+                WHERE um.mission_id = mb.mission_id
+                AND um.user_id = $1
+                AND um.status = 'active'
+                AND mb.mission_type = 'do_presentation'
+                """, user_id)
+            
+            
+            
+            
+            xp = int(xp)
+            
+            await conn.execute(
+                "UPDATE users SET xp = xp + $1 WHERE user_id = $2",
+                xp, user_id
+            )
+            await conn.execute(
+                """
+                UPDATE presentations
+                SET status = 'ranking',
+                    current_section = current_section + 1
+                WHERE presentation_id = $2
+                """,
+                presentation_id
+            )
 
+            return (
+                f"## 🎉 ¡`{group_name}` ha presentado `{song_name}` en el Evento de la semana!\n**Puntuación total:** {format(total_score,',')} _(Esperado: {format(int(average_score),',')})_\n> **XP obtenida:** {xp}"
+            )
+            
         else:
             await conn.execute("""
                 UPDATE user_missions um
