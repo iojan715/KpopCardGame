@@ -3412,7 +3412,6 @@ class ActiveSkillPreviewButton(discord.ui.Button):
             if not skill:
                 return await interaction.response.send_message("❌ No se encontró la habilidad.", ephemeral=True)
 
-            desc = f"**{skill['skill_name']}**\n{parse_effect_description(skill)}"
             
             if idol['unique_id']:
                 card = await conn.fetchrow("SELECT * FROM user_idol_cards WHERE unique_id = $1", idol['unique_id'])
@@ -4265,4 +4264,5 @@ async def finalize_presentation(conn, presentation: dict) -> str:
             )
 
 async def setup(bot):
+
     bot.tree.add_command(PresentationGroup())
