@@ -26,11 +26,11 @@ BDGCUST004,Economy Supporter,custom,,
 BDGCUST005,Guide Helper,custom,,
 BDGCUST006,Anniversary Guest,custom,,
 BDGCUST007,Bug Hunter,custom,,
-BDGEVNT001,Golden Leader (Top 1),event,,
-BDGEVNT002,Silver Challenger (Top 2),event,,
-BDGEVNT003,Final Lineup (Top 3),event,,
-BDGEVNT004,Stage Presence,event,,
-BDGEVNT005,Return Spotlight,event,,
+BDGEVNT001,(Top 1) Golden Live Show,event,,
+BDGEVNT002,(Top 2) Silver Live Show,event,,
+BDGEVNT003,(Top 3) Bronze Live Show,event,,
+BDGEVNT004,Live Showcase,event,,
+BDGEVNT005,(Top 1) Golden Music Show,event,,
 BDGLVL001,First Steps (Lv. 1),level,,
 BDGLVL005,Practice Office (Lv. 5),level,,
 BDGLVL010,Rookie Recruiter (Lv. 10),level,,
@@ -42,7 +42,7 @@ BDGLVL035,Influential Strategist (Lv. 35),level,,
 BDGLVL040,K-Industry Partner (Lv. 40),level,,
 BDGLVL045,Promotions Lead (Lv. 45),level,,
 BDGLVL050,Executive Producer (Lv. 50),level,,
-BDGEVNT006,Star Hunter,event,,
+BDGEVNT006,(Top 2) Silver Music Show,event,,
 BDGCOLL021,Full Collector: `Assemble25`,collection,AA25,
 BDGCOLL022,Dedicated Fan: Chaewon `Assemble25`,collection,AA25,CHW
 BDGCOLL023,Dedicated Fan: Yubin `Assemble25`,collection,AA25,GYB
@@ -120,10 +120,16 @@ BDGCOLL093,Dedicated Fan: Ahyeon `Drip`,collection,DRIP,AHY
 BDGCOLL094,Dedicated Fan: Chiquita `Drip`,collection,DRIP,CHQ
 BDGCOLL095,Dedicated Fan: Pharita `Drip`,collection,DRIP,PHA
 BDGCOLL096,Dedicated Fan: Ruka `Drip`,collection,DRIP,RUK
-BDGCOLL097,Full Collector: `Sweet Tang`,,TANG,
-BDGCOLL098,Dedicated Fan: Sasha `Sweet Tang`,,TANG,SSH
-BDGCOLL099,Dedicated Fan: Rahee `Sweet Tang`,,TANG,RHE
-BDGCOLL100,Dedicated Fan: Hwayeon `Sweet Tang`,,TANG,HWY
-BDGCOLL101,Dedicated Fan: Kasia `Sweet Tang`,,TANG,KSA
-BDGCOLL102,Dedicated Fan: Taerin `Sweet Tang`,,TANG,TAE
-BDGCOLL103,Dedicated Fan: Meu `Sweet Tang`,,TANG,MEU
+BDGCOLL097,Full Collector: `Sweet Tang`,collection,TANG,
+BDGCOLL098,Dedicated Fan: Sasha `Sweet Tang`,collection,TANG,SSH
+BDGCOLL099,Dedicated Fan: Rahee `Sweet Tang`,collection,TANG,RHE
+BDGCOLL100,Dedicated Fan: Hwayeon `Sweet Tang`,collection,TANG,HWY
+BDGCOLL101,Dedicated Fan: Kasia `Sweet Tang`,collection,TANG,KSA
+BDGCOLL102,Dedicated Fan: Taerin `Sweet Tang`,collection,TANG,TAE
+BDGCOLL103,Dedicated Fan: Meu `Sweet Tang`,collection,TANG,MEU
+BDGEVNT007,(Top 3) Bronze Music Show,event,,
+BDGEVNT008,Music Show,event,,
+BDGEVNT009,(Top 1) Golden Cover,event,,
+BDGEVNT010,(Top 2) Silver Cover,event,,
+BDGEVNT011,(Top 3) Bronze Cover,event,,
+BDGEVNT012,Cover Stage,event,,

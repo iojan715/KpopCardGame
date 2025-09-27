@@ -446,17 +446,17 @@ Las cartas mostradas indicarán a qué Agencia pertenecen y su ID, de manera que
 
 ----------------------------------
 
-## 📢 Versión 1.2.9 - Nuevo Grupo y mejoras generales (2025-09-15)
+# 📢 Versión 1.2.9 - Nuevo Grupo y mejoras generales (2025-09-15)
 
-### 🃏 Cartas, idols y colecciones
+## 🃏 Cartas, idols y colecciones
 - Se han agregado las cartas del grupo **ifeye** para su set *Sweet Tang*, así como su FanClub y todas las funciones. Ya pueden ser obtenidas en Packs de cualquier tipo.
 
-### 🛠️ Correcciones y mejoras
+## 🛠️ Correcciones y mejoras
 - Se ha corregido un error que evitaba mostrar los tipos de habilidades de una carta al buscarlas con `/cards search`.
 - Ahora, al buscar cartas con el mismo comando, se muestra tambien el usuario/CEO de la agencia que tiene cada carta.
 - Se ha agregado la descripción faltante a la habilidad :UltimateSkill: _Adaptative Blast_: `Aumenta en +30 la estadística más alta de la sección.`
 
-### 💸 Economía
+## 💸 Economía
 Se ha reducido los costos de envío a la mitad:
 - Regular Lv.1: 💵200
 - Regular Lv.2: 💵350
@@ -473,9 +473,9 @@ Se ha aumentado la cantidad de XP y dinero otorgados por algunas misiones.
 
 ----------------------------------
 
-## 📢 Versión 1.2.9.1 - Cambios generales y mejoras (2025-09-16)
+# 📢 Versión 1.2.9.1 - Cambios generales y mejoras (2025-09-16)
 
-### 🎤 Presentaciones
+## 🎤 Presentaciones
 Se ha actualizado el sistema de presentaciones para *reducir la cantidad de comandos necesarios* para configurar una presentación. Ahora solo se debe crear la presentación de su elección con `/presentation create`, y posteriormente elegirla y configurarla con `/presentation perform`, donde aparecerán botones para **Agregar Grupo** y **Agregar canción**, adicionales al ya existente **Iniciar**. Al elegir canción, también podrán ver las **estadísticas promedio** de cada canción, así como su duración.
 Ahora 
 
@@ -484,9 +484,9 @@ Ahora, al publicar una práctica desde `/presentation list`, se envía un mensaj
 
 ----------------------------------
 
-## 📢 Versión 1.2.9.2 - Cambios a sorteos (2025-09-17)
+# 📢 Versión 1.2.9.2 - Cambios a sorteos (2025-09-17)
 
-### ✨ Nuevas funciones
+## ✨ Nuevas funciones
 - Ahora los **jugadores** también pueden crear sus propios sorteos en el canal #giveaways
 - También es posible *sortear objetos*. Para ello se han separado los comandos de sorteo en:
   - **/giveaway card**: Para sortear cartas idol
@@ -495,36 +495,125 @@ Ahora, al publicar una práctica desde `/presentation list`, se envía un mensaj
 
 ----------------------------------
 
+# 📢 Versión 1.2.9.3 - Cambios a cupones (2025-09-18)
+
+## ✨ Nuevas funciones
+Se ha separado la lógica de canjear cupones por cartas **idol** y **items** en dos comandos diferentes:
+- **/redeem card:** Para canjear cartas idol. Ahora tiene un autocompletado para que sea mas facil escribir el ID, aun si no lo saben completo.
+- **/redeem item:** Para canjear items. Ahora muestra la lista de items en el juego y no es necesario ingresar el ID del item, solo buscarlo por su nombre.
+
+----------------------------------
+
+# 📢 Versión 1.2.9.4 - Bugfix y rebalance a objetos (2025-09-22)
+
+## 🛠️ Correcciones
+Se ha corregido un error que permitía publicar una presentación de tipo **Practice** aún si no tenías el dinero suficiente, dejando saldo negativo.
+
+## 🎮 Cambios en balance de items
+Se ha **duplicado** la efectividad de los **bonos de energía** otorgados por todos los **objetos**. Es decir, un objeto que antes daba `+4 Energía`, ahora da `+8 Energía`, y si antes daba `-2 Energía`, ahora tiene `-4 Energía`.
+Esto con la intención de mantener un **balance de estadísticas**, ya que la Energía suele tener un impacto menor que otro tipo de estadísticas. _(En general, se toma el mismo principio que para balancear estadísticas de las cartas idol)_
+
+También se ha establecido un mínimo de durabilidad para objetos tipo `Accesory` y `Outfit` de **3**, pues antes se tenían objetos de estos tipos con 2 de durabilidad, lo que causaba su consumo demasiado acelerado.
+
+----------------------------------
+
+# 📢 Versión 1.2.9.5 - Mejoras de calidad de vida (2025-09-23)
+
+## ✨ Interfaz de fusión
+Ahora al intentar hacer una fusión se mostrará el "valor" de cada **intento** de fusión: cada carta usada en una fusión tiene un **porcentaje individual** de éxito de acuerdo a su nivel:
+- Nivel 1: 55%
+- Nivel 2: 75%
+- Nivel 3: 95%
+Al usar un cupón de **Better Fusion**, estos porcentajes aumentan **+10%**.
+Cuando se intenta hacer una fusión, se muestran los resultados de cada intento (✅/❌). Ahora también se muestra el número con el que se obtiene este resultado. Si el primer número (elegido entre 1 y 100) es menor que el segundo número (requerido/porcentaje de éxito), el intento será exitoso (✅). Se mostrará algo como:
+> ✅ 13/55 
+> ❌ 71/55 
+> ❌ 75/55
+De esta manera, se espera que los jugadores tengan más claro por qué y cómo se obtienen los resultados de las fusiones.
+
+## 🛠️ Correcciones y mejoras para presentaciones
+Se ha corregido un error que bloqueaba el comando `/presentation perform` al tener más de **10 presentaciones** activas, impidiendo ver y configurar las presentaciones.
+Ahora, para evitar este tipo de errores, se ha agregado una **paginación** para las presentaciones activas, por lo que podrán tener la cantidad que deseen _(Recordando que, una vez creadas, tienen 7 días para completarlas)_. Además, se ha agregado el botón para **Volver** a la lista de presentaciones una vez que se ha seleccionado una, pues antes se requería volver a usar el comando para ver o configurar una presentación diferente.
+
+
+----------------------------------
+
+# 📢 Versión 1.2.9.5 -  (2025-09-)
+
+## ✨ Interfaz de fusión
+
+
+## 🛠️ Correcciones y mejoras
+Se ha quitado un botón de "Volver" del inventario de items, en la selección Idol para equipar un objeto, pues estaba duplicado.
+
+----------------------------------
+
+# 📢 Versión 1.3 - Implementación de Eventos Semanales (2025-09-)
+
+Se han agregado los eventos semanales. Inicialmente habrá 3 del tipo `Live Showcase` (el más básico por ahora):
+
+## Reglas básicas de los eventos
+En este tipo de eventos, cada jugador podrá hacer una presentación con uno de sus grupos a su elección, teniendo **una sola oportunidad**.
+
+Las recompensas se decidirán mediante un **ranking** de puntuación, la cual se calculará de acuerdo a la **XP obtenida** al finalizar la presentación, debido a que este valor está _normalizado_ a la **puntuación requerida** de las canciones presentadas (Y de otra manera, el ranking dependería de la canción elegida por cada jugador, siendo unas canciones mejores para _puntuar_ en el ranking).
+
+_Las presentaciones a realizar durante los eventos **no tienen ningún costo**, y se puede crear una sola vez por evento mediante `/presentation create` seleccionando el tipo **Event**._
+
+# Tipos de eventos
+## Live Showcase
+Durante este evento, se seleccionará un **Set** aleatorio del juego, y los **Packs** obtenidos como recompensa serán de dicho set.
+Además, mientras haya un **Set** activo en un evento, estarán disponibles los **Limited Packs** por _💵10,000_.
+### Limited Packs
+Tienen un **20%** de probabilidad de otorgar una **carta idol** por cada una de las *5 recompensas* que tienen. La probabilida de que la carta idol obtenida sea de rareza **Limited** es de **70%**, y *30%* de ser *Regular*. Siempre serán de un **Set** específico, y no se puede elegir grupo.
+
+## Music Show
+Durante este evento, se elegirá una **canción aleatoria** de las que haya en el juego, y *solamente se podrá presentar esa canción* (no se podrá modificar al configurar la presentación). Además, los Packs obtenidos no serán de ningún set específico.
+
+## Cover Stage
+En este tipo de evento no hay reglas especiales. Se puede elegir cualquier canción a presentar, pero las recompensas son generales. _Ni en este evento, ni durante los **Music Show** se activarán los Limited Packs._
+
+# Cambios generales
+## 🛠️ Correcciones y mejoras
+Ahora se puede filtrar insignias por tipo:
+- **Colección** (obtenidas al completar colecciones)
+- **Nivel** (obtenidas al alcanzar ciertos niveles)
+- **Evento** (obtenidas al participar en eventos y lograr un buen lugar en el ranking) y
+- **Varios** (obtenidas de diversas maneras).
+
+
+
+----------------------------------
+
 `plantilla`
 
-## 📢 Versión X.Y.Z - [Título breve del parche] (AAAA-MM-DD)
+# 📢 Versión X.Y.Z - [Título breve del parche] (AAAA-MM-DD)
 
-### ✨ Nuevas funciones
+## ✨ Nuevas funciones
 - [Función 1] → [Breve descripción].  
 - [Función 2] → [Breve descripción].  
 
-### 🎮 Cambios en gameplay / balance
+## 🎮 Cambios en gameplay / balance
 - [Cambio 1] → de **X** a **Y**.  
 - [Cambio 2] → ahora [nueva mecánica o ajuste].  
 - [Cambio 3] → [buff/nerf de habilidad, ítem, stat, etc.].  
 
-### 🏷️ Misiones y recompensas
+## 🏷️ Misiones y recompensas
 - [Cambio en misiones: ajustes de dificultad, ejemplos].  
 - [Cambio en recompensas: XP, créditos, drops].  
 
-### 🃏 Cartas, idols y colecciones
+## 🃏 Cartas, idols y colecciones
 - [Cambio en sets/cartas: nuevas insignias, fusiones, probabilidades, etc.].  
 - [Corrección en stats, habilidades o descripciones].  
 
-### 👀 Presentaciones y conciertos
+## 👀 Presentaciones y conciertos
 - [Cambio 1: presentaciones públicas, ajustes en popularidad, etc.].  
 - [Cambio 2: balance en conciertos, pagos, tiempos].  
 
-### 💸 Economía
+## 💸 Economía
 - [Cambio en packs, banco, impuestos, drop rates, etc.].  
 - [XP o recompensas adicionales vinculadas a transacciones].  
 
-### 🛠️ Correcciones y mejoras
+## 🛠️ Correcciones y mejoras
 - [Bugfix 1] → descripción breve.  
 - [Bugfix 2] → descripción breve.  
 - Mejoras internas para estabilidad / rendimiento / textos.  

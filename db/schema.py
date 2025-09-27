@@ -705,7 +705,7 @@ async def create_event_participation_table():
                 participation_id SERIAL PRIMARY KEY,
                 instance_id INT NOT NULL,
                 user_id BIGINT NOT NULL,
-                performance_id BIGINT,
+                performance_id TEXT,
                 normal_score INT,
                 ranking INT DEFAULT 0,
                 created_at TIMESTAMPTZ DEFAULT now(),

@@ -295,7 +295,7 @@
   "skills.Adrenaline Spike": "+{dance} Dance.\nSi el Hype es {cond_hype} o más, gana +{pcond_score}% en la puntuación obtenida. Costo: {relative_cost}% energía",
   "skills.Steady Lead": "+{vocal} a todas las estadísticas.\nSi el Hype es mayor a {cond_hype}, +{pcond_vocal} adicional a todas las estadísticas. Costo: {relative_cost}% energía",
   "skills.Sweet Voice": "Aumenta +{vocal} Vocal. Si la sección tiene menos de {cond_dance} Dance y Rap, también aumenta +{pcond_visual} Visual. Costo: {relative_cost}% energía",
-  "skills.High Note": "+{vocal} Vocal.\nSi el Hype es {cond_hype} o más, +{pcond_visual} Visual adicional. Costo: {relative_cost}% energía",
+  "skills.High Note": "+{vocal} Vocal.\nSi el Hype es {cond_hype} o más, +{pcond_vocal} Vocal adicional. Costo: {relative_cost}% energía",
   "skills.Backup Boost": "+{rap} Rap.\nSi el Hype es menor a {cond_hype}, +{pcond_hype}% de Hype obtenido. Costo: {relative_cost}% energía",
   
   "skills.Hidden Charm": "Iguala la peor estadística de la sección al valor de la mejor estadística.",
