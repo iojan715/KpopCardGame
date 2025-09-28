@@ -544,9 +544,17 @@ class InventoryGroup(app_commands.Group):
             for row in rows if current.lower() in f"{row['agency_name'].lower()}"
         ][:25]
 
+    BADGE_CATEGORIES = [
+        app_commands.Choice(name="Colección", value="collection"),
+        app_commands.Choice(name="Nivel", value="level"),
+        app_commands.Choice(name="Evento", value="event"),
+        app_commands.Choice(name="Varios", value="custom"),
+    ]
+    
     @app_commands.command(name="badges", description="Ver tus insignias")
-    @app_commands.describe(agency="Agency")
-    async def badges(self, interaction: discord.Interaction, agency:str = None):
+    @app_commands.describe(agency="Agency", category="Categoria")
+    @app_commands.choices(category=BADGE_CATEGORIES)
+    async def badges(self, interaction: discord.Interaction, agency:str = None, category: app_commands.Choice[str] = None):
         if interaction.guild is None:
             return await interaction.response.send_message(
                 "❌ Este comando solo está disponible en servidores.", 
@@ -570,6 +578,11 @@ class InventoryGroup(app_commands.Group):
         params = [user_id]
         idx = 2
         
+        if category:
+            query += f" AND b.category = ${idx}"
+            params.append(category.value)
+            idx += 1
+            
         order_column = "u.date_obtained"
         order_direction = None
         
@@ -1263,8 +1276,11 @@ async def generate_badges_embeds(rows: list[dict], pool, interaction) -> list[di
         if row['is_selected']:
             is_selected = "✅ "
         
+        badge_number = ""
+        if row['category'] == 'event':
+            badge_number = f" #{row['event_number']}"    
         embed = discord.Embed(
-            title=f"{is_selected}{row['name']}",
+            title=f"{is_selected}{row['name']}{badge_number}",
             description=f"",
             color=discord.Color.teal()
         )
@@ -1366,16 +1382,23 @@ class BadgeButton(discord.ui.Button):
     def __init__(self, row_data: dict, paginator: "BadgesInventoryEmbedPaginator"):
         self.row_data = row_data
         self.paginator = paginator
-        super().__init__(label=row_data['name'], style=discord.ButtonStyle.primary)
+        badge_number = ""
+        if row_data['category'] == 'event':
+            badge_number = f" #{row_data['event_number']}"   
+        super().__init__(label=f"{row_data['name']}{badge_number}", style=discord.ButtonStyle.primary)
         
     async def callback(self, interaction: discord.Interaction):
         row = self.row_data
         language = await get_user_language(interaction.user.id)
         pool = get_pool()
+        
+        badge_number = ""
+        if row['category'] == 'event':
+            badge_number = f" #{row['event_number']}"   
             
         embed = discord.Embed(
             title=f"¿Deseas mostrar esta insignia en tu perfil?",
-            description=f"{row['name']}",
+            description=f"{row['name']}{badge_number}",
             color=discord.Color.teal()
         )
         

@@ -55,14 +55,14 @@ class ModGroup(app_commands.Group):
         }
         
         packs = {
-            "minor": "GFT",
-            "moderate": "SPP",
+            "minor": "IND",
+            "moderate": "BSC",
             "important": "HLV",
             "critical": "STR"
         }
         packs_names = {
-            "minor": "Gift Pack",
-            "moderate": "Support Pack",
+            "minor": "Individual Pack",
+            "moderate": "Basic Pack",
             "important": "High Level Pack",
             "critical": "Star Pack"
         }

@@ -628,12 +628,13 @@ class AdminGroup(app_commands.Group):
                                 row.get("event_type"),
                                 row.get("base_name"),
                                 int(row.get("weight", 0)),
-                                row.get("can_song") in ("true", "True", "1", True),
-                                row.get("can_set") in ("true", "True", "1", True),
+                                row.get("can_song") in ("true", "True", "1", True, "TRUE"),
+                                row.get("can_set") in ("true", "True", "1", True, "TRUE"),
                                 row.get("goal_type"),
                                 row.get("difficulty")
                             )
                             inserted += 1
+                            
                     inserted_total += inserted
                     inserted = 0
 
@@ -668,7 +669,7 @@ class AdminGroup(app_commands.Group):
                                 int(row["rank_max"]),
                                 int(row.get("credits") or 0),
                                 row.get("pack_id"),
-                                row.get("is_ranked") in ("true", "True", "1", True),
+                                row.get("is_ranked") in ("true", "True", "1", True, "TRUE"),
                                 row.get("redeemable_id"),
                                 row.get("badge_id"),
                                 float(row['boost'])

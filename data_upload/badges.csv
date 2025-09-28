@@ -1,4 +1,5 @@
 badge_id,name,category,set_id,idol_id
+BDGBRTH2025,Birthday 2025,custom,,
 BDGCOLL001,Full Collector: `Uncut Gem`,collection,UNGM,
 BDGCOLL002,Dedicated Fan: Haum `Uncut Gem`,collection,UNGM,HUM
 BDGCOLL003,Dedicated Fan: Leesol `Uncut Gem`,collection,UNGM,LSL
@@ -19,30 +20,6 @@ BDGCOLL017,Dedicated Fan: Kyujin `Fe3O4 Break`,collection,FBRK,KYU
 BDGCOLL018,Dedicated Fan: Sullyoon `Fe3O4 Break`,collection,FBRK,SLY
 BDGCOLL019,Dedicated Fan: Bae `Fe3O4 Break`,collection,FBRK,BAE
 BDGCOLL020,Dedicated Fan: Haewon `Fe3O4 Break`,collection,FBRK,OHW
-BDGCUST001,Early Tester,custom,,
-BDGCUST002,Founder,custom,,
-BDGCUST003,Final Tester,custom,,
-BDGCUST004,Economy Supporter,custom,,
-BDGCUST005,Guide Helper,custom,,
-BDGCUST006,Anniversary Guest,custom,,
-BDGCUST007,Bug Hunter,custom,,
-BDGEVNT001,(Top 1) Golden Live Show,event,,
-BDGEVNT002,(Top 2) Silver Live Show,event,,
-BDGEVNT003,(Top 3) Bronze Live Show,event,,
-BDGEVNT004,Live Showcase,event,,
-BDGEVNT005,(Top 1) Golden Music Show,event,,
-BDGLVL001,First Steps (Lv. 1),level,,
-BDGLVL005,Practice Office (Lv. 5),level,,
-BDGLVL010,Rookie Recruiter (Lv. 10),level,,
-BDGLVL015,Talent Scout (Lv. 15),level,,
-BDGLVL020,Training Squad (Lv. 20),level,,
-BDGLVL025,Mid-Tier Management (Lv. 25),level,,
-BDGLVL030,Showcase Coordinator (Lv. 30),level,,
-BDGLVL035,Influential Strategist (Lv. 35),level,,
-BDGLVL040,K-Industry Partner (Lv. 40),level,,
-BDGLVL045,Promotions Lead (Lv. 45),level,,
-BDGLVL050,Executive Producer (Lv. 50),level,,
-BDGEVNT006,(Top 2) Silver Music Show,event,,
 BDGCOLL021,Full Collector: `Assemble25`,collection,AA25,
 BDGCOLL022,Dedicated Fan: Chaewon `Assemble25`,collection,AA25,CHW
 BDGCOLL023,Dedicated Fan: Yubin `Assemble25`,collection,AA25,GYB
@@ -76,7 +53,6 @@ BDGCOLL050,Dedicated Fan: Sieun `S`,collection,SSSS,SIE
 BDGCOLL051,Dedicated Fan: Sumin `S`,collection,SSSS,SMN
 BDGCOLL052,Dedicated Fan: Yoon `S`,collection,SSSS,YON
 BDGCOLL053,Solo Collector: Yves `I did`,collection,IDID,
-BDGBRTH2025,Birthday 2025,custom,,
 BDGCOLL054,Full Collector: `Dall`,collection,DALL,
 BDGCOLL055,Dedicated Fan: Choerry `Dall`,collection,DALL,CHR
 BDGCOLL056,Dedicated Fan: Heejin `Dall`,collection,DALL,JHJ
@@ -127,9 +103,33 @@ BDGCOLL100,Dedicated Fan: Hwayeon `Sweet Tang`,collection,TANG,HWY
 BDGCOLL101,Dedicated Fan: Kasia `Sweet Tang`,collection,TANG,KSA
 BDGCOLL102,Dedicated Fan: Taerin `Sweet Tang`,collection,TANG,TAE
 BDGCOLL103,Dedicated Fan: Meu `Sweet Tang`,collection,TANG,MEU
-BDGEVNT007,(Top 3) Bronze Music Show,event,,
+BDGCUST001,Early Tester,custom,,
+BDGCUST002,Founder,custom,,
+BDGCUST003,Final Tester,custom,,
+BDGCUST004,Economy Supporter,custom,,
+BDGCUST005,Guide Helper,custom,,
+BDGCUST006,Anniversary Guest,custom,,
+BDGCUST007,Bug Hunter,custom,,
+BDGEVNT001,Golden Live Show,event,,
+BDGEVNT002,Silver Live Show,event,,
+BDGEVNT003,Bronze Live Show,event,,
+BDGEVNT004,Live Showcase,event,,
+BDGEVNT005,Golden Music Show,event,,
+BDGEVNT006,Silver Music Show,event,,
+BDGEVNT007,Bronze Music Show,event,,
 BDGEVNT008,Music Show,event,,
-BDGEVNT009,(Top 1) Golden Cover,event,,
-BDGEVNT010,(Top 2) Silver Cover,event,,
-BDGEVNT011,(Top 3) Bronze Cover,event,,
-BDGEVNT012,Cover Stage,event,,
+BDGEVNT009,Golden Stage Mix,event,,
+BDGEVNT010,Silver Stage Mix,event,,
+BDGEVNT011,Bronze Stage Mix,event,,
+BDGEVNT012,Stage Mix,event,,
+BDGLVL001,First Steps (Lv. 1),level,,
+BDGLVL005,Practice Office (Lv. 5),level,,
+BDGLVL010,Rookie Recruiter (Lv. 10),level,,
+BDGLVL015,Talent Scout (Lv. 15),level,,
+BDGLVL020,Training Squad (Lv. 20),level,,
+BDGLVL025,Mid-Tier Management (Lv. 25),level,,
+BDGLVL030,Showcase Coordinator (Lv. 30),level,,
+BDGLVL035,Influential Strategist (Lv. 35),level,,
+BDGLVL040,K-Industry Partner (Lv. 40),level,,
+BDGLVL045,Promotions Lead (Lv. 45),level,,
+BDGLVL050,Executive Producer (Lv. 50),level,,
