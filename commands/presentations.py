@@ -58,6 +58,7 @@ class PresentationGroup(app_commands.Group):
             "finished":       ("⌛", "Finalizada"),
             "cancelled":      ("❌", "Cancelada"),
             "expired":        ("⏰", "Expirada"),
+            "ranking":        ("🏆", "Ranking"),
         }
         
         # 2) Crear embeds de vista previa
@@ -106,6 +107,7 @@ class PresentationGroup(app_commands.Group):
     PRESENTATION_CHOICES = [
         app_commands.Choice(name="Live", value="live"),
         app_commands.Choice(name="Practice", value="practice"),
+        app_commands.Choice(name="Event", value="event"),
         # futuros tipos se agregarán aquí
     ]
 
@@ -133,6 +135,7 @@ class PresentationGroup(app_commands.Group):
             extra_desc = "\n> ⚠️ Esta presentación no otorgará popularidad ni XP"
         elif ptype == "event":
             cost = 0
+            extra_desc = "\n> Solo puedes crear una presentación de este tipo por cada evento, y las recompensas se otorgan al concluir el evento"
 
         cost_desc = f"💵 {cost}"
         active_discount = False
@@ -156,7 +159,8 @@ class PresentationGroup(app_commands.Group):
                     active_discount = True
                     cost_desc = "GRATIS"
                     cost = 0
-                
+        
+          
         if not user_data or user_data["credits"] < cost:
             print(cost)
             await interaction.response.send_message(
@@ -269,10 +273,15 @@ class PresentationDetailButton(discord.ui.Button):
             "finished":       ("⌛", "Finalizada"),
             "cancelled":      ("❌", "Cancelada"),
             "expired":        ("⏰", "Expirada"),
+            "ranking":        ("🏆", "Ranking"),
         }
         emoji, label = STATUS_MAP.get(self.rowdata["status"], ("❓", self.rowdata["status"].capitalize()))
         status = f"{emoji} {label}"
-            
+        
+        popularidad = "**Popularidad:**"
+        if self.rowdata['status'] == "ranking":
+            popularidad = "**Puntuación clasificatoria:**"
+        
         embed = discord.Embed(
             title=f"Detalles — {self.rowdata['presentation_id']}",
             description=(
@@ -283,14 +292,15 @@ class PresentationDetailButton(discord.ui.Button):
                 f"**Creación:** <t:{int(self.rowdata['presentation_date'].timestamp())}:f>\n"
                 f"**Ultima acción:** <t:{int(self.rowdata['last_action'].timestamp())}:f>\n"
                 f"**Sección:** `{self.rowdata['current_section']}`\n"
-                f"**Puntuación:** `{format(self.rowdata['total_score'],',')}`\n"
+                f"**Puntuación total:** `{format(self.rowdata['total_score'],',')}`\n"
                 f"**Hype:** `{round(self.rowdata['total_hype'],1)}`\n"
-                f"**Popularidad:** `{format(self.rowdata['total_popularity'],',')}`\n"
+                f"{popularidad} `{format(self.rowdata['total_popularity'],',')}`\n"
             ),
             color=discord.Color.gold()
         )
         view = discord.ui.View()
-        view.add_item(PublishPracticeButton(rowdata=self.rowdata, paginator=self.paginator))
+        if self.rowdata['presentation_type'] == "practice":
+            view.add_item(PublishPracticeButton(rowdata=self.rowdata, paginator=self.paginator))
         # volver atrás
         view.add_item(BackToPresentationListButton(self.paginator))
         await interaction.response.edit_message(embed=embed, view=view)
@@ -474,6 +484,7 @@ class BackToPresentationListButton(discord.ui.Button):
             "finished":       ("⌛", "Finalizada"),
             "cancelled":      ("❌", "Cancelada"),
             "expired":        ("⏰", "Expirada"),
+            "ranking":        ("🏆", "Ranking"),
         }
         # regenerar embeds
         embeds = []
@@ -629,26 +640,47 @@ class ConfirmCreatePresentationView(discord.ui.View):
                     cost = 0
                     await conn.execute("UPDATE user_boosts SET amount = amount - 1 WHERE user_id = $1 AND boost = 'REHRS'", self.user_id)
             
+            song = None 
+            if self.presentation_type == "event":
+                active_event = await conn.fetchrow("SELECT * FROM event_instances WHERE status = 'active'")
+                
+                if not active_event:
+                    return await interaction.response.send_message(content="## ⚠️ No hay ningún evento activo actualmente", ephemeral=True)
+                    
+                already_on_event = await conn.fetchrow("SELECT * FROM event_participation WHERE instance_id = $1 AND user_id = $2",
+                                                       active_event['instance_id'], interaction.user.id)
+                
+                if already_on_event:
+                    return await interaction.response.send_message(content="## ❌ Ya tienes una presentación para el evento en curso", ephemeral=True)
+                
+                await conn.execute("""
+                    INSERT INTO event_participation (instance_id, user_id, performance_id, created_at)
+                    VALUES ($1, $2, $3, $4)
+                """, active_event['instance_id'], interaction.user.id, presentation_id, datetime.now(timezone.utc))
+                
+                if active_event['song_id']:
+                    song = active_event['song_id']
+                
             await conn.execute("""
-                INSERT INTO presentations (presentation_id, owner_id, user_id, presentation_type)
-                VALUES ($1, $2, $3, $4)
-            """, presentation_id, self.user_id, self.user_id, self.presentation_type)
+                INSERT INTO presentations (presentation_id, owner_id, user_id, presentation_type, song_id)
+                VALUES ($1, $2, $3, $4, $5)
+            """, presentation_id, self.user_id, self.user_id, self.presentation_type, song)
+            
+            
 
             await conn.execute("""
                 UPDATE users SET credits = credits - $1 WHERE user_id = $2
             """, cost, self.user_id)
-            
-        desc = "Elige un grupo para usar en la presentación con `/presentation add_group`\n"
-        desc += "Elige una canción para presentar con `/presentation add_song`\n"
-        desc += "Inicia la presentación cuando tengas todo listo con `/presentation perform`\n\n"
-        desc += "_Puedes retomar la presentación si la dejas incompleta en cualquier momento, volviendo a usar `/presentation perform`_"
+        
+        desc = "Configura e inicia la presentación con `/presentation perform`\n\n"
+        desc += "_Si dejas la presentación incompleta, puedes retomarla en cualquier momento volviendo a usar `/presentation perform`_"
         
         embed = discord.Embed(
             title=f"✅ Presentación creada exitosamente",
             description=desc,
             color=discord.Color.dark_blue()
         )
-        embed.add_field(name="🆔:",value=f"{presentation_id}")
+        embed.set_footer(text=f"🆔: {presentation_id}")
 
         await interaction.response.edit_message(
             content=f"",
@@ -658,11 +690,7 @@ class ConfirmCreatePresentationView(discord.ui.View):
 
     @discord.ui.button(label="❌ Cancelar", style=discord.ButtonStyle.danger)
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user.id != self.user_id:
-            await interaction.response.send_message("❌ No puedes cancelar esta acción.", ephemeral=True)
-            return
-
-        await interaction.response.edit_message(content="❌ Acción cancelada.", view=None)
+        await interaction.response.edit_message(content="## ❌ Acción cancelada.", view=None, embed=None)
 
 
 # --- add_song
@@ -1363,6 +1391,13 @@ class ConfirmStartPresentationView(ui.View):
     async def add_song(self, interaction: Interaction, button: ui.Button):
         pool = get_pool()
         async with pool.acquire() as conn:
+            current_presentation = await conn.fetchrow("SELECT * FROM presentations WHERE presentation_id = $1", self.presentation_id)
+            if current_presentation['presentation_type'] == 'event':
+                current_event = await conn.fetchrow("SELECT * FROM event_instances WHERE status = 'active'")
+                if current_event['song_id']:
+                    return await interaction.response.send_message(ephemeral=True,
+                                                                   content="## ❌ Esta presentación no permite cambiar de canción")
+            
             song_rows = await conn.fetch("SELECT * FROM songs ORDER BY name")
             
         if not song_rows:
@@ -3411,7 +3446,6 @@ class ActiveSkillPreviewButton(discord.ui.Button):
             skill = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1", card["a_skill"])
             if not skill:
                 return await interaction.response.send_message("❌ No se encontró la habilidad.", ephemeral=True)
-
             
             if idol['unique_id']:
                 card = await conn.fetchrow("SELECT * FROM user_idol_cards WHERE unique_id = $1", idol['unique_id'])
@@ -4190,8 +4224,8 @@ async def finalize_presentation(conn, presentation: dict) -> str:
             )
         
         elif ptype == "event":
-            popularity = int(1000 * (total_score / average_score))
-            xp = popularity // 10
+            normal_score = int(1000 * (total_score / average_score))
+            xp = normal_score // 10
             
             await conn.execute("""
                 UPDATE user_missions um
@@ -4209,22 +4243,22 @@ async def finalize_presentation(conn, presentation: dict) -> str:
             
             xp = int(xp)
             
-            await conn.execute(
-                "UPDATE users SET xp = xp + $1 WHERE user_id = $2",
-                xp, user_id
-            )
-            await conn.execute(
-                """
+            
+            await conn.execute("""
                 UPDATE presentations
-                SET status = 'ranking',
+                SET status = 'ranking', total_popularity = $1,
                     current_section = current_section + 1
                 WHERE presentation_id = $2
-                """,
-                presentation_id
-            )
+                """, normal_score, presentation_id)
+            
+            await conn.execute("""
+                UPDATE event_participation
+                SET normal_score = $1
+                WHERE performance_id = $2
+                """, normal_score, presentation_id)
 
             return (
-                f"## 🎉 ¡`{group_name}` ha presentado `{song_name}` en el Evento de la semana!\n**Puntuación total:** {format(total_score,',')} _(Esperado: {format(int(average_score),',')})_\n> **XP obtenida:** {xp}"
+                f"## 🎉 ¡`{group_name}` ha presentado `{song_name}` en el Evento de la semana!\n> Revisa tu puntuación en `/presentation list`"
             )
             
         else:
@@ -4264,5 +4298,4 @@ async def finalize_presentation(conn, presentation: dict) -> str:
             )
 
 async def setup(bot):
-
     bot.tree.add_command(PresentationGroup())

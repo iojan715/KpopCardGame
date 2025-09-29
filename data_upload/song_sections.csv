@@ -153,3 +153,32 @@ section_id,song_id,section_number,section_type,duration,lyrics,vocal,rap,dance,v
 0152,006,32,ending,5,*deo keun jeolmang hyanghae tteoreojyeo jom deo gipsugi*\n*(sasil nan)*,25,10,15,50,optional,harmony,10,,10,,28300
 0153,006,33,ending,5,*naeil nuneul tteumyeon modeun ge kkume dakireul*\n*(haengbokago yeppeun geol nugubodado)*,25,10,35,30,optional,adlib,10,,10,,28300
 0154,006,34,ending,5,*La-la-la la-la-la-la la-la-la la-la*\n*kkumeseo kkaemyeon*,0,20,15,65,optional,pose_sync,,,,15,26200
+0155,005,1,intro,3,*Rebels in our heart*,10,0,35,55,optional,,,,,,13600
+0156,005,2,verse,8,*sijageun hangsang da irun geotcheoreom*\n*ending-eun machi seungnihan geotcheoreom*,30,0,35,35,optional,group_dance,5,,10,10,45300
+0157,005,3,verse,7,*geomnaeji an-go*\n*ma-eumeul ssodeullae*\n*nae moyangdaero*,35,0,25,40,optional,,,,,,32000
+0158,005,4,verse,8,*ije deo isang*\n*(deo isang)*\n*sin-gyeong sseuji ana*\n*eodieseodo nae mameul jikigi*,30,0,35,35,forced,adlib,,,15,5,43600
+0159,005,5,verse,7,*ohae badeul ttaen jayue matgyeodullae*\n*da alge doel geonikka*,35,0,25,40,optional,harmony,15,,5,,38100
+0160,005,6,pre_chorus,8,*So you can love me hate me*\n*You will never be never be never be me*,45,0,35,20,forced,group_dance,,,20,,43900
+0161,005,7,pre_chorus,7,*Try me I'll break free*\n*You will never be never be never be me*,50,0,35,15,optional,,,,,,32600
+0162,005,8,chorus,8,*We are rebels in our heart rebels in our heart*\n*We are rebels in our heart*,35,0,40,25,forced,group_dance,,,20,,44600
+0163,005,9,chorus,7,*We are rebels in our heart kkeokkiji ana*\n*We are rebels in our heart*,35,0,40,25,optional,,,,,,32900
+0164,005,10,break,2,*[music~]*,0,0,25,75,optional,pose_sync,,,,15,10600
+0165,005,11,verse,4,*neoneun eodiga jogeum bujokae*\n*neoneun geogiga mwon-ga jom neomchyeo*,0,55,25,20,forced,backup_dance,,5,15,10,23700
+0166,005,12,verse,3,*I don't care mwodeun mareun cham swipji*\n*geurae silhaeng-i eoryeoun geoya*,0,55,20,25,optional,duet,5,5,10,5,17000
+0167,005,13,verse,4,*Do it move it do it*\n*urin geunyang halge*,40,0,25,35,optional,,,,,,18300
+0168,005,14,verse,4,*nae gal gireun meolgo*\n*geu wieneun deuramaga isseo*,0,55,15,30,optional,adlib,10,5,,5,21800
+0169,005,15,pre_chorus,8,*tto oeroumi neomu gireojineun bamen*\n*geu mameul ssoa ollyeo*,40,0,25,35,forced,pose_sync,,,,20,43200
+0170,005,16,pre_chorus,2,*(Oh-ooh-ooh-oh)*,0,0,30,70,locked,,,,,,9100
+0171,005,17,chorus,8,*Love me hate me*\n*You will never be never be never be me*,45,0,35,20,forced,group_dance,,,15,10,46000
+0172,005,18,chorus,7,*Try me I'll break free*\n*You will never be never be never be me*,50,0,30,20,optional,,,,,,32600
+0173,005,19,chorus,8,*We are rebels in our heart rebels in our heart*\n*We are rebels in our heart*,35,0,45,20,forced,group_dance,,,15,10,46300
+0174,005,20,chorus,7,*We are rebels in our heart kkeokkiji ana*\n*We are rebels in our heart*,35,0,45,20,optional,,,,,,32900
+0175,005,21,break,2,*(rebels in our heart)*,20,0,10,70,optional,,,,,,9300
+0176,005,22,break,8,*La-la-la-la la-la-la la-la-la*\n*Rebels in our heart rebels in our heart*,20,0,35,45,locked,cheering,5,,10,10,45600
+0177,005,23,break,7,*La-la-la-la la-la-la la-la-la*\n*Rebels in our heart rebels in our heart*,20,0,40,40,optional,,,,,,32300
+0178,005,24,bridge,8,*urin ttaro iyureul mutji an-go*\n*seoroga piryohal ttaega isseo*\n*geureon mami eotteon geonji jal algie*,40,0,15,45,locked,pose_sync,,,7,15,44300
+0179,005,25,bridge,9,*yeong-woneul baraneun saibodan*\n*jigeumeul ihaehaejugo sipeo*\n*We will always be the rebels~*,55,0,10,35,forced,,,,,,43100
+0180,005,26,chorus,8,*Come join as who you are*\n*We are rebels we are one*,55,0,25,20,forced,backup_dance,10,,15,,46000
+0181,005,27,chorus,7,*i ma-eummaneuro*\n*We are rebels we are one*,55,0,15,30,optional,,,,,,32900
+0182,005,28,chorus,8,*We are rebels in our heart rebels in our heart*\n*We are rebels in our heart*,40,0,35,25,forced,,,,,,38000
+0183,005,29,ending,9,*We are rebels in our heart kkeokkiji ana*\n*We are rebels in our heart*,40,0,15,45,optional,pose_sync,,,,20,48600

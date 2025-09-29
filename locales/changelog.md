@@ -569,8 +569,16 @@ Tienen un **20%** de probabilidad de otorgar una **carta idol** por cada una de 
 ## Music Show
 Durante este evento, se elegirá una **canción aleatoria** de las que haya en el juego, y *solamente se podrá presentar esa canción* (no se podrá modificar al configurar la presentación). Además, los Packs obtenidos no serán de ningún set específico.
 
-## Cover Stage
+## Stage Mix
 En este tipo de evento no hay reglas especiales. Se puede elegir cualquier canción a presentar, pero las recompensas son generales. _Ni en este evento, ni durante los **Music Show** se activarán los Limited Packs._
+
+# Recompensas de eventos
+Todos los jugadores que participen con una presentación durante los eventos obtendrán recompensas generales, como algunos créditos, Packs y Popularidad para el grupo que eligan usar, además de una insignia de participación del evento, que indica el nombre y la edición del mismo (ejemplo: _Live Showcase #1_), la cual no será obtenible posteriormente, pues cada evento es único.
+Sin embargo, habrá recompensas extra para los jugadores de acuerdo a su posición en el ranking del evento:
+- **Top 3:** Obtendrán una **insignia adicional** de acuerdo a su posición (`Golden`, `Silver` o `Bronze`), Créditos extra, un Pack importante y un **boost** grande para la popularidad obtenida por el grupo.
+- **Top 1:** Adicional, el primer lugar obtendrá un **bono de popularidad permanente** de **+50** para el grupo que haya elegido usar en su presentación.
+- Los demás jugadores también obtendran recompensas "en bloques" de acuerdo a su ranking en el top. Por ejemplo, Top 4 y 5 podrian obtener un Level Pack, del 6 al 10 un Basic Pack, etc., además de créditos y boost de popularidad de acuerdo a esa posición.
+_Todas las recompensas varían de acuerdo al tipo de evento._
 
 # Cambios generales
 ## 🛠️ Correcciones y mejoras
@@ -579,6 +587,16 @@ Ahora se puede filtrar insignias por tipo:
 - **Nivel** (obtenidas al alcanzar ciertos niveles)
 - **Evento** (obtenidas al participar en eventos y lograr un buen lugar en el ranking) y
 - **Varios** (obtenidas de diversas maneras).
+
+## Nueva canción
+Se ha agregado la canción **Rebel Heart** al juego, y ya puede ser seleccionada en presentaciones:
+- Secciones: 28
+- Duración total: 186
+- Estadísticas promedio:
+  - Vocal: 35.5%
+  - Rap: 3.2%
+  - Dance: 29.3%
+  - Visual: 31.9%
 
 
 

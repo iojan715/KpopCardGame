@@ -1,5 +1,5 @@
 import asyncio, discord
-import datetime, random
+import datetime, random, string
 from db.connection import get_pool
 import logging
 from commands.starter import version
@@ -117,14 +117,7 @@ async def cancel_presentation_func():
             group_id = presentation['group_id']
             total_score = presentation['total_score']
 
-            # Marcar como cancelada
-            await conn.execute("""
-                UPDATE presentations
-                SET status = 'expired'
-                WHERE presentation_id = $1
-            """, presentation_id)
-
-            if presentation_type == 'live' and song_id and group_id:
+            if presentation_type == "live" and song_id and group_id:
                 # Obtener average_score
                 average_score = await conn.fetchval("""
                     SELECT average_score FROM songs WHERE song_id = $1
@@ -147,8 +140,31 @@ async def cancel_presentation_func():
                         SET popularity = popularity + $1
                         WHERE group_id = $2
                     """, popularity, group_id)
+            
+            # Marcar como cancelada
+            await conn.execute("""
+                UPDATE presentations
+                SET status = 'expired'
+                WHERE presentation_id = $1
+            """, presentation_id)
+            
         if presentaciones:
             logging.info(f"Presentaciones canceladas: {len(presentaciones)}")
+            
+        active_event = await conn.fetchrow("SELECT * FROM event_instances WHERE status = 'active'")
+        
+        if active_event:
+            if active_event['set_id']:
+                await conn.execute(
+                    "UPDATE packs SET price = 10000, set_id = $1 WHERE pack_id = 'LMT'",
+                    active_event['set_id']
+                )
+                
+            else:
+                await conn.execute(
+                    "UPDATE packs SET price = 0, set_id = $1 WHERE pack_id = 'LMT'",
+                    None
+                )
 
 async def increase_payment():
     pool = get_pool()
@@ -584,7 +600,341 @@ async def remove_roles():
                     print(f"❌ No pude quitar roles a {member.display_name}: {e}")
         print(f"✅ Limpieza completada en {guild.name}")
     pass
-  
+
+async def change_event():
+    pool = get_pool()
+    async with pool.acquire() as conn:
+        event_exists = await conn.fetch("SELECT 1 FROM events")
+        if not event_exists:
+            print("no hay eventos")
+            return
+        
+        today = datetime.datetime.now(datetime.timezone.utc)
+        current_event_row = await conn.fetchrow("SELECT * FROM event_instances WHERE status = 'active' ORDER BY start_date DESC")
+        
+        if current_event_row:
+            if today < current_event_row['end_date']:
+                print("El evento aun no termina")
+                return
+            
+            await conn.execute("UPDATE event_instances SET status = 'finished' WHERE instance_id = $1",
+                               current_event_row['instance_id'])
+            
+            statuses = ["completed", "expired", "canceled"]
+            presentaciones = await conn.fetch("""
+                SELECT * FROM presentations
+                WHERE status <> ALL($1::text[])
+                AND presentation_type = 'event'
+            """, statuses)
+
+            if presentaciones:
+                for p in presentaciones:
+                    if p['status'] == 'preparation':
+                        await conn.execute("UPDATE presentations SET status = 'expired' WHERE presentation_id = $1",
+                                        p['presentation_id'])
+                    elif p['status'] == 'active':
+                        await conn.execute("UPDATE presentations SET status = 'expired' WHERE presentation_id = $1",
+                                        p['presentation_id'])
+                        
+                        average_score = await conn.fetchval("""
+                            SELECT average_score FROM songs WHERE song_id = $1
+                        """, p['song_id'])
+
+                        if average_score and average_score > 0:
+                            final_score = p['total_score']
+                            popularity = int(500 * (final_score / average_score))
+
+                            # Actualizar popularidad en la presentación
+                            await conn.execute("""
+                                UPDATE presentations
+                                SET total_popularity = $1
+                                WHERE presentation_id = $2
+                            """, popularity, p['presentation_id'])
+
+                            # Sumar popularidad al grupo
+                            await conn.execute("""
+                                UPDATE event_participation
+                                SET normal_score = $1
+                                WHERE performance_id = $2
+                            """, popularity, p['presentation_id'])
+                    else:
+                        await conn.execute("UPDATE presentations SET status = 'completed' WHERE presentation_id = $1",
+                                        p['presentation_id'])
+                
+            participations = await conn.fetch("""
+                SELECT * FROM event_participation
+                WHERE instance_id = $1 AND normal_score > 0 ORDER BY normal_score DESC
+            """, current_event_row['instance_id'])
+            
+            event_type = await conn.fetchval("SELECT event_type FROM events WHERE event_id = $1",
+                                             current_event_row['event_id'])
+            
+            rank = 1
+            if participations:
+                for pa in participations:
+                    if event_type in ['live_showcase', 'comeback_show', 'star_hunt']:
+                        rewards = await conn.fetch("SELECT * FROM event_rewards WHERE rank_min <= $1 AND rank_max >= $1 AND event_id = $2",
+                                                rank, current_event_row['event_id'])
+                    
+                    await conn.execute("UPDATE event_participation SET ranking = $1 WHERE participation_id = $2",
+                                    rank, pa['participation_id'])
+                    group_id = ""
+                    normal_score = pa['normal_score']
+                    
+                    reward_desc = ""
+                    reward_credits = 0
+                    for r in rewards:
+                        # Credits
+                        await conn.execute(
+                            "UPDATE users SET credits = credits + $1 WHERE user_id = $2",
+                        r['credits'], pa['user_id'])
+                        reward_credits += r['credits']
+                        
+                        # Packs
+                        while True:
+                            new_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=5))
+                            exists = await conn.fetchval("SELECT 1 FROM players_packs WHERE unique_id = $1", new_id)
+                            if not exists:
+                                break
+                        now = datetime.datetime.now(datetime.timezone.utc)
+                        await conn.execute("""
+                            INSERT INTO players_packs (
+                                unique_id, user_id, pack_id, buy_date,
+                                set_id, theme
+                            ) VALUES ($1, $2, $3, $4, $5, $6)
+                        """, new_id, pa['user_id'], r['pack_id'], now,
+                            current_event_row['set_id'], current_event_row['theme'])
+                        
+                        pack_name = await conn.fetchval("SELECT name FROM packs WHERE pack_id = $1", r['pack_id'])
+                        reward_desc += f"> 📦 {pack_name}\n"
+                        
+                        # Badges
+                        if r['badge_id']:
+                            await conn.execute("""
+                                INSERT INTO user_badges (
+                                    badge_id, user_id, date_obtained, event_number
+                                ) VALUES ($1, $2, $3, $4)
+                            """, r['badge_id'], pa['user_id'], now, current_event_row['event_number'])
+                            
+                            badge_name = await conn.fetchval("SELECT name FROM badges WHERE badge_id = $1", r['badge_id'])
+                            reward_desc += f"> 🏅 {badge_name} #{current_event_row['event_number']}\n"
+                        
+                        # Redeemable
+                        
+                        # Popularity
+                        normal_score *= r['boost']
+                    
+                    normal_score = int(normal_score)
+                    
+                    group_id = await conn.fetchval(
+                        "SELECT group_id FROM presentations WHERE presentation_id = $1",
+                        pa['performance_id'])
+                    
+                    if group_id:
+                        group_row = await conn.fetchrow(
+                            "SELECT * FROM groups WHERE group_id = $1", group_id)
+
+                        group_popularity = group_row['popularity'] + group_row['permanent_popularity']
+                        merch_credits = int(50 * (group_popularity ** 0.5))
+                        await conn.execute(
+                                "UPDATE users SET credits = credits + $1 WHERE user_id = $2",
+                            merch_credits, pa['user_id'])
+                        
+                        
+                        
+                        await conn.execute("""
+                            UPDATE groups
+                            SET popularity = popularity + $1
+                            WHERE group_id = $2
+                        """, normal_score, group_id)
+                        
+                        reward_desc += f"> **Venta de mercancía:** 💵{format(merch_credits,',')}\n"
+                        
+                        reward_desc += f"> **⭐ Popularidad para `{group_row['name']}`**: {format(normal_score,',')}\n"
+                       
+                    
+                        perm = 0
+                        if event_type == 'comeback_show':
+                            perm = 100
+                            await conn.execute("""
+                                UPDATE groups
+                                SET permanent_popularity = permanent_popularity + $1
+                                WHERE group_id = $2
+                            """, perm, group_id)
+                        
+                        elif event_type == 'live_showcase' and rank == 1:
+                            perm = 50
+                            await conn.execute("""
+                                UPDATE groups
+                                SET permanent_popularity = permanent_popularity + $1
+                                WHERE group_id = $2
+                            """, perm, group_id)
+                        
+                        reward_desc += f"> **🏆 Popularidad permanente para `{group_row['name']}`**: {perm}\n"
+                    
+                    if reward_credits > 0:
+                        reward_desc += f"> **Créditos:** 💵{format(reward_credits,',')}\n"
+                    
+                    
+                    try:
+                        row = await conn.fetchrow(
+                            "SELECT notifications FROM users WHERE user_id=$1",
+                            pa['user_id'])
+                        
+                        if row and row["notifications"]:
+                            user = BOT.get_user(pa['user_id'])
+                            if user is None:
+                                user = await BOT.fetch_user(pa['user_id'])  # fallback si no está en caché
+                            if user:
+                                embed = discord.Embed(
+                                    title=f"✨ El evento semanal ha finalizado y has logrado el puesto `{rank}`",
+                                    description=f"**Recompensas:**\n{reward_desc}",
+                                    color=discord.Color.gold()
+                                )
+                                try:
+                                    await user.send(embed=embed)
+                                    await asyncio.sleep(5)
+                                except discord.Forbidden:
+                                    logging.warning(f"No pude enviar DM a {pa['user_id']}, tiene bloqueados los mensajes.")
+                    except Exception as e:
+                        logging.error(f"Error al intentar notificar al ganador {pa['user_id']}: {e}")
+                    
+                    
+                    
+                    
+                    rank += 1
+            
+            else:
+                logging.info(f"No hubo participaciones en el evento anterior.")
+
+
+        start_of_week = today - datetime.timedelta(days=today.weekday())
+        start_of_event = start_of_week.replace(hour=5, minute=0, second=0, microsecond=0)
+
+        end_of_event = (start_of_event + datetime.timedelta(days=6)).replace(hour=20, minute=0, second=0, microsecond=0)
+
+
+        scheduled = await conn.fetchrow("""
+            SELECT * FROM event_instances
+            WHERE status = 'scheduled'
+              AND DATE(start_date) = DATE($1)
+            ORDER BY start_date ASC
+            LIMIT 1
+        """, start_of_event)
+
+        new_desc = ""
+        
+        new_type_desc = new_song = new_set = ""
+        if scheduled:
+            if scheduled['song_id']:
+                new_song = await conn.fetchval("SELECT name FROM songs WHERE song_id = $1", scheduled['song_id'])
+                
+            if scheduled['set_id']:
+                new_set = await conn.fetchval("SELECT set_name FROM cards_idol WHERE set_id = $1 LIMIT 1", scheduled['set_id'])
+            
+            # ACTIVAR LIMITED PACKS Y OTRAS CONFIGURACIONES SI APLICA
+            await conn.execute("""
+                UPDATE event_instances
+                SET status='active'
+                WHERE instance_id=$1
+            """, scheduled["instance_id"])
+            
+            # set_id y price en Limited Packs
+            if scheduled['set_id']:
+                await conn.execute("""UPDATE packs SET
+                    set_id = $1, price = 10000 WHERE pack_id = 'LMT'
+                    """, scheduled['set_id'])
+            else:
+                await conn.execute("UPDATE packs SET price = 0 WHERE pack_id = 'LMT'")
+            
+            event_name = await conn.fetchval("SELECT base_name FROM events WHERE event_id = $1", scheduled['event_id'])
+            new_desc += f"# 📢 Ya comenzó el nuevo evento semanal: {event_name} #{scheduled['event_number']}"
+            logging.info(f"Evento programado {scheduled['instance_id']} activado.")
+            
+        else:
+
+            events = await conn.fetch("""
+                SELECT * FROM events WHERE weight > 0
+            """)
+            if not events:
+                logging.warning("No hay eventos disponibles en la tabla events con weight > 0.")
+                return
+
+            chosen_event = random.choices(events, weights=[e["weight"] for e in events])[0]
+
+            # Obtener siguiente event_number para ese event_id
+            next_number = await conn.fetchval("""
+                SELECT COALESCE(MAX(event_number), 0) + 1
+                FROM event_instances
+                WHERE event_id=$1
+            """, chosen_event["event_id"])
+            
+            song = set_id = None
+            if chosen_event['can_song']:
+                song = await conn.fetchval("SELECT song_id FROM songs ORDER BY RANDOM() LIMIT 1")
+            
+            if chosen_event['can_set']:
+                set_id = await conn.fetchval("""
+                            SELECT set_id
+                            FROM (
+                                SELECT DISTINCT set_id
+                                FROM cards_idol
+                            ) AS sub
+                            ORDER BY RANDOM()
+                            LIMIT 1
+                        """)
+                
+            if song:
+                new_song = await conn.fetchval("SELECT name FROM songs WHERE song_id = $1", song)
+                
+            if set_id:
+                new_set = await conn.fetchval("SELECT set_name FROM cards_idol WHERE set_id = $1 LIMIT 1", set_id)
+
+            # Insertar nuevo evento activo
+            await conn.execute("""
+                INSERT INTO event_instances (event_id, event_number, start_date, end_date, status, song_id, set_id)
+                VALUES ($1, $2, $3, $4, 'active', $5, $6)
+            """, chosen_event["event_id"], next_number, start_of_event, end_of_event, song, set_id)
+            
+            if set_id:
+                await conn.execute("""UPDATE packs SET
+                    set_id = $1, price = 10000 WHERE pack_id = 'LMT'
+                    """, set_id)
+            else:
+                await conn.execute("UPDATE packs SET price = 0 WHERE pack_id = 'LMT'")
+
+            new_desc += f"# 📢 Ya comenzó el nuevo evento semanal: {chosen_event['base_name']} #{next_number}"
+            logging.info(f"Nuevo evento creado: {chosen_event['event_id']} #{next_number}")
+        
+        if new_song:
+            new_type_desc += f"La canción designada para este evento es: **{new_song}**\n"
+            
+        if new_set:
+            new_type_desc += f"Durante este evento estará activo para su compra el **Limited Pack** del set `{new_set}`. Podrás comprarlo por 💵10,000\n"
+        
+        try:
+            if BOT.user.id == 1311183246431752224:
+                CHANNEL_ID = 1395557400521474108
+            else:
+                CHANNEL_ID = 1421367405149552670
+
+            channel = BOT.get_channel(CHANNEL_ID)
+            if channel is None:
+                channel = await BOT.fetch_channel(CHANNEL_ID)  # fallback si no está en caché
+            
+            if channel:
+                new_desc += f"\nParticipa durante la semana para clasificar y obtener recompensas\n\nCrea tu presentación con `/presentation create` eligiendo el tipo `Event` para participar"
+                new_desc += f"{new_type_desc}\n"
+                new_desc += f"_Recuerda revisar tus misiones semanales, tu sponsor y unirte a un FanClub esta semana_\n"
+                new_desc += f"@everyone"
+                await channel.send(content=new_desc)
+            else:
+                logging.error(f"No pude encontrar el canal con ID {CHANNEL_ID}")
+                
+        except Exception as e:
+            logging.error(f"Error al intentar notificar el nuevo evento: {e}")
+        
+    logging.info("Se han entregado recompensas del evento y configurado uno nuevo")
 
 async def events_loop(bot):
     global BOT
@@ -603,6 +953,7 @@ async def events_loop(bot):
         await ejecutar_evento_si_corresponde("add_daily_mission", add_daily_missions)
         await ejecutar_evento_si_corresponde("add_weekly_mission", add_weekly_missions)
         await ejecutar_evento_si_corresponde('giveaway_winner', giveaway_winner)
+        await ejecutar_evento_si_corresponde('change_event', change_event)
 
         await asyncio.sleep(300)  # revisa cada 5 minutos
 
