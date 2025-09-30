@@ -1,4 +1,4 @@
-import discord, asyncio, random, string
+import discord, asyncio, random, string, logging
 from discord.ext import commands
 from discord import app_commands
 from utils.localization import get_translation
@@ -872,6 +872,7 @@ class ConfirmPurchaseView(discord.ui.View):
         await interaction.response.edit_message(
             content=f"✅ ¡Compra completada con éxito!\n## Has obtenido {total_xp} XP por tu compra",
             embed=None, view=None)
+        logging.info(f"Compra completada de {self.amount} {self.pack_data['name']} por 💵{self.total_price}")
         
 
         if self.final_receiver_id != self.user_id:
