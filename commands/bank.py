@@ -1,4 +1,4 @@
-import discord, random, string
+import discord, random, string, logging
 from datetime import timezone, datetime
 from discord.ext import commands
 from discord import app_commands
@@ -135,6 +135,7 @@ class ConfirmSendCreditsButton(discord.ui.Button):
             
         await interaction.response.edit_message(content=f"## 💵`{format(self.amount,',')}` enviados correctamente a `{dest_agency}`{xp_gave}",
                                                     embed=None, view=None)
+        logging.info(f"💵{format(self.amount,',')} enviados  a `{dest_agency}`")
         
 
 async def setup(bot):

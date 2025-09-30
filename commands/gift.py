@@ -1,4 +1,4 @@
-import discord, random, string, asyncio
+import discord, random, string, asyncio, logging
 from discord.ext import commands
 from discord import app_commands
 from utils.localization import get_translation
@@ -172,6 +172,7 @@ class ConfirmGiftButton(discord.ui.Button):
                 description=f"**CEO:** {self.to_user.mention}",
                 color=discord.Color.dark_blue()
             )
+            logging.info(f"✅ Carta {card_data['card_id']} enviada exitosamente a `{agency_name}`")
             
             if card_type == "idol":
                 image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{card_data['card_id']}.webp{version}"

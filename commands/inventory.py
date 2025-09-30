@@ -1,4 +1,4 @@
-import discord, random, asyncio, string, json
+import discord, random, asyncio, string, json, logging
 from discord.ext import commands
 from discord import app_commands
 import csv
@@ -3865,6 +3865,7 @@ class ConfirmRefundView(discord.ui.View):
         await interaction.response.edit_message(content=f"## ✅ Reembolso completado.\n### Has recibido **{self.refund}💵** y **{self.xp} XP**.",
                                                 embed=None,
                                                 view=None)
+        logging.info(f"Se ha reembolsado la carta {row['card_id']}")
 
     @discord.ui.button(label="✖", style=discord.ButtonStyle.danger)
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
