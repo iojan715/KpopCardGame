@@ -279,9 +279,33 @@ class PresentationDetailButton(discord.ui.Button):
         status = f"{emoji} {label}"
         
         popularidad = "**Popularidad:**"
-        if self.rowdata['status'] == "ranking":
-            popularidad = "**Puntuación clasificatoria:**"
-        
+        ranking = ""
+        if self.rowdata['presentation_type'] == "event":
+            async with pool.acquire() as conn:
+                popularidad = "**Puntuación clasificatoria:**"
+                
+                rank = 0
+                event_id = await conn.fetchval("SELECT instance_id FROM event_instances WHERE status = 'active'")
+                if event_id:
+                    participations = await conn.fetch(
+                        "SELECT * FROM event_participation WHERE instance_id = $1 AND normal_score > 0 ORDER BY normal_score DESC",
+                        event_id)
+                    stop = False
+                    if participations:
+                        for p in participations:
+                            if not stop:
+                                rank += 1
+                                if interaction.user.id == p['user_id']:
+                                    stop = True
+            place = ""
+            if rank == 1:
+                place = "🥇"
+            elif rank == 2:
+                place = "🥈"
+            elif rank == 3:
+                place = "🥉"
+            ranking = f"**Ranking:** {place}{rank}"
+            
         embed = discord.Embed(
             title=f"Detalles — {self.rowdata['presentation_id']}",
             description=(
@@ -295,6 +319,7 @@ class PresentationDetailButton(discord.ui.Button):
                 f"**Puntuación total:** `{format(self.rowdata['total_score'],',')}`\n"
                 f"**Hype:** `{round(self.rowdata['total_hype'],1)}`\n"
                 f"{popularidad} `{format(self.rowdata['total_popularity'],',')}`\n"
+                f"{ranking}"
             ),
             color=discord.Color.gold()
         )
@@ -3704,12 +3729,40 @@ async def apply_active_skill_if_applicable(conn, idol_row, section_row, presenta
 # CHECKERS
 async def check_section_stat_above(condition_values, idol_row, section_row, presentation_row, conn):
     for stat, min_value in condition_values.items():
+        
+        effect = None
+        if presentation_row["stage_effect"] and presentation_row["stage_effect_duration"] > 0:
+            effect = await conn.fetchrow("SELECT * FROM performance_effects WHERE effect_id = $1", presentation_row["stage_effect"])
+
+        s_effect = None
+        if presentation_row["support_effect"] and presentation_row["support_effect_duration"] > 0:
+            s_effect = await conn.fetchrow("SELECT * FROM performance_effects WHERE effect_id = $1", presentation_row["support_effect"])
+
+        for ef in (effect, s_effect):
+            if ef:
+                stat += ef[f"plus_{stat}"]
+                
+        
         if section_row.get(stat, 0) <= min_value:
             return False
     return True
 
 async def check_section_stat_below(condition_values, idol_row, section_row, presentation_row, conn):
     for stat, max_value in condition_values.items():
+        
+        effect = None
+        if presentation_row["stage_effect"] and presentation_row["stage_effect_duration"] > 0:
+            effect = await conn.fetchrow("SELECT * FROM performance_effects WHERE effect_id = $1", presentation_row["stage_effect"])
+
+        s_effect = None
+        if presentation_row["support_effect"] and presentation_row["support_effect_duration"] > 0:
+            s_effect = await conn.fetchrow("SELECT * FROM performance_effects WHERE effect_id = $1", presentation_row["support_effect"])
+
+        for ef in (effect, s_effect):
+            if ef:
+                stat += ef[f"plus_{stat}"]
+                
+        
         if section_row.get(stat, 999) >= max_value:
             return False
     return True
