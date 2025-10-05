@@ -612,6 +612,8 @@ async def change_event():
         today = datetime.datetime.now(datetime.timezone.utc)
         current_event_row = await conn.fetchrow("SELECT * FROM event_instances WHERE status = 'active' ORDER BY start_date DESC")
         
+        last_winner = ""
+            
         if current_event_row:
             if today < current_event_row['end_date']:
                 print("El evento aun no termina")
@@ -668,6 +670,7 @@ async def change_event():
             
             event_type = await conn.fetchval("SELECT event_type FROM events WHERE event_id = $1",
                                              current_event_row['event_id'])
+            
             
             rank = 1
             if participations:
@@ -776,6 +779,8 @@ async def change_event():
                         reward_desc += f"> **Créditos:** 💵{format(reward_credits,',')}\n"
                     
                     
+                    
+                    
                     try:
                         row = await conn.fetchrow(
                             "SELECT notifications FROM users WHERE user_id=$1",
@@ -800,7 +805,10 @@ async def change_event():
                         logging.error(f"Error al intentar notificar al ganador {pa['user_id']}: {e}")
                     
                     
-                    
+                    if rank == 1:
+                        agency_name = await conn.fetchval("SELECT agency_name FROM users WHERE user_id = $1",
+                                                          pa['user_id'])
+                        last_winner += f"\n🏆 Grupo ganador del evento anterior: 🥇**{group_row['name']}** de la Agencia `{agency_name}` _(CEO: <@{pa['user_id']}>)_\n"
                     
                     rank += 1
             
@@ -907,10 +915,10 @@ async def change_event():
             logging.info(f"Nuevo evento creado: {chosen_event['event_id']} #{next_number}")
         
         if new_song:
-            new_type_desc += f"La canción designada para este evento es: **{new_song}**\n"
+            new_type_desc += f"🎶 La canción designada para este evento es: **{new_song}**\n"
             
         if new_set:
-            new_type_desc += f"Durante este evento estará activo para su compra el **Limited Pack** del set `{new_set}`. Podrás comprarlo por 💵10,000\n"
+            new_type_desc += f"📦 Durante este evento estará activo para su compra el **Limited Pack** del set `{new_set}`. Podrás comprarlo por 💵10,000\n"
         
         try:
             if BOT.user.id == 1311183246431752224:
@@ -923,7 +931,8 @@ async def change_event():
                 channel = await BOT.fetch_channel(CHANNEL_ID)  # fallback si no está en caché
             
             if channel:
-                new_desc += f"\nParticipa durante la semana para clasificar y obtener recompensas\n\nCrea tu presentación con `/presentation create` eligiendo el tipo `Event` para participar"
+                new_desc += f"{last_winner}"
+                new_desc += f"\n### Participa en el nuevo evento durante la semana para clasificar y obtener recompensas\nCrea tu presentación con `/presentation create` eligiendo el tipo `Event` para participar\n"
                 new_desc += f"{new_type_desc}\n"
                 new_desc += f"_Recuerda revisar tus misiones semanales, tu sponsor y unirte a un FanClub esta semana_\n"
                 new_desc += f"@everyone"
