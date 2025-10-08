@@ -214,3 +214,35 @@ section_id,song_id,section_number,section_type,duration,lyrics,vocal,rap,dance,v
 0213,007,30,chorus,4,*Don't wanna be a bebe*\n*Yeah that's me*\n*Si c'est moi*,30,10,30,30,optional,,,,,,20200
 0214,007,31,ending,7,*Dancin' around in my tight dress*\n*hago sipeun daero hae 'cause I like that*\n*Look at me what I do I'm so priceless*\n*At the same time lookin like a maknae*,0,50,15,35,forced,pose_sync,,,,,35400
 0215,007,32,ending,8,*Oh excuse me made you a little salty*\n*sumgireogo haebwatja da tina like you lunge*\n*(Yeah) so had enough fed up with you girly*\n*bogi shireun geon ttaeron gwagamhi pyeonjip*\n*(yeah)*,10,40,30,20,optional,,,,,,40400
+0216,004,1,intro,8,*I'm like some kind of Supernova*\n*Watch out*,10,20,30,40,optional,,,,,,40400
+0217,004,2,verse,7,*Look at me go*\n*jaemi jom bol*\n*biche Core*\n*So hot~ hot~*,20,20,25,35,forced,,,,,,35400
+0218,004,3,verse,9,*muni yeollyeo*\n*seoroye jonjaereul neukkyeo*\n*machi Discord*\n*nal dalmeun neo neo nuguya*\n*(Drop)*,20,20,35,25,optional,pose_sync,,,5,15,47500
+0219,004,4,pre_chorus,4,*sageoneun dagawa Ah oh ay*\n*geosege keojeoga Ah oh ay*,10,30,35,25,forced,,,,,,20200
+0220,004,5,pre_chorus,4,*That tick that tick tick bomb*\n*That tick that tick tick bomb*,20,20,30,30,optional,,,,,,20200
+0221,004,6,pre_chorus,4,*gamhi geondeuriji motal geol*\n*(nugudo mariya)*,30,10,30,20,optional,duet,10,,5,10,20200
+0222,004,7,pre_chorus,4,*jigeum nae aneseon*\n*Su su su Supernova*,20,20,40,20,optional,,,,,,20200
+0223,004,8,chorus,8,*Nova~*\n*Can't stop hyperstellar*\n*weoncho geugeol chaja*,40,5,45,10,forced,group_dance,,,20,,42200
+0224,004,9,chorus,5,*Bring the light of a dying star*\n*bulleonaen nae ujureul bwa bwa*,25,20,40,15,optional,,,,,,25200
+0225,004,10,chorus,3,*Supernova~*,40,5,35,20,optional,,,,,,15100
+0226,004,11,verse,6,*Ah~ body bang~*,20,20,20,40,forced,backup_dance,,10,10,,31600
+0227,004,12,verse,2,*Make it feel too right*,20,10,25,45,optional,,,,,,10100
+0228,004,13,verse,8,*hwipsseullin eneoji It's so special*\n*janinhan Queen imyeo Scene ija jonggyeol*,30,10,30,30,optional,,,,,,40400
+0229,004,14,verse,8,*itorok geodaehan nae ane Explosion*\n*nae modeun sepo byeollobuteo mandeureojeo*\n*(Under my control ah)*,40,5,35,20,forced,high_note,15,,,5,42200
+0230,004,15,pre_chorus,4,*jilmuneun gyesokdwae Ah oh ay*\n*urin eodiseo wanna Oh ay*,10,30,45,10,forced,,,,,,20200
+0231,004,16,pre_chorus,4,*neukkyeo nae aneseon*\n*(Ha)*\n*Su su su Supernova*,20,20,35,20,optional,adlib,,5,,10,20200
+0232,004,17,chorus,8,*Nova*\n*Can't stop hyperstellar*\n*weoncho geugeol chaja*,40,5,45,10,forced,group_dance,,,15,,42200
+0233,004,18,chorus,5,*Bring the light of a dying star*\n*bulleonaen nae ujureul bwa bwa*,25,20,40,15,optional,pose_sync,,,10,10,27400
+0234,004,19,chorus,3,*Supernova~*,40,5,35,20,optional,,,,,,15800
+0235,004,20,bridge,8,*boiji anneun himeuro*\n*nege son naemireo bolkka*,45,0,15,40,forced,backup_dance,,,5,10,43900
+0236,004,21,bridge,4,*ganeunghan modeun ganeungseong*\n*muhan soge neoreul manna*,30,10,30,30,optional,,,,,,21100
+0237,004,22,bridge,4,*It's about to bang bang*\n*Don't forget my name*,30,20,25,25,optional,pose_sync,,,5,15,21900
+0238,004,23,bridge,2,*Su su su Supernova*,5,25,40,30,optional,,,,,,10500
+0239,004,24,break,8,*sageoneun dagawa Ah oh ay*\n*geosege keojeoga Ah oh ay*\n*jilmuneun gyesokdwae Ah oh ay*\n*urin eodiseo wanna Oh ay*,5,30,55,10,forced,group_dance,,,20,5,43900
+0240,004,25,break,8,*sageoneun dagawa Ah oh ay*\n*geosege keojeoga Ah oh ay*\n*Tell me tell me tell me Oh ay*\n*urin eodiseo wanna Oh ay*,5,30,50,15,forced,pose_sync,,,15,10,43900
+0241,004,26,break,4,*urin eodiseo wanna Oh ay*,5,30,30,35,locked,,,,,,21100
+0242,004,27,chorus,8,*Nova (Nova~)*\n*Can't stop hyperstellar (Hyperstellar~)*\n*weoncho geugeol chaja*,40,5,45,10,forced,adlib,10,,10,5,43900
+0243,004,28,chorus,6,*Bring the light of a dying star*\n*(Bring the light of a dying star)*\n*bulleonaen nae ujureul bwa bwa (All the way)*,30,15,40,15,optional,high_note,15,,5,5,32900
+0244,004,29,chorus,2,*Supernova (Hey ha)*,25,20,35,20,optional,cheering,,,5,10,10900
+0245,004,30,ending,8,*sageoneun dagawa Ah oh ay (Nu star)*\n*geosege keojeoga Ah oh ay*\n*jilmuneun gyesokdwae Ah oh ay (Nova)*\n*urin eodiseo wanna Oh ay*,15,25,40,20,forced,adlib,10,,5,10,43900
+0246,004,31,ending,6,*sageoneun dagawa Ah oh ay (Yeah yeah yeah yeah)*\n*geosege keojeoga Ah oh ay*\n*jilmuneun gyesokdwae Ah oh ay (Nova)*\n*Bring the light of a dying star*,20,20,30,30,optional,high_note,15,,5,5,32900
+0247,004,32,ending,4,*Supernova~*,25,0,15,60,locked,backup_rap,10,10,5,,21900

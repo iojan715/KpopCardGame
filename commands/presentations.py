@@ -285,7 +285,7 @@ class PresentationDetailButton(discord.ui.Button):
                 popularidad = "**Puntuación clasificatoria:**"
                 
                 rank = 0
-                event_id = await conn.fetchval("SELECT instance_id FROM event_instances WHERE status = 'active'")
+                event_id = await conn.fetchval("SELECT instance_id FROM event_participation WHERE performance_id = $1", self.rowdata['presentation_id'])
                 if event_id:
                     participations = await conn.fetch(
                         "SELECT * FROM event_participation WHERE instance_id = $1 AND normal_score > 0 ORDER BY normal_score DESC",
@@ -296,6 +296,8 @@ class PresentationDetailButton(discord.ui.Button):
                             if not stop:
                                 rank += 1
                                 if interaction.user.id == p['user_id']:
+                                    if p['normal_score'] == 0:
+                                        rank = 0
                                     stop = True
             place = ""
             if rank == 1:
