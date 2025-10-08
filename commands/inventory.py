@@ -154,7 +154,7 @@ class InventoryGroup(app_commands.Group):
                 params.append(rarity.value.upper())
                 idx += 1
 
-        if nivel and (not rarity or rarity == "Regular"):
+        if nivel and (not rarity or rarity.value == "Regular"):
             base_query += f" AND RIGHT(uc.rarity_id, 1) = ${idx}"
             params.append(str(nivel))
             idx += 1
@@ -4255,3 +4255,4 @@ class ConfirmLevelUpView(discord.ui.View):
 async def setup(bot):
     bot.tree.add_command(InventoryGroup())
     bot.tree.add_command(CardGroup())
+
