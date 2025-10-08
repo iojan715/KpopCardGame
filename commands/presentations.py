@@ -295,8 +295,8 @@ class PresentationDetailButton(discord.ui.Button):
                         for p in participations:
                             if not stop:
                                 rank += 1
-                                if interaction.user.id == p['user_id']:
-                                    if p['normal_score'] == 0:
+                                if self.rowdata['user_id'] == p['user_id']:
+                                    if not p['normal_score'] or p['normal_score'] == 0:
                                         rank = 0
                                     stop = True
             place = ""
