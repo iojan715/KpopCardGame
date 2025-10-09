@@ -3742,10 +3742,10 @@ async def check_section_stat_above(condition_values, idol_row, section_row, pres
 
         for ef in (effect, s_effect):
             if ef:
-                stat += ef[f"plus_{stat}"]
+                min_value -= ef[f"plus_{stat}"]
                 
         
-        if section_row.get(stat, 0) <= min_value:
+        if section_row.get(stat, 0) < min_value:
             return False
     return True
 
@@ -3762,7 +3762,7 @@ async def check_section_stat_below(condition_values, idol_row, section_row, pres
 
         for ef in (effect, s_effect):
             if ef:
-                stat += ef[f"plus_{stat}"]
+                max_value += ef[f"plus_{stat}"]
                 
         
         if section_row.get(stat, 999) >= max_value:
@@ -4353,4 +4353,5 @@ async def finalize_presentation(conn, presentation: dict) -> str:
             )
 
 async def setup(bot):
+
     bot.tree.add_command(PresentationGroup())
