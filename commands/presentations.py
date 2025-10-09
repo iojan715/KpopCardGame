@@ -1662,8 +1662,101 @@ async def show_current_section_view(interaction: discord.Interaction, presentati
             description=f"> {section_type}\n{section['lyrics'].replace("\\n","\n")}",
             color=discord.Color.orange()
         )
-        embed2.add_field(name=f"🎤 Vocal: {section['vocal']}", value=f"🎶 Rap: {section['rap']}")
-        embed2.add_field(name=f"💃 Dance: {section['dance']}", value=f"📸 Visual: {section['visual']}")
+        
+        section_vocal = section['vocal']
+        section_rap = section['rap']
+        section_dance = section['dance']
+        section_visual = section['visual']
+        estadisticas = [section_vocal, section_rap, section_dance, section_visual]
+        p_vocal = p_rap = p_dance = p_visual = ""
+        
+        if presentation["stage_effect"] and presentation["stage_effect_duration"] > 0:
+            st_eff = await conn.fetchrow("SELECT * FROM performance_effects WHERE effect_id = $1", presentation['stage_effect'])
+            if st_eff['highest_stat_mod'] > 0:
+                if section_vocal == max(estadisticas):
+                    section_vocal += st_eff['highest_stat_mod']
+                elif section_rap == max(estadisticas):
+                    section_rap += st_eff['highest_stat_mod']
+                elif section_dance == max(estadisticas):
+                    section_dance += st_eff['highest_stat_mod']
+                elif section_visual == max(estadisticas):
+                    section_visual += st_eff['highest_stat_mod']
+            
+            if st_eff['lowest_stat_mod'] > 0:
+                if section_vocal == min(estadisticas):
+                    section_vocal += st_eff['lowest_stat_mod']
+                elif section_rap == min(estadisticas):
+                    section_rap += st_eff['lowest_stat_mod']
+                elif section_dance == min(estadisticas):
+                    section_dance += st_eff['lowest_stat_mod']
+                elif section_visual == min(estadisticas):
+                    section_visual += st_eff['lowest_stat_mod']
+                    
+            section_vocal += st_eff['plus_vocal']
+            section_rap += st_eff['plus_rap']
+            section_dance += st_eff['plus_dance']
+            section_visual += st_eff['plus_visual']
+
+        if presentation["support_effect"] and presentation["support_effect_duration"] > 0:
+            sp_eff = await conn.fetchrow("SELECT * FROM performance_effects WHERE effect_id = $1", presentation['support_effect'])
+            if sp_eff['highest_stat_mod'] > 0:
+                if section_vocal == max(estadisticas):
+                    section_vocal += sp_eff['highest_stat_mod']
+                elif section_rap == max(estadisticas):
+                    section_rap += sp_eff['highest_stat_mod']
+                elif section_dance == max(estadisticas):
+                    section_dance += sp_eff['highest_stat_mod']
+                elif section_visual == max(estadisticas):
+                    section_visual += sp_eff['highest_stat_mod']
+            
+            if sp_eff['lowest_stat_mod'] > 0:
+                if section_vocal == min(estadisticas):
+                    section_vocal += sp_eff['lowest_stat_mod']
+                elif section_rap == min(estadisticas):
+                    section_rap += sp_eff['lowest_stat_mod']
+                elif section_dance == min(estadisticas):
+                    section_dance += sp_eff['lowest_stat_mod']
+                elif section_visual == min(estadisticas):
+                    section_visual += sp_eff['lowest_stat_mod']
+                    
+            section_vocal += sp_eff['plus_vocal']
+            section_rap += sp_eff['plus_rap']
+            section_dance += sp_eff['plus_dance']
+            section_visual += sp_eff['plus_visual']
+        
+        if section_vocal > section['vocal']:
+            p_vocal = "🔺"
+        elif section_vocal < section['vocal']:
+            p_vocal = "🔻"
+            
+        if section_rap > section['rap']:
+            p_rap = "🔺"
+        elif section_rap < section['rap']:
+            p_rap = "🔻"
+            
+        if section_dance > section['dance']:
+            p_dance = "🔺"
+        elif section_dance < section['dance']:
+            p_dance = "🔻"
+            
+        if section_visual > section['visual']:
+            p_visual = "🔺"
+        elif section_visual < section['visual']:
+            p_visual = "🔻"
+        
+        plus_vocal = plus_rap = plus_dance = plus_visual = ""
+        if section['type_plus']:
+            if section['plus_vocal'] > 0:
+                plus_vocal = f" (+{section['plus_vocal']})"
+            if section['plus_rap'] > 0:
+                plus_rap = f" (+{section['plus_rap']})"
+            if section['plus_dance'] > 0:
+                plus_dance = f" (+{section['plus_dance']})"
+            if section['plus_visual'] > 0:
+                plus_visual = f" (+{section['plus_visual']})"
+        
+        embed2.add_field(name=f"🎤 Vocal: {section_vocal}{p_vocal}{plus_vocal}", value=f"🎶 Rap: {section_rap}{p_rap}{plus_rap}")
+        embed2.add_field(name=f"💃 Dance: {section_dance}{p_dance}{plus_dance}", value=f"📸 Visual: {section_visual}{p_visual}{plus_visual}")
         embed2.set_footer(text=f"⭐ Puntuación esperada: {section['average_score']}")
         
         embeds.append(embed)
@@ -2916,6 +3009,12 @@ async def perform_section_action(conn, presentation_id: str, idol_row, song_sect
     Ph = min(1.2, max(0.8, ((0.4 * H) - 20) / 100 + 1))
 
     base_energy_cost = duration
+    
+    base_energy_cost += skill_bonus.get("extra_cost", 0)
+    base_energy_cost *= skill_bonus.get("relative_cost", 1)
+    base_energy_cost = round(base_energy_cost,2)
+    
+    
     if effect:
         base_energy_cost += effect["extra_cost"]
         base_energy_cost *= effect["relative_cost"]
@@ -2923,10 +3022,6 @@ async def perform_section_action(conn, presentation_id: str, idol_row, song_sect
         base_energy_cost += s_effect["extra_cost"]
         base_energy_cost *= s_effect["relative_cost"]
 
-    
-    base_energy_cost += skill_bonus.get("extra_cost", 0)
-    base_energy_cost *= skill_bonus.get("relative_cost", 1)
-    base_energy_cost = round(base_energy_cost,2)
     
     new_used_energy = min(idol_row["max_energy"], idol_row["used_energy"] + base_energy_cost)
 
@@ -2961,7 +3056,7 @@ async def perform_section_action(conn, presentation_id: str, idol_row, song_sect
     await conn.execute("""
         UPDATE presentation_members SET used_energy = used_energy - $1
         WHERE presentation_id = $2 AND current_position = 'back'
-    """, base_energy_cost * 0.1, presentation_id)
+    """, round(base_energy_cost * 0.1,1), presentation_id)
 
     # Set last positions according to last current positions
     await conn.execute("""
@@ -3000,6 +3095,23 @@ async def perform_section_action(conn, presentation_id: str, idol_row, song_sect
     Hg = round((1 - base_hype / base_score) * 5 * skill_bonus.get("hype", 1), 2)
     if effect: Hg *= effect["hype_mod"]
     if s_effect: Hg *= s_effect["hype_mod"]
+    
+    section_types = {
+        "intro": 1.1,
+        "verse": 0.9,
+        "pre_chorus": 1.0,
+        "chorus": 1.3,
+        "break": 1.2,
+        "bridge": 0.8,
+        "ending": 0.7
+    }
+    
+    for key, value in section_types.items():
+        if song_section['section_type'] == key:
+            print(Hg)
+            Hg *= value
+            print(key)
+            print(Hg)
 
     Hg = round(Hg,2)
     await conn.execute("UPDATE presentations SET total_hype = LEAST(100, GREATEST(0, total_hype + $1)) WHERE presentation_id = $2", Hg, presentation_id)
@@ -3426,30 +3538,6 @@ class SupportSkillUseButton(discord.ui.Button):
 
 
 # - active skill
-def parse_effect_description(skill):
-    effects = []
-
-    if skill["effect"] == "stat_boost":
-        for stat, value in json.loads(skill["params"]).items():
-            if value > 0:
-                effects.append(f"+{value} a {stat.capitalize()}")
-
-    elif skill["effect"] == "multi_effect":
-        for stat, value in skill["params"].items():
-            if value > 0:
-                effects.append(f"+{value} a {stat.capitalize()}")
-
-    elif skill["effect"] == "boost_higher_stat":
-        effects.append(f"+{skill['params'].get('value', '?')} a la estadística más alta")
-
-    elif skill["effect"] == "boost_lower_stat":
-        effects.append(f"+{skill['params'].get('value', '?')} a la estadística más baja")
-
-    if skill["condition_effect"]:
-        effects.append("🔸 Tiene efecto adicional si se cumple una condición")
-
-    return "\n".join(effects) if effects else "Sin efecto aparente"
-
 class ActiveSkillPreviewButton(discord.ui.Button):
     def __init__(self, presentation_id: str, emoji, disabled: bool = False):
         super().__init__(label="Active", emoji=emoji, style=discord.ButtonStyle.primary, disabled=disabled, row=1)
@@ -4353,5 +4441,4 @@ async def finalize_presentation(conn, presentation: dict) -> str:
             )
 
 async def setup(bot):
-
     bot.tree.add_command(PresentationGroup())
