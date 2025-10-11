@@ -602,6 +602,100 @@ Se ha agregado la canción **Rebel Heart** al juego, y ya puede ser seleccionada
 
 ----------------------------------
 
+# 📢 Versión 1.3.0.1 - Ranking de Eventos (2025-10-01)
+
+## ✨ Nuevas funciones
+Se ha agregado la opción de ver tu posición en el ranking del Evento semanal. Esto puede ser observado desde el comando de `/presentation list`, donde las presentaciones de Eventos mostrarán la puntuación clasificatoria y la posición actual de su presentación en el evento.
+
+_Por el momento no se podrá ver el ranking completo del evento_
+
+----------------------------------
+
+# 📢 Versión 1.3.1 - Nueva canción (2025-10-06)
+
+Se ha agregado la canción `BEBE` de **Stayc** al juego, y ya puede ser usada en presentaciones,  salir en eventos tipo **Music Show**.
+
+## Ajustes menores
+Se han hecho algunos cambios y ajustes menores al juego, tanto de interfaz (lo que se ve en cada comando) como de funcionamiento interno para evitar algunos errores o mantener balance:
+- Al usar el comando `/cards fusion`, si un **ID** era introducido erroneamente, podía causar un error y no mostrar ningún resultado en el comando (ahora se avisa que algo se introdujo mal)
+- Se ha ajustado la dificultad de las secciones de la mayoría de canciones, para evitar que haya una diferencia muy grande entre secciones que piden algún tipo de **refuerzo** y las que no, para que ahora sirvan principalmente como **bonus** y no tanto como castigo si no se usan.
+
+----------------------------------
+
+# 📢 Versión 1.3.2 - Nueva canción y bugs arreglados (2025-10-07)
+
+## :🎶:  `Supernova` de *Aespa*
+Ha sido agregada al juego, y ya puede ser usada en presentaciones.
+
+## Correcciones
+Se ha arreglado dos errores que fueron reportados en el canal de [canal]:
+- Las presentaciones de evento vistas desde `/presentation list` mostraban erróneamente el puesto o lugar obtenido durante el evento en que se realizaron (corregido).
+- El inventario de cartas idol ignoraba el filtro **Nivel** cuando se ponía la rareza _Regular_ en el filtro **rarity**. Ahora permite poner ambos o usar solo uno de los dos. Si se filtra por alguna otra rareza que no sea _Regular_, el filtro de nivel se seguirá ignorando (pues solo las cartas Regulares tienen distintos niveles) 
+
+----------------------------------
+
+# 📢 Versión 1.3.3 - Cambios a presentaciones (2025-10-08)
+
+## 📃 Lista de cambios
+### 🔥 Multiplicadores de Hype
+Ahora durante la presentación, dependiendo del tipo de sección, se obtendrá más o menos Hype de acuerdo a la puntuación obtenida, con los siguientes multiplicadores:
+- **Intro:** x1.1
+- **Verse:** x0.9
+- **Pre_chorus:** x1.0
+- **Chorus:** x1.3
+- **Break:** x1.2
+- **Bridge:** x0.8
+- **Ending:** x0.7
+Haciendo de esta manera más fácil **ganar (o perder) Hype** en secciones más importantes como los Coros/Estribillos, Breaks, o desde el Inicio de la canción _(aunque la diferencia es poca y todas las secciones siguen importando)_
+
+### Apoyo visual a estadísticas de la sección
+Ahora los efectos de tipo **Stage** o **Support** se ven *aplicados en las estadísticas* mostradas en la parte baja de la vista de presentación *como se muestra en la imagen*. Las estadísticas afectadas mostrarán un **icono (🔺/🔻)** para saber si el efecto ha provocado un *aumento o disminución* en dicha estadística.
+> En el **ejemplo de la imagen** se observa que la estadística **Visual** está "potenciada", por lo que su valor original es menor, pero ya con el o los efectos aplicados suma un total de 40 en esa estadística.
+
+Además, ahora se muestra el bono que se obtiene si se usa una **P. Card** de **Reinforcement** del mismo tipo de la sección. 
+> En el ejemplo de la imagen, la sección es de tipo **Backup Dance**, y al usar un refuerzo de ese tipo, aumentaría en +10 la estadística **Dance** en esa sección
+
+## 🎶 Nueva canción: `DRIP` de *Babymonster*
+🎉 Ha sido agregada al juego, y ya puede ser usada en presentaciones.
+
+----------------------------------
+
+# 📢 Versión 1.3.3.1 - Cambios a habilidades en general (2025-10-11)
+
+## 🔺 Mejoras o Buffs para los jugadores
+- :PassiveSkill: **Encore Spirit:** Ahora se activa desde que tienes 70% de energia restante o menos, antes 65%
+- :PassiveSkill: **Last Push:** Ahora se activa desde que tienes 60% de energia restante o menos, antes 45%
+- :PassiveSkill: **Natural Rhythm:** Ahora se activa desde que tienes 75% de energia restante o menos, antes 60%
+- :PassiveSkill: **Well Paced:** Ahora se activa cuando que tienes 80% de energia restante o más, antes 70%
+- :PassiveSkill: **Peak Turn:** Ahora al activarse, mejora +8 Vocal y Dance, antes +6
+- :PassiveSkill: **Energy Sensor:** Ahora al activarse mejora +14 Dance, antes +12
+- :PassiveSkill: **Rhythm Focus:** Ahora al activarse mejora +15 Dance, antes +12
+- :PassiveSkill: **Sluggish Mood:** Ahora afecta solo cuando que tienes 95% de energia restante o más, antes 90%
+- :PassiveSkill: **Flow Mastery:** Ahora aumenta +6 a todas las stats, antes +4
+- :PassiveSkill: **Clumsy Entry:** Ahora cuando se activa aumenta el costo de energia en 2, antes 4
+- :ActiveSkill: **Over Push:** El efecto condicional ahora se activa si tienes menos de 75% de energia, antes 55%, y mejora la puntuación +15%, antes +10%
+- :ActiveSkill: **Encore Push:** Ahora al activarse el efecto condicional tambien aumenta la puntuación en +10%, antes solo +20% de Hype 
+- :PassiveSkill: **Silent Recovery:** Ahora recupera +20 energía, antes +15 (sigue aumentando +10 Dance y Visual)
+- :PassiveSkill: **Hyper Rest:** Ahora recupera +35 energía, antes +25
+- :PassiveSkill: **Audience Bond:** Arreglada la descripción, pues triplica el Hype obtenido, pero la descripción mostraba que "duplica".
+
+## 🔻 Debuffs a habilidades
+- :PassiveSkill: **Peak Fit:** Ahora se activa cuando que tienes 80% de energia restante o más, antes 70%
+- :PassiveSkill: **Resilient Core:** Ahora se activa cuando que tienes 85% de energia restante o más, antes 80%
+- :PassiveSkill: **Stable Core:** Ahora se activa cuando que tienes 75% de energia restante o más, antes 70%
+- :PassiveSkill: **Tempo Strain:** Ahora afecta si la duración de la sección es mayor a 5, antes 6
+- :PassiveSkill: **Score Leader:** Ahora al activarse, aumenta la puntuación en +10%, antes +12%
+- :PassiveSkill: **Vocal Boost:** Ahora al activarse, sigue aumentando +16 Vocal pero reduce -8 Rap, antes -6
+- :PassiveSkill: **Popularity Pressure:** Ahora al activarse reduce -10 Dance, antes -6
+- :PassiveSkill: **Popularity Pressure:** Ahora al activarse, reduce -12 Dance, antes -10
+- :PassiveSkill: **Low Morale:** Ahora afecta cuando el Hype es menor a 45, antes 40
+- :PassiveSkill: **Stage Anxiety:** Ahora al activarse tambien reduce -8 Vocal, antes solo -8 Rap
+- :PassiveSkill: **Tension:** Ahora al activarse reduce -6 Rap y Dance, antes -4
+- :PassiveSkill: **Nerves:** Ahora al activarse reduce -8 Vocal, antes -6
+- :PassiveSkill: **Stage Fright:** Ahora se activa desde que el Hype es mayor a 65, antes 70
+
+----------------------------------
+
 `plantilla`
 
 # 📢 Versión X.Y.Z - [Título breve del parche] (AAAA-MM-DD)
