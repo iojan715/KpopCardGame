@@ -130,7 +130,7 @@ class ModGroup(app_commands.Group):
 
         embed = discord.Embed(
             title="🎁 Recompensa por reporte de error",
-            description=f"**Arreglado:** _{message}_",
+            description=f"**Arreglado:** *{message}*",
             color=discord.Color.orange()
         )
         embed.add_field(name="💵 Dinero otorgado", value=f"{reward_credits:,}", inline=False)

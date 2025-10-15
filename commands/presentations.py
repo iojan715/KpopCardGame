@@ -1886,14 +1886,17 @@ class IdolSwitchPaginator:
             if idol['unique_id']:
                 async with pool.acquire() as conn:
                     card = await conn.fetchrow("SELECT * FROM user_idol_cards WHERE unique_id = $1", idol['unique_id'])
-                    if card['p_skill']:
-                        idol_desc += ps_emoji
-                    if card['a_skill']:
-                        idol_desc += as_emoji
-                    if card['s_skill']:
-                        idol_desc += ss_emoji
-                    if card['u_skill']:
-                        idol_desc += us_emoji
+                    if card:
+                        if card['p_skill']:
+                            idol_desc += ps_emoji
+                        if card['a_skill']:
+                            idol_desc += as_emoji
+                        if card['s_skill']:
+                            idol_desc += ss_emoji
+                        if card['u_skill']:
+                            idol_desc += us_emoji
+                    else:
+                        await conn.execute("UPDATE presentation_members SET card_id = $1 AND unique_id = $1 WHERE id = $2", None, idol['id'])
             
             embed = discord.Embed(
                 title=idol_desc,

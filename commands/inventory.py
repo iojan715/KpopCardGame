@@ -3475,8 +3475,14 @@ class CardGroup(app_commands.Group):
         
         if len(set(input_cards)) != 3:
             return await interaction.response.send_message("❌ Las cartas deben ser diferentes.", ephemeral=True)
-
-        uids = [c.split(".")[1] for c in input_cards]
+        
+        try:
+            uids = [c.split(".")[1] for c in input_cards]
+        except IndexError:
+            return await interaction.response.send_message("❌ El formato de alguno de los ID es incorrecto.", ephemeral=True)
+        
+        
+        
         pool = await get_pool()
 
         async with pool.acquire() as conn:
@@ -4255,4 +4261,3 @@ class ConfirmLevelUpView(discord.ui.View):
 async def setup(bot):
     bot.tree.add_command(InventoryGroup())
     bot.tree.add_command(CardGroup())
-
