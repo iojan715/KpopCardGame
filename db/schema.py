@@ -394,7 +394,8 @@ async def create_songs_table():
                 total_duration INTEGER NOT NULL,
                 total_sections INTEGER NOT NULL,
                 released_date TIMESTAMPTZ DEFAULT now(),
-                average_score FLOAT NOT NULL
+                average_score FLOAT NOT NULL,
+                set_id TEXT
             );
         """)
 

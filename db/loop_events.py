@@ -895,6 +895,9 @@ async def change_event():
             if song:
                 new_song = await conn.fetchval("SELECT name FROM songs WHERE song_id = $1", song)
                 
+                if not set_id:
+                    set_id = await conn.fetchval("SELECT set_id FROM songs WHERE song_id = $1", song)
+                
             if set_id:
                 new_set = await conn.fetchval("SELECT set_name FROM cards_idol WHERE set_id = $1 LIMIT 1", set_id)
 
