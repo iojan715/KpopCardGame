@@ -1052,67 +1052,6 @@ class GroupAssignButton(ui.Button):
 # --- PERFORM
 
 # - start performance
-class PresentationSelectToPerformView(ui.View):
-    def __init__(self, interaction: Interaction, presentations: List[dict]):
-        super().__init__(timeout=60)
-        self.interaction = interaction
-        for row in presentations:
-            self.add_item(PerformPresentationButton(row["presentation_id"]))
-      
-class BackToPresentationPerformanceButton(discord.ui.Button):
-    def __init__(self, paginator: "PresentationListPaginator"):
-        super().__init__(label="🔙 Volver", style=discord.ButtonStyle.secondary, row=2)
-        self.paginator = paginator
-
-    async def callback(self, interaction: discord.Interaction):
-        # re-ejecutar la consulta
-        pool = get_pool()
-        async with pool.acquire() as conn:
-            rows = await conn.fetch(self.paginator.base_query, *self.paginator.query_params)
-        if not rows:
-            return await interaction.response.edit_message(
-                content="⚠️ No se encontraron presentaciones.",
-                embed=None, view=None
-            )
-            
-        STATUS_MAP = {
-            "preparation":    ("🛠️", "Preparación"),
-            "active":         ("▶️", "En curso"),
-            "completed":      ("🎉", "Completada"),
-            "finished":       ("⌛", "Finalizada"),
-            "cancelled":      ("❌", "Cancelada"),
-            "expired":        ("⏰", "Expirada"),
-        }
-        # regenerar embeds
-        embeds = []
-        for r in rows:
-            async with pool.acquire() as conn:
-                group_name = await conn.fetchval("SELECT name FROM groups WHERE group_id = $1", r['group_id'])
-                song_name = await conn.fetchval("SELECT name FROM songs WHERE song_id = $1", r['song_id'])
-            
-            emoji, label = STATUS_MAP.get(r["status"], ("❓", r["status"].capitalize()))
-            status = f"{emoji} {label}"
-            
-            e = discord.Embed(
-                title=f"🎬 Presentación {r['presentation_id']}",
-                color=discord.Color.blurple()
-            )
-            e.add_field(name=f"**Tipo:** {r["presentation_type"].capitalize()}", value=f"**Estado:** {status}", inline=False)
-            e.add_field(name=f"**Grupo:** {group_name if group_name else "`n/a`"}", value=f"**Canción:** {song_name if song_name else "`n/a`"}", inline=False)
-            e.add_field(name=f"Creación: <t:{int(r['presentation_date'].timestamp())}:f>", value="", inline=False)
-            e.set_footer(text=f"{r['presentation_id']}")
-            embeds.append(e)
-
-        new_p = PresentationPerformancePaginator(
-            embeds=embeds,
-            rows=rows,
-            interaction=interaction,
-            base_query=self.paginator.base_query,
-            query_params=self.paginator.query_params,
-            embeds_per_page=self.paginator.embeds_per_page
-        )
-        await new_p.restart(interaction)
-
 class PresentationPerformancePaginator:
     def __init__(
         self,
@@ -1198,7 +1137,7 @@ class NextPerformancePageButton(discord.ui.Button):
 
 
 class PerformPresentationButton(ui.Button):
-    def __init__(self, presentation_id: str, paginator: "PresentationListPaginator"):
+    def __init__(self, presentation_id: str, paginator: PresentationPerformancePaginator):
         super().__init__(label=f"{presentation_id}", style=discord.ButtonStyle.primary)
         self.presentation_id = presentation_id
         self.paginator = paginator
@@ -1223,6 +1162,7 @@ class PerformPresentationButton(ui.Button):
             embed=embed,
             view=view
         )
+
 
 async def get_presentation_embed(pool, presentation_id, user_id):
     pool = get_pool()
@@ -1262,7 +1202,7 @@ async def get_presentation_embed(pool, presentation_id, user_id):
 
 
 class ConfirmStartPresentationView(ui.View):
-    def __init__(self, presentation_id: str, user_id: int, paginator: "PresentationListPaginator"):
+    def __init__(self, presentation_id: str, user_id: int, paginator: PresentationPerformancePaginator):
         super().__init__(timeout=60)
         self.presentation_id = presentation_id
         self.user_id = user_id
@@ -1896,7 +1836,7 @@ class IdolSwitchPaginator:
                         if card['u_skill']:
                             idol_desc += us_emoji
                     else:
-                        await conn.execute("UPDATE presentation_members SET card_id = $1 AND unique_id = $1 WHERE id = $2", None, idol['id'])
+                        await conn.execute("UPDATE presentation_members SET card_id = $1, unique_id = $1 WHERE id = $2", None, idol['id'])
             
             embed = discord.Embed(
                 title=idol_desc,
