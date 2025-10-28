@@ -939,19 +939,7 @@ class IdolButton(discord.ui.Button):
                     have_it = await conn.fetch("SELECT 1 FROM user_badges WHERE badge_id = $1 AND user_id = $2",
                                             badge_id, interaction.user.id)
                     embed.set_footer(text="✅ Idol completo en este set")
-                else:
-                    have_it = True
-                    embed.set_footer(text="Este set no tiene recompensas")
                 
-                if not have_it:
-                    await conn.execute("INSERT INTO user_badges (user_id, badge_id) VALUES ($1, $2)",
-                                    interaction.user.id, badge_id)
-                    await conn.execute("UPDATE users SET credits = credits + 10000, xp = xp + 100")
-                    new_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
-                    now = datetime.datetime.now(datetime.timezone.utc)
-                    await conn.execute(
-                        "INSERT INTO players_packs (pack_id, user_id, unique_id, buy_date) VALUES ('MST', $1, $2, $3)",
-                        interaction.user.id, new_id, now)
         else:
             embed.set_footer(text="❌ Aún te faltan cartas de este idol en el set")
 
@@ -1239,3 +1227,4 @@ class LockCardButton(discord.ui.Button):
 
 async def setup(bot):
     await bot.add_cog(CollectionCommand(bot))
+
