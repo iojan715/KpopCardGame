@@ -110,7 +110,7 @@ class CollectionCommand(commands.Cog):
 async def generate_sets_embeds(query, params, pool, interaction: discord.Interaction):
     async with pool.acquire() as conn:
         cards = await conn.fetch(query, *params)
-        user_cards = await conn.fetch("SELECT card_id FROM user_idol_cards WHERE user_id = $1", interaction.user.id)
+        user_cards = await conn.fetch("SELECT card_id FROM user_idol_cards WHERE user_id = $1 AND is_locked = True", interaction.user.id)
 
     user_card_ids = {uc["card_id"] for uc in user_cards}
     user_regular_models = set()
@@ -633,10 +633,10 @@ class SetButton(discord.ui.Button):
         embed = already_active = None
         
         async with pool.acquire() as conn:
-            query = "SELECT * FROM cards_idol WHERE set_id = $1"
+            query = "SELECT * FROM cards_idol WHERE set_id = $1 ORDER BY idol_id"
             params = [self.set_id]
             cards = await conn.fetch(query, *params)
-            user_cards = await conn.fetch("SELECT card_id FROM user_idol_cards WHERE user_id = $1", user_id)
+            user_cards = await conn.fetch("SELECT card_id FROM user_idol_cards WHERE user_id = $1 AND is_locked = True", user_id)
             
         idols_in_set = defaultdict(lambda: {"owned": 0, "total": 0, "_counted": set(), "_owned": set()})
         total_in_set = set()
@@ -688,23 +688,28 @@ class SetButton(discord.ui.Button):
 
         embeds = []
         
+        idols = []
         for idol_key, data in sorted(idols_in_set.items(), key=lambda x: x[0]):
-            idol_name = idol_key.split("|")[0]
+            idol_name, idol_id = idol_key.split("|")
             
+            idol_data = f"{idol_name} ({idol_id})"
+            idols.append((idol_data,idol_id))
 
             embed = discord.Embed(
-                title=f"{idol_name}",
+                title=idol_data,
                 description=f"[`{round(int(data['owned'])/int(data['total'])*100,2)}%`] - ({data['owned']}/{data['total']})",
                 color=discord.Color.green()
             )
             embeds.append(embed)
+            
         
-        embed = discord.Embed(
+        
+        embed1 = discord.Embed(
             title=f"📦 Cartas en el set: {self.set_name}",
             description="",
             color=discord.Color.green()
         )
-        if set_completed:
+        if set_completed and False:
             async with pool.acquire() as conn:
                 set_id = self.set_id
                 badge_id = await conn.fetchval("SELECT badge_id FROM badges WHERE set_id = $1 AND idol_id = ''",
@@ -712,13 +717,13 @@ class SetButton(discord.ui.Button):
                 if badge_id:
                     have_it = await conn.fetch("SELECT 1 FROM user_badges WHERE badge_id = $1 AND user_id = $2",
                                             badge_id, interaction.user.id)
-                    embed.set_footer(text="✅ ¡Set completo!")
+                    embed1.set_footer(text="✅ ¡Set completo!")
                 else:
                     have_it = True
-                    embed.set_footer(text="Este set no tiene recompensa grupal")
+                    embed1.set_footer(text="Este set no tiene recompensa grupal")
                 
                 
-                await interaction.response.send_message(embed=embed, ephemeral=True)
+                await interaction.response.send_message(embed=embed1, ephemeral=True)
                 
                 if not have_it:
                     await conn.execute("INSERT INTO user_badges (user_id, badge_id) VALUES ($1, $2)",
@@ -741,14 +746,15 @@ class SetButton(discord.ui.Button):
                         content=f"## ⭐ Has completado todas las cartas del set _{self.set_name}_\n_Has recibido 💵{format(credits_given,',')} y {xp} XP y un **Star Pack**_",
                         ephemeral=True)
             
-        else:
-            embed.set_footer(text="❌ Aún no tienes todas las cartas del set.")
 
+
+        
         paginator = CollectionIdolsPaginator(
             embeds=embeds,
-            rows=idols_in_set,
+            rows=idols,
             interaction=interaction,
             base_query=self.base_query,
+            set_name=self.set_name,
             query_params=self.query_params
         )
         
@@ -763,10 +769,12 @@ class CollectionIdolsPaginator:
         interaction: discord.Interaction,
         base_query: str,
         query_params: tuple,
-        embeds_per_page: int = 5
+        set_name: str,
+        embeds_per_page: int = 4
     ):
         self.all_embeds = embeds
         self.all_rows = rows
+        self.set_name = set_name
         self.interaction = interaction
         self.embeds_per_page = embeds_per_page
         self.current_page = 0
@@ -779,7 +787,7 @@ class CollectionIdolsPaginator:
         end = start + self.embeds_per_page
         page = self.all_embeds[start:end]
         footer = discord.Embed(
-            description=f"Página {self.current_page+1}/{self.total_pages} • Total: {len(self.all_embeds)}",
+            description=f"Página {self.current_page+1}/{self.total_pages} • Total: {len(self.all_embeds)}\n**Set: `{self.set_name}`**",
             color=discord.Color.dark_gray()
         )
         return [footer] + page
@@ -788,8 +796,8 @@ class CollectionIdolsPaginator:
         view = discord.ui.View(timeout=120)
         start = self.current_page * self.embeds_per_page
         end = start + self.embeds_per_page
-        #for row in self.all_rows[start:end]:
-            #view.add_item(IdolButton(set_id=row[0][0], set_name=row[0][1]))
+        for row in self.all_rows[start:end]:
+            view.add_item(IdolButton(idol_id=row[1], idol_name=row[0], set_name=self.set_name, base_query=self.base_query, query_params=self.query_params))
         view.add_item(PreviousIdolPageButton(self))
         view.add_item(NextIdolPageButton(self))
         view.add_item(BackToSetsButton(query=self.base_query, params=self.query_params))
@@ -806,6 +814,7 @@ class CollectionIdolsPaginator:
     async def restart(self):
         self.current_page = 0
         await self.interaction.response.edit_message(
+            content = "",
             embeds=self.get_page_embeds(),
             view=self.get_view()
         )
@@ -862,24 +871,371 @@ class NextIdolPageButton(discord.ui.Button):
         await self.paginator.next_page(interaction)
 
 class IdolButton(discord.ui.Button):
-    def __init__(self, set_id: str, set_name: str):
-        super().__init__(label=f"{set_name}", style=discord.ButtonStyle.primary)
-        self.set_id = set_id
+    def __init__(self, idol_id: str, idol_name: str, set_name: str, base_query: str, query_params: str):
+        super().__init__(label=f"{idol_name}", style=discord.ButtonStyle.primary)
+        self.idol_id = idol_id
+        self.idol_name = idol_name
+        self.set_name = set_name
+        self.base_query = base_query
+        self.query_params = query_params
 
     async def callback(self, interaction: discord.Interaction):
         user_id = interaction.user.id
         pool = get_pool()
-        embed = already_active = None
         
+        description = ""
+        completed = True
+        cards = []
+        cards_rows = []
         
+        async with pool.acquire() as conn:
+            set_id = await conn.fetchval("SELECT set_id FROM cards_idol WHERE set_name = $1", self.set_name)
+            
+            for rarity in RARITY_LIST:
+                if rarity == "Regular":
+                    card = await conn.fetchval("SELECT card_id FROM cards_idol WHERE set_name = $1 AND rarity_id = 'R13' AND idol_id = $2",
+                                            self.set_name, self.idol_id)
+                    cards.append(card)
+                    card = await conn.fetchval("SELECT card_id FROM cards_idol WHERE set_name = $1 AND rarity_id = 'R23' AND idol_id = $2",
+                                            self.set_name, self.idol_id)
+                    cards.append(card)
+                    card = await conn.fetchval("SELECT card_id FROM cards_idol WHERE set_name = $1 AND rarity_id = 'R33' AND idol_id = $2",
+                                            self.set_name, self.idol_id)
+                    cards.append(card)
+                else:
+                    card = await conn.fetchval("SELECT card_id FROM cards_idol WHERE set_name = $1 AND rarity = $2 AND idol_id = $3",
+                                            self.set_name, rarity, self.idol_id)
+                    cards.append(card)
+            
+            for card in cards:
+                if card:
+                    collected = await conn.fetchrow("SELECT 1 FROM user_idol_cards WHERE card_id = $1 AND is_locked = True AND user_id = $2",
+                                                    card, user_id)
+                    description += f"`{card}` - {"✅" if collected else "❌"}\n"
+                    completed = collected is not None
+                    rarity: str = await conn.fetchval("SELECT rarity FROM cards_idol WHERE card_id = $1", card)
+                    
+                    if rarity == "Regular":
+                        rarity += f" {card[8]}"
+                    
+                    cards_rows.append((card,collected,rarity))
+            
+        embed = discord.Embed(
+            title=f"{self.idol_name} - {self.set_name}",
+            description=description,
+            color=discord.Color.teal()
+        )
         
-        view = None
+        badge_id = have_it = None
+        
+        if completed:
+            async with pool.acquire() as conn:
+                set_id = await conn.fetchval("SELECT set_id FROM cards_idol WHERE set_name = $1", self.set_name)
+                badge_id = await conn.fetchval(
+                    "SELECT badge_id FROM badges WHERE set_id = $1 AND idol_id = $2",
+                    set_id, self.idol_id
+                )
+                if badge_id:
+                    have_it = await conn.fetch("SELECT 1 FROM user_badges WHERE badge_id = $1 AND user_id = $2",
+                                            badge_id, interaction.user.id)
+                    embed.set_footer(text="✅ Idol completo en este set")
+                else:
+                    have_it = True
+                    embed.set_footer(text="Este set no tiene recompensas")
+                
+                if not have_it:
+                    await conn.execute("INSERT INTO user_badges (user_id, badge_id) VALUES ($1, $2)",
+                                    interaction.user.id, badge_id)
+                    await conn.execute("UPDATE users SET credits = credits + 10000, xp = xp + 100")
+                    new_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
+                    now = datetime.datetime.now(datetime.timezone.utc)
+                    await conn.execute(
+                        "INSERT INTO players_packs (pack_id, user_id, unique_id, buy_date) VALUES ('MST', $1, $2, $3)",
+                        interaction.user.id, new_id, now)
+        else:
+            embed.set_footer(text="❌ Aún te faltan cartas de este idol en el set")
+
+            
+        view = IdolCardsView(cards_rows, user_id, self.base_query, self.query_params, set_id, self.set_name)
 
         await interaction.response.edit_message(
-            content=".",
+            content="",
             embed=embed,
             view=view
         )
+
+class IdolCardsView(discord.ui.View):
+    def __init__(self, cards_rows: list, user_id, base_query, query_params, set_id, set_name):
+        super().__init__(timeout=180)
+        self.user_id = user_id
+        self.cards_rows = cards_rows
+        self.base_query = base_query
+        self.query_params = query_params
+        self.set_id = set_id
+        self.set_name = set_name
+
+        for card_id, collected, rarity in cards_rows:
+            if not card_id:
+                continue
+            self.add_card_button(card_id, collected, rarity)
+
+    def add_card_button(self, card_id: str, collected: bool, rarity: str):
+        button = discord.ui.Button(
+            label=f"{rarity}",
+            style=discord.ButtonStyle.success if collected else discord.ButtonStyle.secondary
+        )
+
+        async def card_callback(interaction: discord.Interaction, cid=card_id, coll=collected):
+            await interaction.response.defer(
+                ephemeral=True
+            )
+            user_id = interaction.user.id
+            pool = get_pool()
+            is_duplicated = False
+
+            idol_query = """
+                SELECT uc.*, ci.* FROM user_idol_cards uc
+                JOIN cards_idol ci ON uc.card_id = ci.card_id
+                WHERE uc.user_id = $1 AND uc.card_id = $2
+            """
+            idol_params = [user_id, card_id]
+            
+            async with pool.acquire() as conn:
+                rows = await conn.fetch(idol_query, *idol_params)    
+            
+            language = await get_user_language(user_id=user_id)  
+                
+            if not rows:
+                await interaction.edit_original_response(content="## ❌No hay cartas para mostrar.")
+                return
+
+            embeds = await generate_idol_card_embeds(rows, pool, interaction.guild)
+
+            paginator = InventoryEmbedPaginator(embeds, rows, interaction, self.base_query, self.query_params, is_duplicated, True, self.set_id, self.set_name)
+            await paginator.restart(interaction)
+            
+
+        button.callback = card_callback
+        self.add_item(button)
+    
+    
+    @discord.ui.button(label="⬅️ Volver", style=discord.ButtonStyle.secondary, row=4)
+    async def back_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await SetButton(self.set_id, self.set_name, self.base_query, self.query_params).callback(interaction)
+
+async def generate_idol_card_embeds(rows: list, pool, guild: discord.Guild, is_detailed:bool = True) -> list[discord.Embed]:
+    from collections import Counter
+    from utils.emojis import get_emoji
+    from commands.starter import version
+    """Genera una lista de embeds para cartas de idols."""
+    card_counts = Counter([row['card_id'] for row in rows])
+    embeds = []
+
+    for row in rows:
+        async with pool.acquire() as conn:
+            idol_row = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", row["card_id"])
+            idol_base_row = await conn.fetchrow("SELECT * FROM idol_base WHERE idol_id = $1", row["idol_id"])
+            user_card_row = await conn.fetchrow("SELECT * FROM user_idol_cards WHERE unique_id = $1", row['unique_id'])
+            
+        name = idol_row['idol_name']
+        card_set = idol_row['set_name']
+        rarity = idol_row['rarity']
+        group_name = idol_row['group_name']
+
+        c_rarity = rarity
+        if rarity == "Regular":
+            model = idol_row['rarity_id'][1]
+            level = idol_row['rarity_id'][2]
+            rarity += f" {model} - Lvl.{level}"
+
+        blocked = "🔐" if row["is_locked"] else ""
+        c_status = ""
+        if row['status'] == 'equipped':
+            c_status = "👥"
+        elif row['status'] == "trading":
+            c_status = "🔄"
+        elif row['status'] == "on_sale":
+            c_status = "💲"
+        elif row['status'] == "giveaway":
+            c_status = "🎁"
+
+        RARITY_COLORS = {
+            "Regular": discord.Color.light_gray(),
+            "Special": discord.Color.purple(),
+            "Limited": discord.Color.yellow(),
+            "FCR": discord.Color.orange(),
+            "POB": discord.Color.blue(),
+            "Legacy": discord.Color.dark_purple(),
+        }
+        embed_color = RARITY_COLORS.get(c_rarity, discord.Color.default())
+
+        cantidad_copias = ""
+        if card_counts[row['card_id']] > 1:
+            cantidad_copias = f" `x{card_counts[row['card_id']]} copias`"
+
+        embed = discord.Embed(
+            title=f"{name} - *{group_name}*{cantidad_copias} {blocked}{c_status}",
+            description=f"{card_set} `{rarity}`",
+            color=embed_color
+        )
+
+        image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/f_webp,d_no_image.jpg/{row['card_id']}.webp{version}"
+        embed.set_thumbnail(url=image_url)
+
+        skills = ""
+        if user_card_row['p_skill']:
+            skills += get_emoji(guild, "PassiveSkill")
+        if user_card_row['a_skill']:
+            skills += get_emoji(guild, "ActiveSkill")
+        if user_card_row['s_skill']:
+            skills += get_emoji(guild, "SupportSkill")
+        if user_card_row['u_skill']:
+            skills += get_emoji(guild, "UltimateSkill")
+
+        vocal = idol_row['vocal'] - idol_base_row['vocal']
+        rap = idol_row['rap'] - idol_base_row['rap']
+        dance = idol_row['dance'] - idol_base_row['dance']
+        visual = idol_row['visual'] - idol_base_row['visual']
+        energy = idol_row['energy'] - 50
+
+        if is_detailed:
+            embed.add_field(name=f"**🎤 Vocal: {idol_base_row['vocal']} (+{vocal})**", value=f"**🎶 Rap: {idol_base_row['rap']} (+{rap})**", inline=True)
+            embed.add_field(name=f"**💃 Dance: {idol_base_row['dance']} (+{dance})**", value=f"**✨ Visual: {idol_base_row['visual']} (+{visual})**", inline=True)
+            embed.add_field(name=f"**⚡ Energy: 50 (+{energy})**", value=f"**Skills: {skills}**", inline=True)
+
+        embed.set_footer(text=f"{row['card_id']}.{row['unique_id']}")
+        embeds.append(embed)
+
+    return embeds
+
+class InventoryEmbedPaginator:
+    def __init__(
+        self,
+        embeds: list[discord.Embed],
+        rows: list[dict],
+        interaction: discord.Interaction,
+        base_query: str,
+        query_params: tuple,
+        is_duplicated: bool,
+        is_detailed: bool,
+        set_id: str,
+        set_name: str,
+        embeds_per_page: int = 3
+    ):
+        self.all_embeds = embeds
+        self.all_rows = rows
+        self.interaction = interaction
+        self.embeds_per_page = embeds_per_page
+        self.current_page = 0
+        self.total_pages = (len(embeds) + embeds_per_page - 1) // embeds_per_page
+        self.current_page_embeds: list[discord.Embed] = []
+
+        self.base_query = base_query
+        self.query_params = query_params
+        self.is_duplicated = is_duplicated
+        self.is_detailed = is_detailed
+        self.set_id = set_id
+        self.set_name = set_name
+    
+    def get_page_embeds(self):
+        start = self.current_page * self.embeds_per_page
+        end = start + self.embeds_per_page
+        page = self.all_embeds[start:end]
+        # al final, pie de página con info de paginación
+        footer = discord.Embed(
+            description=f"### Total: {len(self.all_embeds)}\n**Página** {self.current_page+1}/{self.total_pages}",
+            color=discord.Color.dark_gray()
+        )
+        return [footer] + page
+
+    def get_view(self):
+        view = discord.ui.View(timeout=120)
+        # botones de detalles para cada embed de carta (sin contar el footer)
+        start = self.current_page * self.embeds_per_page
+        end = start + self.embeds_per_page
+        rows_this_page = self.all_rows[start:end]
+
+        for row_data in rows_this_page:
+            view.add_item(LockCardButton(row_data, self.set_id, self.set_name, self.base_query, self.query_params))
+
+        # navegación
+        view.add_item(PreviousPageButton(self))
+        view.add_item(NextPageButton(self))
+        return view
+
+    async def start(self):
+        self.current_page_embeds = self.get_page_embeds()
+        await self.interaction.edit_original_response(
+            embeds=self.current_page_embeds,
+            view=self.get_view()
+        )
+
+    async def restart(self, interaction: discord.Interaction):
+        self.current_page = 0  # Reiniciar la página
+        self.current_page_embeds = self.get_page_embeds()
+        await interaction.edit_original_response(
+            content="",
+            embeds=self.current_page_embeds,
+            view=self.get_view()
+        )
+
+    async def update(self, interaction: discord.Interaction):
+        self.current_page_embeds = self.get_page_embeds()
+        await interaction.response.edit_message(
+            content="",
+            embeds=self.current_page_embeds,
+            view=self.get_view()
+        )
+
+    async def previous_page(self, interaction: discord.Interaction):
+        self.current_page = (self.current_page - 1) % self.total_pages
+        await self.update(interaction)
+
+    async def next_page(self, interaction: discord.Interaction):
+        self.current_page = (self.current_page + 1) % self.total_pages
+        await self.update(interaction)
+
+class PreviousPageButton(discord.ui.Button):
+    def __init__(self, paginator: "InventoryEmbedPaginator"):
+        super().__init__(label="⬅️", style=discord.ButtonStyle.secondary, row=2)
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        await self.paginator.previous_page(interaction)
+
+class NextPageButton(discord.ui.Button):
+    def __init__(self, paginator: "InventoryEmbedPaginator"):
+        super().__init__(label="➡️", style=discord.ButtonStyle.secondary, row=2)
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        await self.paginator.next_page(interaction)
+
+class LockCardButton(discord.ui.Button):
+    def __init__(self, row_data:dict, set_id, set_name, base_query, query_params):
+        super().__init__(label=f"{row_data['unique_id']}", style=discord.ButtonStyle.primary)
+        self.row_data = row_data
+
+        self.base_query = base_query
+        self.query_params = query_params
+        self.set_id = set_id
+        self.set_name = set_name
+
+    async def callback(self, interaction: discord.Interaction):
+        pool = get_pool()
+        language = await get_user_language(interaction.user.id)
+        guild = interaction.guild
+        
+        async with pool.acquire() as conn:
+            await conn.execute("UPDATE user_idol_cards SET is_locked = $1 WHERE card_id = $2 AND user_id = $3",
+                               False, self.row_data['card_id'], interaction.user.id)
+            await conn.execute("UPDATE user_idol_cards SET is_locked = $1 WHERE unique_id = $2", True, self.row_data['unique_id'])
+            name = await conn.fetchval("SELECT name FROM idol_base WHERE idol_id = $1", self.row_data['idol_id'])
+        
+        idol_name = f"{name} ({self.row_data['idol_id']})"
+        
+        await IdolButton(self.row_data['idol_id'], idol_name, self.set_name, self.base_query, self.query_params).callback(interaction)
+
 
 async def setup(bot):
     await bot.add_cog(CollectionCommand(bot))
