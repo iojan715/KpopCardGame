@@ -912,7 +912,8 @@ class IdolButton(discord.ui.Button):
                     collected = await conn.fetchrow("SELECT 1 FROM user_idol_cards WHERE card_id = $1 AND is_locked = True AND user_id = $2",
                                                     card, user_id)
                     description += f"`{card}` - {"✅" if collected else "❌"}\n"
-                    completed = collected is not None
+                    if not collected:
+                        completed = False
                     rarity: str = await conn.fetchval("SELECT rarity FROM cards_idol WHERE card_id = $1", card)
                     
                     if rarity == "Regular":
@@ -939,12 +940,16 @@ class IdolButton(discord.ui.Button):
                     have_it = await conn.fetch("SELECT 1 FROM user_badges WHERE badge_id = $1 AND user_id = $2",
                                             badge_id, interaction.user.id)
                     embed.set_footer(text="✅ Idol completo en este set")
+                else:
+                    have_it = True
+                    embed.set_footer(text="Este set no tiene recompensas")
+                
                 
         else:
             embed.set_footer(text="❌ Aún te faltan cartas de este idol en el set")
 
             
-        view = IdolCardsView(cards_rows, user_id, self.base_query, self.query_params, set_id, self.set_name)
+        view = IdolCardsView(cards_rows, user_id, self.base_query, self.query_params, set_id, self.set_name, completed, have_it)
 
         await interaction.response.edit_message(
             content="",
@@ -953,7 +958,7 @@ class IdolButton(discord.ui.Button):
         )
 
 class IdolCardsView(discord.ui.View):
-    def __init__(self, cards_rows: list, user_id, base_query, query_params, set_id, set_name):
+    def __init__(self, cards_rows: list, user_id, base_query, query_params, set_id, set_name, completed:bool, have_it:bool):
         super().__init__(timeout=180)
         self.user_id = user_id
         self.cards_rows = cards_rows
@@ -961,18 +966,39 @@ class IdolCardsView(discord.ui.View):
         self.query_params = query_params
         self.set_id = set_id
         self.set_name = set_name
+        self.completed = completed
+        self.have_it = have_it
 
         for card_id, collected, rarity in cards_rows:
             if not card_id:
                 continue
-            self.add_card_button(card_id, collected, rarity)
+            self.add_card_button(card_id, collected, rarity, self.completed, self.have_it)
 
-    def add_card_button(self, card_id: str, collected: bool, rarity: str):
+
+        complete_button = discord.ui.Button(
+            label="✔️ Completar",
+            style=discord.ButtonStyle.success,
+            row=4,
+            disabled = True if have_it else (False if completed else True)
+        )
+        complete_button.callback = self.complete_button
+        self.add_item(complete_button)
+
+
+        back_button = discord.ui.Button(
+            label="⬅️ Volver",
+            style=discord.ButtonStyle.secondary,
+            row=4
+        )
+        back_button.callback = self.back_button
+        self.add_item(back_button)
+        
+        
+    def add_card_button(self, card_id: str, collected: bool, rarity: str, completed: bool, have_it: bool):
         button = discord.ui.Button(
             label=f"{rarity}",
-            style=discord.ButtonStyle.success if collected else discord.ButtonStyle.secondary
+            style=(discord.ButtonStyle.success if have_it else discord.ButtonStyle.primary) if collected else discord.ButtonStyle.secondary,
         )
-
         async def card_callback(interaction: discord.Interaction, cid=card_id, coll=collected):
             await interaction.response.defer(
                 ephemeral=True
@@ -1006,9 +1032,32 @@ class IdolCardsView(discord.ui.View):
         button.callback = card_callback
         self.add_item(button)
     
+    async def complete_button(self, interaction: discord.Interaction):
+        pool = get_pool()
+        card_id, collected, rarity = self.cards_rows[0]
+        
+        async with pool.acquire() as conn:
+            badge_id = await conn.fetchval("SELECT badge_id FROM badges WHERE set_id = $1 AND idol_id = $2",
+                                           self.set_id, card_id[:3])
+            idol_name = await conn.fetchval("SELECT name FROM idol_base WHERE idol_id = $1", card_id[:3])
+            
+            
+            await conn.execute("INSERT INTO user_badges (user_id, badge_id) VALUES ($1, $2)",
+                            interaction.user.id, badge_id)
+            await conn.execute("UPDATE users SET credits = credits + 10000, xp = xp + 150")
+            new_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
+            now = datetime.datetime.now(datetime.timezone.utc)
+            await conn.execute(
+                "INSERT INTO players_packs (pack_id, user_id, unique_id, buy_date) VALUES ('STR', $1, $2, $3)",
+                interaction.user.id, new_id, now)
     
-    @discord.ui.button(label="⬅️ Volver", style=discord.ButtonStyle.secondary, row=4)
-    async def back_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        
+        await SetButton(self.set_id, self.set_name, self.base_query, self.query_params).callback(interaction)
+        await interaction.followup.send(
+            content=f"## ⭐ {interaction.user.mention} ha completado todas las cartas de _{idol_name} ({card_id[:3]})_ del set _{self.set_name}_\n**Recompensas:**\n> 💵10,000\n> 150 XP\n> 📦 **Star Pack**",
+            ephemeral=False)
+    
+    async def back_button(self, interaction: discord.Interaction):
         await SetButton(self.set_id, self.set_name, self.base_query, self.query_params).callback(interaction)
 
 async def generate_idol_card_embeds(rows: list, pool, guild: discord.Guild, is_detailed:bool = True) -> list[discord.Embed]:
@@ -1227,4 +1276,3 @@ class LockCardButton(discord.ui.Button):
 
 async def setup(bot):
     await bot.add_cog(CollectionCommand(bot))
-
