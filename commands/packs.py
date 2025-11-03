@@ -110,156 +110,6 @@ class PacksGroup(app_commands.Group):
             embeds.append(embed)
             pack_ids.append(pack["unique_id"])
         
-        class OpenPackButton(discord.ui.Button):
-            def __init__(self, label, unique_id, paginator=None):
-                super().__init__(label=label, style=discord.ButtonStyle.green)
-                self.unique_id = unique_id
-                self.paginator = paginator
-
-            async def callback(self, interaction: discord.Interaction):
-                pool = get_pool()
-                
-                async with pool.acquire() as conn:
-                    await conn.execute("""
-                        UPDATE user_missions um
-                        SET obtained = um.obtained + 1,
-                            last_updated = now()
-                        FROM missions_base mb
-                        WHERE um.mission_id = mb.mission_id
-                        AND um.user_id = $1
-                        AND um.status = 'active'
-                        AND mb.mission_type = 'open_pack'
-                        """, interaction.user.id)
-                
-                await interaction.response.edit_message(content="## 📦 Abriendo el pack...", embed=None, view=None)
-
-                # Abrir el pack y obtener resultado
-                result, pack_name = await open_pack(self.unique_id, interaction.user.id)
-
-                if isinstance(result, str):  # Error (ej. pack ya abierto)
-                    await interaction.followup.send(result, ephemeral=True)
-                    return
-
-                # Mapa de emojis para animación
-                emoji_map = {
-                    "item": "🎒",
-                    "performance": "🎬",
-                    "redeemable": "🎟️",
-                    "idol": "👤",
-                    "error": "❌"
-                }
-
-                message = await interaction.original_response()
-                content = ""
-
-                # Mostrar "animación" de apertura
-                for tipo, _, id, u_id in result:
-                    content += "\n" + emoji_map.get(tipo, "❓")
-                    await message.edit(content=f"## 📦 Abriendo el pack...\n{content}")
-                    await asyncio.sleep(0.6)
-
-                await asyncio.sleep(1)
-
-                RARITY_COLORS = {
-                    "Regular": discord.Color.light_gray(),
-                    "Special": discord.Color.purple(),
-                    "Limited": discord.Color.yellow(),
-                    "FCR": discord.Color.orange(),
-                    "POB": discord.Color.blue(),
-                    "Legacy": discord.Color.dark_purple(),
-                }
-                TYPE_COLORS = {
-                    "item": discord.Color.teal(),
-                    "performance": discord.Color.green(),
-                    "redeemable": discord.Color.orange(),
-                    "error": discord.Color.red()
-                }
-                RARITY_EMOJIS = {
-                    "Regular": "⚪",
-                    "Special": "🟣",
-                    "Limited": "🟡",
-                    "FCR": "🔴",
-                    "POB": "🔵",
-                    "Legacy": "⚫",
-                }
-                    
-                final_embeds = []
-                for i, (tipo, descripcion, id, u_id) in enumerate(result, start=1):
-                    color = TYPE_COLORS.get(tipo, discord.Color.random())
-
-                    if tipo == "idol":
-                        emoji = "👤"
-                        for nombre_r, color_r in RARITY_COLORS.items():
-                            if nombre_r in descripcion:
-                                color = color_r
-                                emoji = RARITY_EMOJIS.get(nombre_r, emoji)
-                                break
-                    else:
-                        emoji = ""
-
-                    tipo_carta = tipo.capitalize()
-                    
-                    if tipo == "redeemable":
-                        descr = f"{tipo_carta} obtenido!"
-                    else:
-                        descr = f"Carta {tipo_carta} obtenida"
-                    embed = discord.Embed(
-                        title=f"{emoji}{descripcion}",
-                        description=descr,
-                        color=color
-                    )
-                    if tipo != "redeemable" and tipo != "performance":
-                        embed.set_footer(text=f"{id}.{u_id}")
-                        
-                    image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/d_no_image.jpg/{id}.webp{version}"
-                    if tipo == "idol":
-                        embed.set_thumbnail(url=image_url)
-                    final_embeds.append(embed)
-
-                await interaction.followup.send(
-                    content=f"## {interaction.user.mention} ha abierto `{pack_name}` y obtuvo:",
-                    embeds=final_embeds,
-                    ephemeral=False
-                )
-                await interaction.followup.send(
-                    content="✅ Pack abierto. Puedes volver a seleccionar otro pack:",
-                    embed=None,
-                    view=ReturnToPacksView(interaction.user.id),
-                    ephemeral=True
-                )
-
-        class OpenPackView(discord.ui.View):
-            def __init__(self, paginator: Paginator):
-                super().__init__(timeout=120)
-                self.paginator = paginator
-                self.update_buttons()
-
-            def update_buttons(self):
-                self.clear_items()
-                
-                start = self.paginator.current_page * self.paginator.embeds_per_page
-                end = start + self.paginator.embeds_per_page
-                for i, pack_id in enumerate(self.paginator.pack_ids[start:end], start=1):
-                    self.add_item(OpenPackButton(f"Open {i}", pack_id, paginator=self.paginator))
-
-                
-                self.add_item(PreviousButton(self.paginator))
-                self.add_item(NextButton(self.paginator))
-
-            async def interaction_check(self, interaction: discord.Interaction) -> bool:
-                
-                return interaction.user.id == user_id
-        
-        class CustomPaginator(Paginator):
-            def __init__(self, embeds, embeds_per_page=3):
-                super().__init__(embeds, embeds_per_page)
-                self.pack_ids = []  # ✅ Esto lo evita el error
-
-            def get_view(self):
-                return OpenPackView(self)
-
-            def current_embed(self):
-                return self.embeds[self.current_page]
 
         
         # Crear paginador
@@ -267,69 +117,8 @@ class PacksGroup(app_commands.Group):
         paginator.pack_ids = pack_ids
         await paginator.start(interaction)
 
-        class ReturnToPacksButton(discord.ui.Button):
-            def __init__(self, user_id):
-                super().__init__(label="🔙 Volver a Packs", style=discord.ButtonStyle.secondary)
-                self.user_id = user_id
 
-            async def callback(self, interaction: discord.Interaction):
-                pool = await get_pool()
 
-                async with pool.acquire() as conn:
-                    player_packs = await conn.fetch("""
-                        SELECT pp.*, p.name, p.card_amount 
-                        FROM players_packs pp
-                        JOIN packs p ON pp.pack_id = p.pack_id
-                        WHERE pp.user_id = $1
-                        ORDER BY pp.buy_date ASC
-                    """, self.user_id)
-
-                if not player_packs:
-                    await interaction.response.edit_message(content="❌ Ya no tienes packs disponibles.", embed=None, view=None)
-                    return
-
-                embeds = []
-                new_pack_ids = []
-
-                for pack in player_packs:
-                    desc = f"**Cartas:** {pack['card_amount']}"
-                    if pack['group_name']:
-                        desc += f"\n**Grupo:** {pack['group_name']}"
-                    if pack['set_id']:
-                        async with pool.acquire() as conn:
-                            pack_set = await conn.fetchrow("SELECT DISTINCT set_name FROM cards_idol WHERE set_id = $1", pack['set_id'])
-                        desc += f"\n**Set:** {pack_set['set_name']}"
-                    desc += f"\n> **Obtenido:** <t:{int(pack['buy_date'].timestamp())}:d>"
-
-                    embed = discord.Embed(
-                        title=f"🎁 {pack['name']}",
-                        description=desc,
-                        color=discord.Color.gold()
-                    )
-                    embed.set_footer(text="Usa los botones para abrir el pack.")
-                    embeds.append(embed)
-                    new_pack_ids.append(pack["unique_id"])
-
-                # Crear nuevo paginador
-                class RefreshedPaginator(Paginator):
-                    def get_view(self):
-                        return OpenPackView(self)
-
-                    def current_embed(self):
-                        return self.embeds[self.current_page]
-
-                new_paginator = RefreshedPaginator(embeds, embeds_per_page=3)
-                new_paginator.pack_ids = new_pack_ids
-
-                # Sobrescribir variables globales del view actual (para que los botones se actualicen correctamente)
-                view = new_paginator.get_view()
-
-                await interaction.response.edit_message(embeds=new_paginator.get_current_embeds(), view=view)
-
-        class ReturnToPacksView(discord.ui.View):
-            def __init__(self, user_id):
-                super().__init__(timeout=60)
-                self.add_item(ReturnToPacksButton(user_id))
 
     @app_commands.command(name="buy", description="Comprar un sobre de cartas")
     @app_commands.describe(
@@ -549,6 +338,219 @@ class PacksGroup(app_commands.Group):
 
         paginator = Paginator(embeds, embeds_per_page=3)
         await paginator.start(interaction)
+
+class OpenPackButton(discord.ui.Button):
+    def __init__(self, label, unique_id, paginator=None):
+        super().__init__(label=label, style=discord.ButtonStyle.green)
+        self.unique_id = unique_id
+        self.paginator = paginator
+
+    async def callback(self, interaction: discord.Interaction):
+        pool = get_pool()
+        
+        async with pool.acquire() as conn:
+            await conn.execute("""
+                UPDATE user_missions um
+                SET obtained = um.obtained + 1,
+                    last_updated = now()
+                FROM missions_base mb
+                WHERE um.mission_id = mb.mission_id
+                AND um.user_id = $1
+                AND um.status = 'active'
+                AND mb.mission_type = 'open_pack'
+                """, interaction.user.id)
+        
+        await interaction.response.edit_message(content="## 📦 Abriendo el pack...", embed=None, view=None)
+
+        # Abrir el pack y obtener resultado
+        result, pack_name = await open_pack(self.unique_id, interaction.user.id)
+
+        if isinstance(result, str):  # Error (ej. pack ya abierto)
+            await interaction.followup.send(result, ephemeral=True)
+            return
+
+        # Mapa de emojis para animación
+        emoji_map = {
+            "item": "🎒",
+            "performance": "🎬",
+            "redeemable": "🎟️",
+            "idol": "👤",
+            "error": "❌"
+        }
+
+        message = await interaction.original_response()
+        content = ""
+
+        # Mostrar "animación" de apertura
+        for tipo, _, id, u_id in result:
+            content += "\n" + emoji_map.get(tipo, "❓")
+            await message.edit(content=f"## 📦 Abriendo el pack...\n{content}")
+            await asyncio.sleep(0.6)
+
+        await asyncio.sleep(1)
+
+        RARITY_COLORS = {
+            "Regular": discord.Color.light_gray(),
+            "Special": discord.Color.purple(),
+            "Limited": discord.Color.yellow(),
+            "FCR": discord.Color.orange(),
+            "POB": discord.Color.blue(),
+            "Legacy": discord.Color.dark_purple(),
+        }
+        TYPE_COLORS = {
+            "item": discord.Color.teal(),
+            "performance": discord.Color.green(),
+            "redeemable": discord.Color.orange(),
+            "error": discord.Color.red()
+        }
+        RARITY_EMOJIS = {
+            "Regular": "⚪",
+            "Special": "🟣",
+            "Limited": "🟡",
+            "FCR": "🔴",
+            "POB": "🔵",
+            "Legacy": "⚫",
+        }
+            
+        final_embeds = []
+        for i, (tipo, descripcion, id, u_id) in enumerate(result, start=1):
+            color = TYPE_COLORS.get(tipo, discord.Color.random())
+
+            if tipo == "idol":
+                emoji = "👤"
+                for nombre_r, color_r in RARITY_COLORS.items():
+                    if nombre_r in descripcion:
+                        color = color_r
+                        emoji = RARITY_EMOJIS.get(nombre_r, emoji)
+                        break
+            else:
+                emoji = ""
+
+            tipo_carta = tipo.capitalize()
+            
+            if tipo == "redeemable":
+                descr = f"{tipo_carta} obtenido!"
+            else:
+                descr = f"Carta {tipo_carta} obtenida"
+            embed = discord.Embed(
+                title=f"{emoji}{descripcion}",
+                description=descr,
+                color=color
+            )
+            if tipo != "redeemable" and tipo != "performance":
+                embed.set_footer(text=f"{id}.{u_id}")
+                
+            image_url = f"https://res.cloudinary.com/dyvgkntvd/image/upload/d_no_image.jpg/{id}.webp{version}"
+            if tipo == "idol":
+                embed.set_thumbnail(url=image_url)
+            final_embeds.append(embed)
+
+        await interaction.followup.send(
+            content=f"## {interaction.user.mention} ha abierto `{pack_name}` y obtuvo:",
+            embeds=final_embeds,
+            ephemeral=False
+        )
+        await interaction.followup.send(
+            content="✅ Pack abierto. Puedes volver a seleccionar otro pack:",
+            embed=None,
+            view=ReturnToPacksView(interaction.user.id),
+            ephemeral=True
+        )
+
+class OpenPackView(discord.ui.View):
+    def __init__(self, paginator: Paginator):
+        super().__init__(timeout=120)
+        self.paginator = paginator
+        self.update_buttons()
+
+    def update_buttons(self):
+        self.clear_items()
+        
+        start = self.paginator.current_page * self.paginator.embeds_per_page
+        end = start + self.paginator.embeds_per_page
+        for i, pack_id in enumerate(self.paginator.pack_ids[start:end], start=1):
+            self.add_item(OpenPackButton(f"Open {i}", pack_id, paginator=self.paginator))
+
+        
+        self.add_item(PreviousButton(self.paginator))
+        self.add_item(NextButton(self.paginator))
+
+
+class CustomPaginator(Paginator):
+    def __init__(self, embeds, embeds_per_page=3):
+        super().__init__(embeds, embeds_per_page)
+        self.pack_ids = []
+
+    def get_view(self):
+        return OpenPackView(self)
+
+    def current_embed(self):
+        return self.embeds[self.current_page]
+
+class ReturnToPacksButton(discord.ui.Button):
+    def __init__(self, user_id):
+        super().__init__(label="🔙 Ir a Packs", style=discord.ButtonStyle.secondary)
+        self.user_id = user_id
+
+    async def callback(self, interaction: discord.Interaction):
+        pool = await get_pool()
+
+        async with pool.acquire() as conn:
+            player_packs = await conn.fetch("""
+                SELECT pp.*, p.name, p.card_amount 
+                FROM players_packs pp
+                JOIN packs p ON pp.pack_id = p.pack_id
+                WHERE pp.user_id = $1
+                ORDER BY pp.buy_date ASC
+            """, self.user_id)
+
+        if not player_packs:
+            await interaction.response.edit_message(content="❌ Ya no tienes packs disponibles.", embed=None, view=None)
+            return
+
+        embeds = []
+        new_pack_ids = []
+
+        for pack in player_packs:
+            desc = f"**Cartas:** {pack['card_amount']}"
+            if pack['group_name']:
+                desc += f"\n**Grupo:** {pack['group_name']}"
+            if pack['set_id']:
+                async with pool.acquire() as conn:
+                    pack_set = await conn.fetchrow("SELECT DISTINCT set_name FROM cards_idol WHERE set_id = $1", pack['set_id'])
+                desc += f"\n**Set:** {pack_set['set_name']}"
+            desc += f"\n> **Obtenido:** <t:{int(pack['buy_date'].timestamp())}:d>"
+
+            embed = discord.Embed(
+                title=f"🎁 {pack['name']}",
+                description=desc,
+                color=discord.Color.gold()
+            )
+            embed.set_footer(text="Usa los botones para abrir el pack.")
+            embeds.append(embed)
+            new_pack_ids.append(pack["unique_id"])
+
+        # Crear nuevo paginador
+        class RefreshedPaginator(Paginator):
+            def get_view(self):
+                return OpenPackView(self)
+
+            def current_embed(self):
+                return self.embeds[self.current_page]
+
+        new_paginator = RefreshedPaginator(embeds, embeds_per_page=3)
+        new_paginator.pack_ids = new_pack_ids
+
+        # Sobrescribir variables globales del view actual (para que los botones se actualicen correctamente)
+        view = new_paginator.get_view()
+
+        await interaction.response.edit_message(embeds=new_paginator.get_current_embeds(), view=view)
+
+class ReturnToPacksView(discord.ui.View):
+    def __init__(self, user_id):
+        super().__init__(timeout=60)
+        self.add_item(ReturnToPacksButton(user_id))
+
 
 async def open_pack(unique_id: str, user_id: int):
     pool = await get_pool()
@@ -869,9 +871,11 @@ class ConfirmPurchaseView(discord.ui.View):
         if quantity > 1:
             t_quantity = f" x{quantity}"
         
+        view = ReturnToPacksView(interaction.user.id)
+        
         await interaction.response.edit_message(
             content=f"✅ ¡Compra completada con éxito!\n## Has obtenido {total_xp} XP por tu compra",
-            embed=None, view=None)
+            embed=None, view=view)
         logging.info(f"Compra completada de {self.amount} {self.pack_data['name']} por 💵{self.total_price}")
         
 

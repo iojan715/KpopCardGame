@@ -3347,6 +3347,8 @@ class CardGroup(app_commands.Group):
 
         if row_1["status"] != "available" or row_2["status"] != "available":
             return await interaction.response.send_message("❌ Ambas cartas deben estar disponibles.", ephemeral=True)
+        if row_1["is_locked"] != False or row_2["is_locked"] != False:
+            return await interaction.response.send_message("🔐 Ambas cartas deben estar disponibles.", ephemeral=True)
 
         rarity_id = row_1["rarity_id"]
         if not rarity_id.startswith("R") or rarity_id.endswith("3"):
@@ -3411,6 +3413,7 @@ class CardGroup(app_commands.Group):
                 JOIN cards_idol ci ON uc.card_id = ci.card_id
                 WHERE uc.user_id = $1
                 AND uc.status = 'available'
+                AND uc.is_locked = False
                 AND uc.rarity_id LIKE 'R__'
             """, user_id)
 
@@ -3499,6 +3502,9 @@ class CardGroup(app_commands.Group):
         if any(row["status"] != "available" for row in rows):
             return await interaction.response.send_message("❌ Todas las cartas deben estar disponibles.", ephemeral=True)
 
+        if any(row["is_locked"] != False for row in rows):
+            return await interaction.response.send_message("❌ Todas las cartas deben estar disponibles.", ephemeral=True)
+        
         if any(not row["rarity_id"].startswith("R") for row in rows):
             return await interaction.response.send_message("❌ Solo se pueden usar cartas Regulares.", ephemeral=True)
 
@@ -3593,6 +3599,10 @@ class CardGroup(app_commands.Group):
                 """, uid, user_id)
                 item_type = "item"
 
+            if item_type == "idol" and row['is_locked'] == True:
+                return await interaction.response.send_message("🔐 La carta está bloqueada.", ephemeral=True)
+            
+            
             if not row or row["status"] != "available":
                 return await interaction.response.send_message("❌ No se encontró el ítem o no está disponible.", ephemeral=True)
             
@@ -3849,11 +3859,19 @@ class ConfirmRefundView(discord.ui.View):
 
         pool = await get_pool()
         async with pool.acquire() as conn:
-            tabla = "user_idol_cards" if self.item_type == "idol" else "user_item_cards"
-            row = await conn.fetchrow(f"""
-                SELECT * FROM {tabla}
-                WHERE unique_id = $1 AND user_id = $2 AND status = 'available'
-            """, self.unique_id, self.user_id)
+            if self.item_type == "idol":
+                tabla = "user_idol_cards"
+                row = await conn.fetchrow(f"""
+                    SELECT * FROM user_idol_cards
+                    WHERE unique_id = $1 AND user_id = $2 AND status = 'available' AND is_locked = False
+                """, self.unique_id, self.user_id)
+            else:
+                tabla = "user_item_cards"
+                row = await conn.fetchrow(f"""
+                    SELECT * FROM user_item_cards
+                    WHERE unique_id = $1 AND user_id = $2 AND status = 'available'
+                """, self.unique_id, self.user_id)
+        
 
             if not row:
                 return await interaction.response.edit_message(content="❌ El ítem ya no está disponible.", embed=None, view=None)
@@ -3906,7 +3924,7 @@ class ConfirmFusionView(discord.ui.View):
             
             rows = await conn.fetch("""
                 SELECT * FROM user_idol_cards
-                WHERE unique_id = ANY($1::TEXT[]) AND user_id = $2 AND status = 'available'
+                WHERE unique_id = ANY($1::TEXT[]) AND user_id = $2 AND status = 'available' AND is_locked = False
             """, self.uids, self.user_id)
 
             if len(rows) != 3:
@@ -4063,7 +4081,7 @@ class ConfirmFusionView(discord.ui.View):
 
         embed = discord.Embed(
             title="✨ Fusión completada con éxito!",
-            description="🎉 Has obtenido una nueva carta **Special**",
+            description=f"### {interaction.user.mention} ha obtenido una nueva carta **Special**",
             color=discord.Color.purple()
         )
         embed.add_field(name=f"**{idol_name}** _{set_name}_",value=f"`{self.new_card_id}.{new_uid}`", inline=False)
@@ -4176,7 +4194,7 @@ class ConfirmLevelUpView(discord.ui.View):
             # Verificar que ambas cartas aún estén disponibles
             rows = await conn.fetch("""
                 SELECT * FROM user_idol_cards
-                WHERE unique_id = ANY($1::TEXT[]) AND user_id = $2 AND status = 'available'
+                WHERE unique_id = ANY($1::TEXT[]) AND user_id = $2 AND status = 'available' AND is_locked = False
             """, [self.uid_1, self.uid_2], self.user_id)
 
             if len(rows) != 2:

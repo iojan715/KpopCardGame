@@ -1025,7 +1025,7 @@ class IdolCardsView(discord.ui.View):
 
             embeds = await generate_idol_card_embeds(rows, pool, interaction.guild)
 
-            paginator = InventoryEmbedPaginator(embeds, rows, interaction, self.base_query, self.query_params, is_duplicated, True, self.set_id, self.set_name)
+            paginator = InventoryEmbedPaginator(embeds, rows, interaction, self.base_query, self.query_params, is_duplicated, True, self.set_id, self.set_name, have_it)
             await paginator.restart(interaction)
             
 
@@ -1044,6 +1044,7 @@ class IdolCardsView(discord.ui.View):
             
             await conn.execute("INSERT INTO user_badges (user_id, badge_id) VALUES ($1, $2)",
                             interaction.user.id, badge_id)
+            
             await conn.execute("UPDATE users SET credits = credits + 10000, xp = xp + 150")
             new_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
             now = datetime.datetime.now(datetime.timezone.utc)
@@ -1157,6 +1158,7 @@ class InventoryEmbedPaginator:
         is_detailed: bool,
         set_id: str,
         set_name: str,
+        have_it: bool,
         embeds_per_page: int = 3
     ):
         self.all_embeds = embeds
@@ -1173,6 +1175,7 @@ class InventoryEmbedPaginator:
         self.is_detailed = is_detailed
         self.set_id = set_id
         self.set_name = set_name
+        self.have_it = have_it
     
     def get_page_embeds(self):
         start = self.current_page * self.embeds_per_page
@@ -1187,7 +1190,6 @@ class InventoryEmbedPaginator:
 
     def get_view(self):
         view = discord.ui.View(timeout=120)
-        # botones de detalles para cada embed de carta (sin contar el footer)
         start = self.current_page * self.embeds_per_page
         end = start + self.embeds_per_page
         rows_this_page = self.all_rows[start:end]
@@ -1198,6 +1200,8 @@ class InventoryEmbedPaginator:
         # navegación
         view.add_item(PreviousPageButton(self))
         view.add_item(NextPageButton(self))
+        
+        view.add_item(UnlockButton(rows_this_page[0], self.set_id, self.set_name, self.base_query, self.query_params, self.have_it))
         return view
 
     async def start(self):
@@ -1267,6 +1271,30 @@ class LockCardButton(discord.ui.Button):
             await conn.execute("UPDATE user_idol_cards SET is_locked = $1 WHERE card_id = $2 AND user_id = $3",
                                False, self.row_data['card_id'], interaction.user.id)
             await conn.execute("UPDATE user_idol_cards SET is_locked = $1 WHERE unique_id = $2", True, self.row_data['unique_id'])
+            name = await conn.fetchval("SELECT name FROM idol_base WHERE idol_id = $1", self.row_data['idol_id'])
+        
+        idol_name = f"{name} ({self.row_data['idol_id']})"
+        
+        await IdolButton(self.row_data['idol_id'], idol_name, self.set_name, self.base_query, self.query_params).callback(interaction)
+
+class UnlockButton(discord.ui.Button):
+    def __init__(self, row_data:dict, set_id, set_name, base_query, query_params, have_it):
+        super().__init__(label=f"Remove", style=discord.ButtonStyle.danger, disabled=have_it!=None, row=2)
+        self.row_data = row_data
+
+        self.base_query = base_query
+        self.query_params = query_params
+        self.set_id = set_id
+        self.set_name = set_name
+
+    async def callback(self, interaction: discord.Interaction):
+        pool = get_pool()
+        language = await get_user_language(interaction.user.id)
+        guild = interaction.guild
+        
+        async with pool.acquire() as conn:
+            await conn.execute("UPDATE user_idol_cards SET is_locked = $1 WHERE card_id = $2 AND user_id = $3",
+                               False, self.row_data['card_id'], interaction.user.id)
             name = await conn.fetchval("SELECT name FROM idol_base WHERE idol_id = $1", self.row_data['idol_id'])
         
         idol_name = f"{name} ({self.row_data['idol_id']})"
