@@ -277,3 +277,29 @@ section_id,song_id,section_number,section_type,duration,lyrics,vocal,rap,dance,v
 0276,009,29,chorus,4,*Drip drip drip*\n*(You know we got got that drip)*,0,40,25,35,optional,backup_rap,,10,10,,21000
 0277,009,30,chorus,6,*Baby got drip drip drip*\n*Baby got baby got baby got*\n*Drip drip drip*,0,40,40,20,optional,,,,,,31600
 0278,009,31,ending,2,*Got that drip yeah*,50,0,30,20,optional,pose_sync,,,5,10,10900
+0279,010,1,intro,11,*Loco*\n*(Ey!)*,10,0,45,45,optional,group_dance,,,15,,54900
+0280,010,2,verse,9,*michindaneun mari ihae gandalkka*\n*(I'm gettin' loco loco)*\n*Oh gosh igeon dalkomhan dok gata*\n*(I'm gettin' loco loco)*,25,15,40,20,forced,adlib,5,5,,,44900
+0281,010,3,verse,10,*chulgu eomneun bang ane*\n*sabang-i neoran geouriya*\n*guji swipge malhajamyeon*\n*I feel like I was born to love ya*,30,20,35,15,optional,backup_dance,5,,10,,49900
+0282,010,4,pre_chorus,4,*oasiseu channeun Kitty nan ne juwireul maemdolji*,15,25,35,25,forced,,,,,,19900
+0283,010,5,pre_chorus,5,*kongkkakji kkyeo beorin nae du nuneun yellow*\n*kyeojwo ne soneuro bul kkeojin nae simjang*,10,35,25,30,optional,group_dance,,,10,,24900
+0284,010,6,pre_chorus,9,*It's too late want you so bad*\n*neoreul gatgo sipeojyeosseo*\n*molla ijen imi nan blind kkeutkkaji gabollae*,35,5,40,20,optional,adlib,7,7,,,44900
+0285,010,7,chorus,9,*neon nal banjjeum michige mandeureo*\n*You got me like cray-cray-crazy in love*\n*daeche nega mwonde*,45,0,45,10,forced,group_dance,,,15,,46900
+0286,010,8,chorus,10,*michyeo nalttwieo gibuni up and down*\n*You got me like cray-cray-crazy in love*\n*nado naega outta control*,45,0,40,15,optional,,,,,,52100
+0287,010,9,break,5,*I'm gettin' loco loco*,5,15,45,35,forced,harmony,5,,,5,24900
+0288,010,10,break,7,*I'm gettin' loco loco*,5,15,35,45,optional,pose_sync,5,,,10,34900
+0289,010,11,verse,4,*naege daeche neon mwol wonhae*\n*michin i ma-eumeun da gatda peo jwodo I'm ok*,10,45,40,5,forced,,,,,,19900
+0290,010,12,verse,6,*haruneun cheon-gugeul gatda watda gado*\n*narak kkeutkkaji nal mireobeoryeo*,20,30,20,30,optional,harmony,10,,,,29900
+0291,010,13,verse,4,*So dangerous so so so dangerous*\n*(uh-oh)*,30,5,20,45,forced,pose_sync,5,,,10,20800
+0292,010,14,verse,5,*nal deo manggatteuryeodo*\n*neol mideul su bakke eopge haejwo*,10,45,30,15,optional,backup_dance,,,10,,24900
+0293,010,15,pre_chorus,4,*oasiseu chajeun Kitty nan ne yeop jaril neomboji*,15,25,35,25,forced,group_dance,,,10,,19900
+0294,010,16,pre_chorus,5,*Break ttawin ijeosseo kkeutkkaji ga bollae*,35,5,40,20,optional,,,,,,24900
+0295,010,17,chorus,9,*neon nal banjjeum michige mandeureo*\n*You got me like cray-cray-crazy in love*\n*daeche nega mwonde*,45,0,45,10,forced,group_dance,,,15,,46900
+0296,010,18,chorus,10,*michyeo nalttwieo gibuni up and down*\n*You got me like cray-cray-crazy in love*\n*nado naega outta control*,45,0,40,15,optional,,,,,,52100
+0297,010,19,break,9,*Loco*,0,10,55,35,forced,group_dance,,,20,,46900
+0298,010,20,bridge,10,*I'm gettin' loco loco-co*\n*I'm gettin' loco loco-co-oh-oh-oh*,5,10,60,25,locked,group_dance,5,,20,,54300
+0299,010,21,bridge,12,*I'm gettin' loco loco-co*\n*I'm gettin' loco loco-co-oh-oh-oh*,5,10,65,20,optional,group_dance,5,,20,,65100
+0300,010,22,chorus,9,*neon nal banjjeum michige mandeureo*\n*You got me like cray-cray-crazy in love*\n*daeche nega mwonde*,50,0,10,40,forced,pose_sync,5,,,15,46900
+0301,010,23,chorus,10,*michyeo nalttwieo gibuni up and down*\n*You got me like cray-cray-crazy in love*\n*nado naega outta control*,45,0,40,15,optional,,,,,,52100
+0302,010,24,ending,4,*I'm gettin' loco loco*,10,10,35,45,forced,group_dance,,,10,,19900
+0303,010,25,ending,5,*I'm gettin' loco loco*,10,10,30,50,optional,pose_sync,,,5,10,24900
+0304,010,26,ending,5,*[music~]*,0,0,30,70,locked,pose_sync,,,,10,24900
