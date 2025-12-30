@@ -1743,7 +1743,7 @@ async def show_current_section_view(interaction: discord.Interaction, presentati
     disabled_active = disabled_active or disabled
     view.add_item(ActiveSkillPreviewButton(presentation_id, as_emoji, disabled=disabled_active))
     
-    disabled_support = disabled_support or disabled
+    disabled_support = disabled_support
     view.add_item(SupportSkillPreviewButton(presentation_id, ss_emoji, disabled=disabled_support))
 
     disabled_ult = disabled_ult or disabled
