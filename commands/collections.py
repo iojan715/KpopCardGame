@@ -633,8 +633,13 @@ class SetButton(discord.ui.Button):
         embed = already_active = None
         
         async with pool.acquire() as conn:
-            query = "SELECT * FROM cards_idol WHERE set_id = $1 ORDER BY idol_id"
+            query = "SELECT * FROM cards_idol WHERE set_id = $1"
             params = [self.set_id]
+            
+            if "group_name" in self.base_query:
+                query += f" AND group_name = '{self.query_params[0]}'"
+            
+            query += " ORDER BY idol_id"
             cards = await conn.fetch(query, *params)
             user_cards = await conn.fetch("SELECT card_id FROM user_idol_cards WHERE user_id = $1 AND is_locked = True", user_id)
             

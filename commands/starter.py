@@ -7,9 +7,9 @@ from utils.localization import get_translation
 from utils.language import get_user_language
 from asyncpg import Pool
 
-version = "?v=237"
-base = 200
-mult = 600
+version = "?v=236"
+base = 180
+mult = 500
 reduct = 100000
 
 class StartView(discord.ui.View):

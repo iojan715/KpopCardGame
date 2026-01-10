@@ -1536,3 +1536,63 @@ JHRAAASSPC,JHR,AAAS,SPC,Hyerin,tripleS,AAA,Special,,71,38,82,71,96,,,,,350,1000
 JHRAAASLMT,JHR,AAAS,LMT,Hyerin,tripleS,AAA,Limited,,67,35,73,69,92,,,,,350,1000
 JHRAAASFCR,JHR,AAAS,FCR,Hyerin,tripleS,AAA,FCR,,64,38,75,63,100,,,,,350,1000
 JHRAAASPOB,JHR,AAAS,POB,Hyerin,tripleS,AAA,POB,,62,35,70,65,96,,,,,350,1000
+LEESG25LMT,LEE,SG25,LMT,Leeseo,IVE,Season's Greetings 2025,Limited,,62,57,59,66,92,,,,,266,1000
+AYJSG25LMT,AYJ,SG25,LMT,Yujin,IVE,Season's Greetings 2025,Limited,,64,54,60,66,92,,,,,266,1000
+GAESG25LMT,GAE,SG25,LMT,Gaeul,IVE,Season's Greetings 2025,Limited,,56,72,58,58,92,,,,,266,1000
+REISG25LMT,REI,SG25,LMT,Rei,IVE,Season's Greetings 2025,Limited,,58,68,61,57,92,,,,,266,1000
+LIZSG25LMT,LIZ,SG25,LMT,Liz,IVE,Season's Greetings 2025,Limited,,72,43,59,70,92,,,,,266,1000
+JWYSG25LMT,JWY,SG25,LMT,Wonyoung,IVE,Season's Greetings 2025,Limited,,66,49,53,76,92,,,,,266,1000
+NNGSG25LMT,NNG,SG25,LMT,Ningning,Aespa,Season's Greetings 2025,Limited,,71,57,56,60,92,,,,,350,1000
+KRNSG25LMT,KRN,SG25,LMT,Karina,Aespa,Season's Greetings 2025,Limited,,60,64,58,62,92,,,,,350,1000
+WINSG25LMT,WIN,SG25,LMT,Winter,Aespa,Season's Greetings 2025,Limited,,66,54,57,67,92,,,,,350,1000
+GSLSG25LMT,GSL,SG25,LMT,Giselle,Aespa,Season's Greetings 2025,Limited,,56,68,61,59,92,,,,,350,1000
+YUKSG25LMT,YUK,SG25,LMT,Yuki,Purple Kiss,Season's Greetings 2025,Limited,,50,76,59,59,92,,,,,266,1000
+CHNSG25LMT,CHN,SG25,LMT,Chaein,Purple Kiss,Season's Greetings 2025,Limited,,65,56,64,59,92,,,,,266,1000
+SWNSG25LMT,SWN,SG25,LMT,Swan,Purple Kiss,Season's Greetings 2025,Limited,,75,56,59,54,92,,,,,266,1000
+NGESG25LMT,NGE,SG25,LMT,Goeun,Purple Kiss,Season's Greetings 2025,Limited,,70,51,59,64,92,,,,,266,1000
+DOSSG25LMT,DOS,SG25,LMT,Dosie,Purple Kiss,Season's Greetings 2025,Limited,,55,56,69,64,92,,,,,266,1000
+IRHSG25LMT,IRH,SG25,LMT,Ireh,Purple Kiss,Season's Greetings 2025,Limited,,55,61,74,54,92,,,,,266,1000
+JYESG25LMT,JYE,SG25,LMT,J,Stayc,Season's Greetings 2025,Limited,,60,66,62,56,92,,,,,266,1000
+ISASG25LMT,ISA,SG25,LMT,Isa,Stayc,Season's Greetings 2025,Limited,,68,46,64,66,92,,,,,266,1000
+SIESG25LMT,SIE,SG25,LMT,Sieun,Stayc,Season's Greetings 2025,Limited,,72,52,59,61,92,,,,,266,1000
+SEESG25LMT,SEE,SG25,LMT,Seeun,Stayc,Season's Greetings 2025,Limited,,61,46,62,75,92,,,,,266,1000
+YONSG25LMT,YON,SG25,LMT,Yoon,Stayc,Season's Greetings 2025,Limited,,67,52,62,63,92,,,,,266,1000
+SMNSG25LMT,SMN,SG25,LMT,Sumin,Stayc,Season's Greetings 2025,Limited,,62,60,64,58,92,,,,,266,1000
+LLYSG25LMT,LLY,SG25,LMT,Lily,NMIXX,Season's Greetings 2025,Limited,,77,43,61,63,92,,,,,266,1000
+KJWSG25LMT,KJW,SG25,LMT,Jiwoo,NMIXX,Season's Greetings 2025,Limited,,57,73,65,49,92,,,,,266,1000
+KYUSG25LMT,KYU,SG25,LMT,Kyujin,NMIXX,Season's Greetings 2025,Limited,,59,68,66,51,92,,,,,266,1000
+SLYSG25LMT,SLY,SG25,LMT,Sullyoon,NMIXX,Season's Greetings 2025,Limited,,71,48,59,66,92,,,,,266,1000
+BAESG25LMT,BAE,SG25,LMT,Bae,NMIXX,Season's Greetings 2025,Limited,,61,57,63,63,92,,,,,266,1000
+OHWSG25LMT,OHW,SG25,LMT,Haewon,NMIXX,Season's Greetings 2025,Limited,,73,45,65,61,92,,,,,266,1000
+SLASG25LMT,SLA,SG25,LMT,Seola,WJSN,Season's Greetings 2025,Limited,,72,41,54,77,92,,,,,225,1000
+EXYSG25LMT,EXY,SG25,LMT,Exy,WJSN,Season's Greetings 2025,Limited,,58,74,54,58,92,,,,,225,1000
+PSBSG25LMT,PSB,SG25,LMT,Soobin,WJSN,Season's Greetings 2025,Limited,,75,40,58,71,92,,,,,225,1000
+BNASG25LMT,BNA,SG25,LMT,Bona,WJSN,Season's Greetings 2025,Limited,,61,48,61,74,92,,,,,225,1000
+EUNSG25LMT,EUN,SG25,LMT,Eunseo,WJSN,Season's Greetings 2025,Limited,,58,53,62,71,92,,,,,225,1000
+LYRSG25LMT,LYR,SG25,LMT,Yeoreum,WJSN,Season's Greetings 2025,Limited,,57,54,71,62,92,,,,,225,1000
+DAYSG25LMT,DAY,SG25,LMT,Dayoung,WJSN,Season's Greetings 2025,Limited,,70,50,66,58,92,,,,,225,1000
+YYJSG25LMT,YYJ,SG25,LMT,Yeonjung,WJSN,Season's Greetings 2025,Limited,,77,40,57,70,92,,,,,225,1000
+YSYSG25LMT,YSY,SG25,LMT,Seoyeon,tripleS,Season's Greetings 2025,Limited,,62,47,60,75,92,,,,,141,1000
+JHRSG25LMT,JHR,SG25,LMT,Hyerin,tripleS,Season's Greetings 2025,Limited,,64,48,70,62,92,,,,,141,1000
+LJWSG25LMT,LJW,SG25,LMT,Jiwoo,tripleS,Season's Greetings 2025,Limited,,67,49,59,69,92,,,,,141,1000
+KCYSG25LMT,KCY,SG25,LMT,Chaeyeon,tripleS,Season's Greetings 2025,Limited,,68,47,56,73,92,,,,,141,1000
+KYYSG25LMT,KYY,SG25,LMT,Yooyeon,tripleS,Season's Greetings 2025,Limited,,59,53,58,74,92,,,,,141,1000
+KSMSG25LMT,KSM,SG25,LMT,Soomin,tripleS,Season's Greetings 2025,Limited,,61,50,60,73,92,,,,,141,1000
+NAKSG25LMT,NAK,SG25,LMT,Nakyoung,tripleS,Season's Greetings 2025,Limited,,64,58,64,58,92,,,,,141,1000
+GYBSG25LMT,GYB,SG25,LMT,Yubin,tripleS,Season's Greetings 2025,Limited,,63,57,62,62,92,,,,,141,1000
+KAESG25LMT,KAE,SG25,LMT,Kaede,tripleS,Season's Greetings 2025,Limited,,67,42,72,63,92,,,,,141,1000
+SDHSG25LMT,SDH,SG25,LMT,Dahyun,tripleS,Season's Greetings 2025,Limited,,77,43,61,63,92,,,,,141,1000
+KOTSG25LMT,KOT,SG25,LMT,Kotone,tripleS,Season's Greetings 2025,Limited,,56,67,66,55,92,,,,,141,1000
+KYJSG25LMT,KYJ,SG25,LMT,Yeonji,tripleS,Season's Greetings 2025,Limited,,54,53,68,69,92,,,,,141,1000
+NIESG25LMT,NIE,SG25,LMT,Nien,tripleS,Season's Greetings 2025,Limited,,67,55,62,60,92,,,,,141,1000
+PSHSG25LMT,PSH,SG25,LMT,Sohyun,tripleS,Season's Greetings 2025,Limited,,62,57,62,63,92,,,,,141,1000
+XNYSG25LMT,XNY,SG25,LMT,Xinyu,tripleS,Season's Greetings 2025,Limited,,61,53,59,71,92,,,,,141,1000
+MAYSG25LMT,MAY,SG25,LMT,Mayu,tripleS,Season's Greetings 2025,Limited,,65,49,59,71,92,,,,,141,1000
+LYNSG25LMT,LYN,SG25,LMT,Lynn,tripleS,Season's Greetings 2025,Limited,,54,59,68,63,92,,,,,141,1000
+JOOSG25LMT,JOO,SG25,LMT,Joobin,tripleS,Season's Greetings 2025,Limited,,64,49,58,73,92,,,,,141,1000
+HAYSG25LMT,HAY,SG25,LMT,Hayeon,tripleS,Season's Greetings 2025,Limited,,63,52,55,74,92,,,,,141,1000
+PSOSG25LMT,PSO,SG25,LMT,Shion,tripleS,Season's Greetings 2025,Limited,,71,47,62,64,92,,,,,141,1000
+CHWSG25LMT,CHW,SG25,LMT,Chaewon,tripleS,Season's Greetings 2025,Limited,,62,48,62,72,92,,,,,141,1000
+SLLSG25LMT,SLL,SG25,LMT,Sullin,tripleS,Season's Greetings 2025,Limited,,60,51,58,75,92,,,,,141,1000
+SOASG25LMT,SOA,SG25,LMT,Seoah,tripleS,Season's Greetings 2025,Limited,,64,52,58,70,92,,,,,141,1000
+JIYSG25LMT,JIY,SG25,LMT,Jiyeon,tripleS,Season's Greetings 2025,Limited,,60,49,64,71,92,,,,,141,1000
