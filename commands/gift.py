@@ -62,7 +62,8 @@ class GiftGroup(app_commands.Group):
             if card_type == "idol":
                 if card_data['is_locked']:
                     return await interaction.response.send_message(
-                        "## 🔐 No se puede enviar esta carta porque está bloqueada."
+                        content="## 🔐 No se puede enviar esta carta porque está bloqueada.",
+                        ephemeral=True
                     )
             
                 card_base = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1",card_data['card_id'])
@@ -139,7 +140,8 @@ class ConfirmGiftButton(discord.ui.Button):
             if card_type == "idol":
                 if card_data['is_locked']:
                     return await interaction.response.send_message(
-                        "## 🔐 No se puede enviar esta carta porque está bloqueada."
+                        content="## 🔐 No se puede enviar esta carta porque está bloqueada.",
+                        ephemeral=True
                     )
             
                 card_base = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1",card_data['card_id'])
