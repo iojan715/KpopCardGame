@@ -183,6 +183,8 @@ class InventoryGroup(app_commands.Group):
         base_query += f" ORDER BY {order_column} {order_dir}"
         
         async with pool.acquire() as conn:
+            
+            #mision
             await conn.execute("""
                 UPDATE user_missions um
                 SET obtained = um.obtained + 1,
@@ -193,6 +195,7 @@ class InventoryGroup(app_commands.Group):
                 AND um.status = 'active'
                 AND mb.mission_type = 'view_inventory'
                 """, interaction.user.id)
+            
             rows = await conn.fetch(base_query, *params)
             if duplicated:
                 card_counts = Counter([row['card_id'] for row in rows])
@@ -215,7 +218,12 @@ class InventoryGroup(app_commands.Group):
             return
 
         card_counts = Counter([row['card_id'] for row in rows])
-        embeds = await generate_idol_card_embeds(rows, pool, interaction.guild, is_detailed)
+        
+        main_user = None
+        if agency:
+            main_user = interaction.user.id
+        
+        embeds = await generate_idol_card_embeds(rows, pool, interaction.guild, is_detailed, main_user=main_user)
 
         paginator = InventoryEmbedPaginator(embeds, rows, interaction, base_query, params, is_duplicated, is_detailed, embeds_per_page=3)
         await paginator.start()
@@ -2218,7 +2226,7 @@ class ConfirmItemRefundView(discord.ui.View):
 
 
 # - idol_cards
-async def generate_idol_card_embeds(rows: list, pool, guild: discord.Guild, is_detailed:bool) -> list[discord.Embed]:
+async def generate_idol_card_embeds(rows: list, pool, guild: discord.Guild, is_detailed:bool, main_user = None) -> list[discord.Embed]:
     """Genera una lista de embeds para cartas de idols."""
     card_counts = Counter([row['card_id'] for row in rows])
     embeds = []
@@ -2228,7 +2236,15 @@ async def generate_idol_card_embeds(rows: list, pool, guild: discord.Guild, is_d
             idol_row = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", row["card_id"])
             idol_base_row = await conn.fetchrow("SELECT * FROM idol_base WHERE idol_id = $1", row["idol_id"])
             user_card_row = await conn.fetchrow("SELECT * FROM user_idol_cards WHERE unique_id = $1", row['unique_id'])
-            
+        
+            have_it = ""
+            if main_user:
+                have_card = await conn.fetchrow("SELECT * FROM user_idol_cards WHERE card_id = $1 AND user_id = $2", row["card_id"], main_user)
+                if have_card:
+                    have_it = "✅"
+                else:
+                    have_it = "❌"
+        
         name = idol_row['idol_name']
         card_set = idol_row['set_name']
         rarity = idol_row['rarity']
@@ -2266,7 +2282,7 @@ async def generate_idol_card_embeds(rows: list, pool, guild: discord.Guild, is_d
             cantidad_copias = f" `x{card_counts[row['card_id']]} copias`"
 
         embed = discord.Embed(
-            title=f"{name} - *{group_name}*{cantidad_copias} {blocked}{c_status}",
+            title=f"{have_it}{name} - *{group_name}*{cantidad_copias} {blocked}{c_status}",
             description=f"{card_set} `{rarity}`",
             color=embed_color
         )
