@@ -951,6 +951,55 @@ class ConfirmFCRView(discord.ui.View):
         await interaction.response.edit_message(content="## ✅ Pack FCR entregado correctamente!",view=None, embed=None)
         await interaction.followup.send(f"🎉 {user_data['agency_name']} ha recibido un **FCR Pack** de **{self.group_name}**", ephemeral=False)
 
+    @discord.ui.button(label="❔ Grupo Random", style=discord.ButtonStyle.gray)
+    async def confirm_random(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if interaction.user.id != self.user_id:
+            await interaction.response.send_message("❌ No puedes confirmar esto.", ephemeral=True)
+            return
+
+        pool = get_pool()
+        unique_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=5))
+
+        guild = interaction.guild
+        
+        role_name = f"{self.group_name} FanClub"
+        role = discord.utils.get(guild.roles, name=role_name)
+        
+        if role:
+            try:
+                await interaction.user.add_roles(role, reason=f"Reclamar FCR Pack de {self.group_name}")
+            except discord.Forbidden:
+                await interaction.response.send_message(
+                    f"⚠️ No se pudo asignar el rol {role_name}.", ephemeral=True)
+                return
+        else:
+            await interaction.response.send_message(
+                f"⚠️ No se encontró el rol **{role_name}** en el servidor.",
+            ephemeral=True)
+            return
+        
+        async with pool.acquire() as conn:
+            # Verificar que el usuario aún pueda recibirlo
+            user_data = await conn.fetchrow("SELECT can_fcr FROM users WHERE user_id = $1", self.user_id)
+            if not user_data or not user_data["can_fcr"]:
+                await interaction.response.send_message("❌ Ya reclamaste este pack.", ephemeral=True)
+                return
+
+            # Marcar como ya recibido
+            await conn.execute("UPDATE users SET can_fcr = FALSE WHERE user_id = $1", self.user_id)
+
+            user_data = await conn.fetchrow("SELECT * FROM users WHERE user_id = $1", self.user_id)
+            
+            # Insertar en tabla players_packs
+            await conn.execute("""
+                INSERT INTO players_packs (unique_id, user_id, pack_id, buy_date)
+                VALUES ($1, $2, $3, NOW())
+            """, unique_id, self.user_id, self.pack_data['pack_id'])
+
+        
+        await interaction.response.edit_message(content="## ✅ Pack FCR entregado correctamente!",view=None, embed=None)
+        await interaction.followup.send(f"🎉 {user_data['agency_name']} ha recibido un **FCR Pack** de **{self.group_name}**", ephemeral=False)
+
     @discord.ui.button(label="❌ Cancelar", style=discord.ButtonStyle.red)
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user.id != self.user_id:
