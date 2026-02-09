@@ -949,7 +949,7 @@ class ConfirmFCRView(discord.ui.View):
 
         
         await interaction.response.edit_message(content="## ✅ Pack FCR entregado correctamente!",view=None, embed=None)
-        await interaction.followup.send(f"🎉 {user_data['agency_name']} ha recibido un **FCR Pack** de **{self.group_name}**", ephemeral=False)
+        await interaction.followup.send(f"🎉 {user_data['agency_name']} ha recibido un **FCR Pack** de **{self.group_name}** y se ha unido al FanClub", ephemeral=False)
 
     @discord.ui.button(label="❔ Grupo Random", style=discord.ButtonStyle.gray)
     async def confirm_random(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -998,7 +998,7 @@ class ConfirmFCRView(discord.ui.View):
 
         
         await interaction.response.edit_message(content="## ✅ Pack FCR entregado correctamente!",view=None, embed=None)
-        await interaction.followup.send(f"🎉 {user_data['agency_name']} ha recibido un **FCR Pack** de **{self.group_name}**", ephemeral=False)
+        await interaction.followup.send(f"🎉 {user_data['agency_name']} ha recibido un **FCR Pack** random y se ha unido al FanClub de **{self.group_name}**", ephemeral=False)
 
     @discord.ui.button(label="❌ Cancelar", style=discord.ButtonStyle.red)
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
