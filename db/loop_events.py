@@ -82,7 +82,14 @@ async def reset_fcr_func():
 async def reducir_popularidad_func():
     pool = get_pool()
     async with pool.acquire() as conn:
-        await conn.execute("UPDATE groups SET popularity = popularity * 0.9")
+        groups = await conn.fetch("SELECT * FROM groups WHERE status <> 'creating'")
+        for group in groups:
+            multiplier = 0.9 - 0.03*group['unpaid_weeks']
+            popularity = float(group['popularity'])
+            new_pop = int(popularity * multiplier)
+            await conn.execute("UPDATE groups SET popularity = $1 WHERE group_id = $2", new_pop, group['group_id'])
+        
+        
     logging.info("Popularidad reducida")
 
 async def reducir_influencia_func():
@@ -886,7 +893,7 @@ async def change_event():
                             SELECT set_id
                             FROM (
                                 SELECT DISTINCT set_id
-                                FROM cards_idol
+                                FROM cards_idol WHERE rarity_id = 'POB'
                             ) AS sub
                             ORDER BY RANDOM()
                             LIMIT 1
