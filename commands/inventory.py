@@ -2537,10 +2537,15 @@ class CardDetailButton(discord.ui.Button):
             embed.set_image(url=image_url)
             embed.set_footer(text=f"{self.card_id}.{self.unique_id}")
             
+            lockable = True
+            if base_card_data['rarity_id'][2] == "2" or base_card_data['rarity_id'][2] == "1":
+                lockable = False
+            
             view = discord.ui.View()
             if card['user_id'] == interaction.user.id:
                 view.add_item(EquipButton(self.row_data, self.paginator))
                 view.add_item(DesequipButton(self.row_data, self.paginator))
+                view.add_item(LockButton(self.row_data, self.paginator, lockable))
 
             view.add_item(BackToInventoryButton(self.paginator))
 
@@ -2561,6 +2566,49 @@ class BackToInventoryButton(discord.ui.Button):
         async with pool.acquire() as conn:
             rows = await conn.fetch(self.paginator.base_query, *self.paginator.query_params)
 
+        if not rows:
+            await interaction.response.edit_message(
+                content="⚠️ No se encontraron cartas con esta búsqueda.",
+                embed=None,
+                view=None
+            )
+            return
+        card_counts = Counter([row['card_id'] for row in rows])
+        if self.paginator.is_duplicated:
+            rows = [row for row in rows if card_counts[row['card_id']] >= 2]
+        else:
+            rows = [row for row in rows if card_counts[row['card_id']] >= 1]
+            
+
+        embeds = await generate_idol_card_embeds(rows, pool, interaction.guild, self.paginator.is_detailed)
+        new_paginator = InventoryEmbedPaginator(
+            embeds,
+            rows,
+            interaction,
+            base_query=self.paginator.base_query,
+            query_params=self.paginator.query_params,
+            is_duplicated=self.paginator.is_duplicated,
+            is_detailed=self.paginator.is_detailed,
+            embeds_per_page=self.paginator.embeds_per_page
+        )
+        await new_paginator.restart(interaction)
+
+class LockButton(discord.ui.Button):
+    def __init__(self, row_data, paginator: "InventoryEmbedPaginator", lockable:bool):
+        super().__init__(label="🔐 Bloquear", style=discord.ButtonStyle.secondary, disabled=not lockable)
+        self.paginator = paginator
+        self.row_data = row_data
+
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+        pool = get_pool()
+        async with pool.acquire() as conn:
+            await conn.execute("UPDATE user_idol_cards SET is_locked = $1 WHERE card_id = $2 AND user_id = $3",
+                               False, self.row_data['card_id'], interaction.user.id)
+            await conn.execute("UPDATE user_idol_cards SET is_locked = $1 WHERE unique_id = $2", True, self.row_data['unique_id'])
+            
+            rows = await conn.fetch(self.paginator.base_query, *self.paginator.query_params)
+            
         if not rows:
             await interaction.response.edit_message(
                 content="⚠️ No se encontraron cartas con esta búsqueda.",
