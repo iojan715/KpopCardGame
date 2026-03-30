@@ -1,4 +1,4 @@
-import discord, json, inspect, math
+import discord, json, inspect, math, asyncio
 from discord.ext import commands
 from discord import app_commands, ui, Interaction
 from datetime import datetime, timezone
@@ -1101,6 +1101,7 @@ class PresentationPerformancePaginator:
     async def restart(self, interaction: discord.Interaction):
         self.current_page = 0
         await interaction.response.edit_message(
+            content="",
             embeds=self.get_page_embeds(),
             view=self.get_view()
         )
@@ -1225,7 +1226,7 @@ class ConfirmStartPresentationView(ui.View):
             """, self.presentation_id)
 
             if not pres or not pres["group_id"] or not pres["song_id"]:
-                view = ConfirmStartPresentationView(self.presentation_id, interaction.user.id)
+                view = ConfirmStartPresentationView(self.presentation_id, interaction.user.id, self.paginator)
                 await interaction.edit_original_response(
                     content="❌ La presentación no tiene grupo y canción asignados.",
                     view=view
@@ -1330,8 +1331,139 @@ class ConfirmStartPresentationView(ui.View):
             """, self.presentation_id, datetime.now(timezone.utc))
             
         await show_current_section_view(interaction, self.presentation_id, edit=True)
+        
+    @ui.button(label="☑️ Auto-Perform", style=discord.ButtonStyle.primary)
+    async def confirm_auto(self, interaction: Interaction, button: ui.Button):
+        await interaction.response.defer()
+        if interaction.user.id != self.user_id:
+            await interaction.edit_original_response(content="❌ No puedes iniciar esta presentación.")
+            return
 
-    @ui.button(label="➕ Group", style=discord.ButtonStyle.success)
+        pool = get_pool()
+
+        async with pool.acquire() as conn:
+            # Obtener info de presentación
+            pres = await conn.fetchrow("""
+                SELECT * FROM presentations
+                WHERE presentation_id = $1
+            """, self.presentation_id)
+
+            if not pres or not pres["group_id"] or not pres["song_id"]:
+                view = ConfirmStartPresentationView(self.presentation_id, interaction.user.id, self.paginator)
+                await interaction.edit_original_response(
+                    content="❌ La presentación no tiene grupo y canción asignados.",
+                    view=view
+                )
+                return
+            
+            if pres["presentation_type"] == 'event':
+                view = ConfirmStartPresentationView(self.presentation_id, interaction.user.id, self.paginator)
+                await interaction.edit_original_response(
+                    content="❌ Las presentaciones de Evento no se pueden iniciar automáticamente",
+                    view=view
+                )
+                return
+
+            group_id, song_id = pres["group_id"], pres["song_id"]
+
+            # Obtener miembros del grupo
+            group_members = await conn.fetch("""
+                SELECT * FROM groups_members
+                WHERE group_id = $1
+            """, group_id)
+
+            for member in group_members:
+                # Calcular stats base
+                vocal = rap = dance = visual = energy = 0
+
+                if member['card_id']:
+                    card_id, unique_id = member['card_id'].split('.')
+                    card = await conn.fetchrow("SELECT * FROM cards_idol WHERE card_id = $1", card_id)
+
+                    vocal += card["vocal"]
+                    rap += card["rap"]
+                    dance += card["dance"]
+                    visual += card["visual"]
+                    energy += card["energy"]
+                else:
+                    card_id = unique_id = None
+                    idol = await conn.fetchrow("SELECT * FROM idol_base WHERE idol_id = $1", member['idol_id'])
+                    vocal += idol["vocal"]
+                    rap += idol["rap"]
+                    dance += idol["dance"]
+                    visual += idol["visual"]
+                    energy += 50
+
+                # Equipamiento adicional
+                for item_field in ["mic_id", "outfit_id", "accessory_id", "consumable_id"]:
+                    if member[item_field]:
+                        item_id, unique_item_id = member[item_field].split(".")
+                        item = await conn.fetchrow("""
+                            SELECT * FROM cards_item WHERE item_id = $1
+                        """, item_id)
+                        if item:
+                            vocal += item["plus_vocal"]
+                            rap += item["plus_rap"]
+                            dance += item["plus_dance"]
+                            visual += item["plus_visual"]
+                            energy += item["plus_energy"]
+
+                            # Reducir durabilidad
+                            await conn.execute("""
+                                UPDATE user_item_cards
+                                SET durability = durability - 1
+                                WHERE unique_id = $1
+                            """, unique_item_id)
+                            
+                            items_cero_durability = await conn.fetch("SELECT * FROM user_item_cards WHERE durability < 1")
+                            
+                            for item in items_cero_durability:
+                                field = ""
+                                if item['item_id'][:3] == "ACC":
+                                    field = "accessory_id"
+                                elif item['item_id'][:3] == "MIC":
+                                    field = "mic_id"
+                                elif item['item_id'][:3] == "FIT":
+                                    field = "outfit_id"
+                                elif item['item_id'][:3] == "CON":
+                                    field = "consumable_id"
+                                    
+                                await conn.execute(f"""
+                                    UPDATE groups_members
+                                    SET {field} = $1
+                                    WHERE {field} = $2
+                                """, None, f"{item['item_id']}.{item['unique_id']}")
+                            
+                                await conn.execute(f"""
+                                    DELETE FROM user_item_cards
+                                    WHERE unique_id = $1
+                                """, item['unique_id'])
+
+
+                # Insertar en members
+                await conn.execute("""
+                    INSERT INTO presentation_members (
+                        presentation_id, idol_id, card_id, unique_id, user_id,
+                        vocal, rap, dance, visual, max_energy
+                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                """, self.presentation_id, member['idol_id'], card_id, unique_id, member["user_id"],
+                     vocal, rap, dance, visual, energy or 50)
+
+            # Insertar sección 1
+            await conn.execute("""
+                INSERT INTO presentation_sections (presentation_id, section)
+                VALUES ($1, 1)
+            """, self.presentation_id)
+
+            # Cambiar estado de la presentación
+            await conn.execute("""
+                UPDATE presentations SET status = 'active', last_action = $2, free_switches = 2, performance_card_uses = 2
+                WHERE presentation_id = $1
+            """, self.presentation_id, datetime.now(timezone.utc))
+            
+        await perform_auto_presentation(interaction, self.presentation_id, edit=True)
+
+    @ui.button(label="➕ Group", style=discord.ButtonStyle.success, row=1)
     async def add_group(self, interaction: Interaction, button:ui.Button):
         pool = get_pool()
         async with pool.acquire() as conn:
@@ -1354,7 +1486,7 @@ class ConfirmStartPresentationView(ui.View):
         await paginator.start()
 
 
-    @ui.button(label="➕ Canción", style=discord.ButtonStyle.success)
+    @ui.button(label="➕ Canción", style=discord.ButtonStyle.success, row=1)
     async def add_song(self, interaction: Interaction, button: ui.Button):
         pool = get_pool()
         async with pool.acquire() as conn:
@@ -1378,7 +1510,7 @@ class ConfirmStartPresentationView(ui.View):
         paginator = SongSelectionPaginator(interaction, self.presentation_id, song_rows)
         await paginator.start()
         
-    @ui.button(label="❌ Cancelar", style=discord.ButtonStyle.danger)
+    @ui.button(label="❌ Cancelar", style=discord.ButtonStyle.danger, row=1)
     async def cancel(self, interaction: Interaction, button: ui.Button):
         pool = get_pool()
         user_id = interaction.user.id
@@ -1754,6 +1886,182 @@ async def show_current_section_view(interaction: discord.Interaction, presentati
         await interaction.edit_original_response(content="", embeds=embeds, view=view)
     else:
         await interaction.edit_original_response(content="", embeds=embeds, view=view)
+                
+
+async def perform_auto_presentation(interaction: discord.Interaction, presentation_id: str, edit: bool = False):
+    pool = get_pool()
+    guild = interaction.guild
+    user_id = interaction.user.id
+
+    async with pool.acquire() as conn:
+        presentation = await conn.fetchrow("""
+            SELECT * FROM presentations
+            WHERE presentation_id = $1 AND user_id = $2
+        """, presentation_id, user_id)
+        
+        
+        st_embed = discord.Embed(
+            title="⏳ Presentación en curso... _(los mensajes de cada sección se borrarán después de un tiempo)_",
+            color=discord.Color.gold()
+            )
+        await interaction.edit_original_response(embed=st_embed, view=None)
+
+        if not presentation:
+            await interaction.edit_original_response(content="❌ No se encontró la presentación.")
+            return
+        
+        idols = await conn.fetch("""
+            SELECT * FROM presentation_members
+            WHERE presentation_id = $1
+        """, presentation_id)
+        
+        # Seleccionar primer Idol
+        new_idol = random.choice(idols)
+
+        await conn.execute("""
+            UPDATE presentation_members
+            SET current_position = 'active'
+            WHERE presentation_id = $1 AND idol_id = $2
+        """, presentation_id, new_idol['idol_id'])
+
+
+    # 🔹 Loop principal
+    finished = False
+    
+
+
+    while not finished:
+        async with pool.acquire() as conn:
+
+            # 🔸 Refrescar estado SIEMPRE (importante)
+            presentation = await conn.fetchrow("""
+                SELECT * FROM presentations
+                WHERE presentation_id = $1 AND user_id = $2
+            """, presentation_id, user_id)
+
+            section = await conn.fetchrow("""
+                SELECT * FROM song_sections
+                WHERE song_id = $1 AND section_number = $2
+            """, presentation['song_id'], presentation['current_section'])
+
+            idols = await conn.fetch("""
+                SELECT * FROM presentation_members
+                WHERE presentation_id = $1
+            """, presentation_id)
+
+        # 🔸 1. P. Cards
+        if presentation['performance_card_uses'] > 0:
+            use_pcard = random.choice([True, False])
+            use_pcard = False ## placeholder
+
+            if use_pcard:
+                # elegir tipo / carta
+                pass
+
+        # 🔸 2. Habilidades
+        ## Revisar si tiene AS o US
+        action = "BASIC"
+
+        if action == "AS":
+            pass
+        elif action == "US":
+            pass
+        else: # Basic
+            pool = get_pool()
+            async with pool.acquire() as conn:
+                # Obtener info de la presentación
+                presentation = await conn.fetchrow("""
+                    SELECT * FROM presentations WHERE presentation_id = $1
+                """, presentation_id)
+
+                # Verificar idol activo
+                idol = await conn.fetchrow("""
+                    SELECT * FROM presentation_members 
+                    WHERE presentation_id = $1 AND current_position = 'active'
+                """, presentation_id)
+                
+                idol_name = await conn.fetchval("SELECT name FROM idol_base WHERE idol_id = $1", idol['idol_id'])
+
+                # Obtener sección actual
+                current_section = presentation["current_section"]
+                song_id = presentation["song_id"]
+                song_section = await conn.fetchrow("""
+                    SELECT * FROM song_sections
+                    WHERE song_id = $1 AND section_number = $2
+                """, song_id, current_section)
+
+                if not song_section:
+                    return await interaction.followup.send(content="Sección no encontrada.", ephemeral=True)
+
+                # REVISAR SI FUNCIONA
+                passive_bonus = await apply_passive_skill_if_applicable(conn, idol, song_section, presentation)
+                score, hype, finished, base_score = await perform_section_action(conn, presentation_id, idol, song_section, presentation, passive_bonus)
+
+                p_totals = await conn.fetchval("SELECT total_hype, total_score FROM presentations WHERE presentation_id = $1", presentation_id)
+
+        # 🔸 4. Verificar fin
+        if finished:
+            is_ephemeral:bool = presentation['presentation_type'] == "practice"
+            content = await finalize_presentation(conn, presentation)
+            fn_embed =discord.Embed(
+                title="✅ Presentación finalizada!",
+                color=discord.Color.gold()
+            )
+            await interaction.edit_original_response(embed=fn_embed, view=None)
+            
+            await interaction.followup.send(
+                content=content,
+                ephemeral = is_ephemeral
+            )
+            break
+        
+        # 🔸 5. Support Skill
+        ## Revisar si tiene SS
+        use_support = False
+        if use_support:
+            pass
+
+        # 🔸 6. Cambio de idol
+        if len(idols) > 1:
+            change = random.choices([True, False], weights=[70,30])
+            if change:
+                if presentation['free_switches'] != 0:
+                    async with pool.acquire() as conn:
+                        # Obtener actual activo
+                        old_active = await conn.fetchrow("""
+                            SELECT idol_id FROM presentation_members
+                            WHERE presentation_id = $1 AND current_position = 'active'
+                        """, presentation_id)
+                        
+                        n_idols = await conn.fetch("""
+                            SELECT * FROM presentation_members
+                            WHERE presentation_id = $1 AND idol_id <> $2
+                        """, presentation_id, old_active['idol_id'])
+                        
+                        new_idol = random.choice(n_idols)
+
+                        # Actualizar posiciones
+                        await conn.execute("""
+                            UPDATE presentation_members
+                            SET current_position = 'back'
+                            WHERE presentation_id = $1 AND current_position = 'active'
+                        """, presentation_id)
+
+                        await conn.execute("""
+                            UPDATE presentation_members
+                            SET current_position = 'active'
+                            WHERE presentation_id = $1 AND idol_id = $2
+                        """, presentation_id, new_idol['idol_id'])
+
+        # 🔸 7. Delay opcional (para que no sea instantáneo)
+        await asyncio.sleep(1)
+
+        # 🔸 8. (Opcional) actualizar embed visual
+        await interaction.followup.send(
+            content=f"## Sección {presentation['current_section']}\n- Idol: {idol_name} ({idol['idol_id']})\n- Puntuación: {format(score,',')} ({format(base_score,',')})\n- Hype: {p_totals['total_hype']} ({hype})",
+            ephemeral=True
+        )
+ 
 
 # - switch idol
 class SwitchIdolView(discord.ui.View):
@@ -3051,10 +3359,7 @@ async def perform_section_action(conn, presentation_id: str, idol_row, song_sect
     
     for key, value in section_types.items():
         if song_section['section_type'] == key:
-            print(Hg)
             Hg *= value
-            print(key)
-            print(Hg)
 
     Hg = round(Hg,2)
     await conn.execute("UPDATE presentations SET total_hype = LEAST(100, GREATEST(0, total_hype + $1)) WHERE presentation_id = $2", Hg, presentation_id)
@@ -3163,7 +3468,6 @@ async def apply_ultimate_skill_if_applicable(conn, idol_row, section_row, presen
 
 async def apply_equals_to_idol_stat(params, conn, presentation_row, idol_row):
     value = params.get("value")
-    print(f"value {value}")
     if not value:
         return {}
 
@@ -3177,7 +3481,6 @@ async def apply_equals_to_idol_stat(params, conn, presentation_row, idol_row):
 
     if value in ["vocal", "rap", "dance", "visual"]:
         idol_stat = idol_row.get(value)
-        print(f"idol stat {idol_stat}")
         return {"override_stat": {value: idol_stat}}
 
     elif value in ["highest"]:
@@ -3618,7 +3921,6 @@ class ActiveSkillUseButton(discord.ui.Button):
                     bonus[key] *= value
                 else:
                     bonus[key] = value
-            print(bonus)
             
             score, hype, final, base_score = await perform_section_action(conn, self.presentation_id, idol, section, presentation, bonus)
 
@@ -3829,7 +4131,6 @@ async def check_highest_section_stat(condition_values, idol_row, section_row, pr
     }
 
     highest = max(section_stats.items(), key=lambda x: (x[1], ["vocal", "rap", "dance", "visual"].index(x[0])))
-    print(f"highest: {highest}")
     return highest[0] == target_stat
 
 async def check_duration_above(condition_values, idol_row, section_row, presentation_row, conn):
@@ -4062,17 +4363,14 @@ async def apply_boost_lower_stat(effect_values, conn, presentation_row, idol_row
 async def apply_passive_skill_if_applicable(conn, idol_row, section_row, presentation_row, check_only=False):
     card_id = idol_row["unique_id"]
     if not card_id:
-        print("no carta")
         return {}
 
     card = await conn.fetchrow("SELECT p_skill FROM user_idol_cards WHERE unique_id = $1", card_id)
     if not card or not card["p_skill"]:
-        print("no skill")
         return {}
 
     skill = await conn.fetchrow("SELECT * FROM skills WHERE skill_name = $1 AND skill_type = 'passive'", card["p_skill"])
     if not skill:
-        print("no skill data")
         return {}
 
     condition = skill["condition"]
