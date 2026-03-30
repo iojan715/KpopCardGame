@@ -1997,7 +1997,7 @@ async def perform_auto_presentation(interaction: discord.Interaction, presentati
                 passive_bonus = await apply_passive_skill_if_applicable(conn, idol, song_section, presentation)
                 score, hype, finished, base_score = await perform_section_action(conn, presentation_id, idol, song_section, presentation, passive_bonus)
 
-                p_totals = await conn.fetchval("SELECT total_hype, total_score FROM presentations WHERE presentation_id = $1", presentation_id)
+                p_totals = await conn.fetchrow("SELECT total_hype, total_score FROM presentations WHERE presentation_id = $1", presentation_id)
 
         # 🔸 4. Verificar fin
         if finished:
