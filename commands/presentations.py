@@ -2054,7 +2054,7 @@ async def perform_auto_presentation(interaction: discord.Interaction, presentati
                         """, presentation_id, new_idol['idol_id'])
 
         # 🔸 7. Delay opcional (para que no sea instantáneo)
-        await asyncio.sleep(1)
+        await asyncio.sleep(3)
 
         # 🔸 8. (Opcional) actualizar embed visual
         await interaction.followup.send(
