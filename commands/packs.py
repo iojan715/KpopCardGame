@@ -154,10 +154,17 @@ class PacksGroup(app_commands.Group):
             group_name = None
             if group:
                 if pack_data["can_group"]:
-                    group_name = group
+                    group_exist = await conn.fetchrow("SELECT 1 FROM cards_idol WHERE group_name = $1", group)
+                    if group_exist:
+                        group_name = group
+                    else:
+                        await interaction.response.send_message("❌ Selecciona un nombre de grupo válido.", ephemeral=True)
+                        return
                 else:
                     await interaction.response.send_message("❌ Este pack no permite elegir grupo.", ephemeral=True)
                     return
+                
+                
                 
             
 

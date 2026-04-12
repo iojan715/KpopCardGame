@@ -636,7 +636,7 @@ class SetButton(discord.ui.Button):
             query = "SELECT * FROM cards_idol WHERE set_id = $1"
             params = [self.set_id]
             
-            if "group_name" in self.base_query:
+            if "AND group_name" in self.base_query:
                 query += f" AND group_name = '{self.query_params[0]}'"
             
             query += " ORDER BY idol_id"
@@ -946,7 +946,7 @@ class IdolButton(discord.ui.Button):
                                             badge_id, interaction.user.id)
                     embed.set_footer(text="✅ Idol completo en este set")
                 else:
-                    have_it = True
+                    have_it = False
                     embed.set_footer(text="Este set no tiene recompensas")
                 
                 
@@ -954,7 +954,7 @@ class IdolButton(discord.ui.Button):
             embed.set_footer(text="❌ Aún te faltan cartas de este idol en el set")
 
             
-        view = IdolCardsView(cards_rows, user_id, self.base_query, self.query_params, set_id, self.set_name, completed, have_it)
+        view = IdolCardsView(cards_rows, user_id, self.base_query, self.query_params, set_id, self.set_name, completed, have_it, badge_id)
 
         await interaction.response.edit_message(
             content="",
@@ -963,7 +963,7 @@ class IdolButton(discord.ui.Button):
         )
 
 class IdolCardsView(discord.ui.View):
-    def __init__(self, cards_rows: list, user_id, base_query, query_params, set_id, set_name, completed:bool, have_it:bool):
+    def __init__(self, cards_rows: list, user_id, base_query, query_params, set_id, set_name, completed:bool, have_it:bool, badge_id):
         super().__init__(timeout=180)
         self.user_id = user_id
         self.cards_rows = cards_rows
@@ -973,18 +973,19 @@ class IdolCardsView(discord.ui.View):
         self.set_name = set_name
         self.completed = completed
         self.have_it = have_it
+        self.badge_id = badge_id
 
         for card_id, collected, rarity in cards_rows:
             if not card_id:
                 continue
             self.add_card_button(card_id, collected, rarity, self.completed, self.have_it)
 
-
+        print(badge_id)
         complete_button = discord.ui.Button(
             label="✔️ Completar",
             style=discord.ButtonStyle.success,
             row=4,
-            disabled = True if have_it else (False if completed else True)
+            disabled = False if badge_id and completed else True
         )
         complete_button.callback = self.complete_button
         self.add_item(complete_button)
@@ -1029,8 +1030,10 @@ class IdolCardsView(discord.ui.View):
                 return
 
             embeds = await generate_idol_card_embeds(rows, pool, interaction.guild)
+            
+            
 
-            paginator = InventoryEmbedPaginator(embeds, rows, interaction, self.base_query, self.query_params, is_duplicated, True, self.set_id, self.set_name, have_it)
+            paginator = InventoryEmbedPaginator(embeds, rows, interaction, self.base_query, self.query_params, is_duplicated, True, self.set_id, self.set_name, have_it, completed)
             await paginator.restart(interaction)
             
 
@@ -1164,6 +1167,7 @@ class InventoryEmbedPaginator:
         set_id: str,
         set_name: str,
         have_it: bool,
+        completed: bool,
         embeds_per_page: int = 3
     ):
         self.all_embeds = embeds
@@ -1181,6 +1185,7 @@ class InventoryEmbedPaginator:
         self.set_id = set_id
         self.set_name = set_name
         self.have_it = have_it
+        self.completed = completed
     
     def get_page_embeds(self):
         start = self.current_page * self.embeds_per_page
@@ -1284,7 +1289,7 @@ class LockCardButton(discord.ui.Button):
 
 class UnlockButton(discord.ui.Button):
     def __init__(self, row_data:dict, set_id, set_name, base_query, query_params, have_it):
-        super().__init__(label=f"Remove", style=discord.ButtonStyle.danger, disabled=have_it!=None, row=2)
+        super().__init__(label=f"Remove", style=discord.ButtonStyle.danger, disabled=have_it!=False, row=2)
         self.row_data = row_data
 
         self.base_query = base_query

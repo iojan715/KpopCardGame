@@ -922,7 +922,7 @@ class GroupSelectionPaginator:
 
         async with pool.acquire() as conn:
             for row in self.get_page_items():
-                members_row = await conn.fetch("SELECT * FROM groups_members WHERE group_id = $1", row['group_id'])
+                members_row = await conn.fetch("SELECT * FROM groups_members WHERE group_id = $1 ORDER BY idol_id", row['group_id'])
 
                 descr = ""
                 for member in members_row:
@@ -2058,7 +2058,7 @@ async def perform_auto_presentation(interaction: discord.Interaction, presentati
 
         # 🔸 8. (Opcional) actualizar embed visual
         await interaction.followup.send(
-            content=f"## Sección {presentation['current_section']}\n- Idol: {idol_name} ({idol['idol_id']})\n- Puntuación: {format(score,',')} ({format(base_score,',')})\n- Hype: {p_totals['total_hype']} ({hype})",
+            content=f"## Sección {presentation['current_section']}\n- Idol: {idol_name} ({idol['idol_id']})\n- Puntuación: {format(score,',')} ({format(base_score,',')})\n- Hype: {round(p_totals['total_hype'],2)} ({hype})",
             ephemeral=True
         )
  

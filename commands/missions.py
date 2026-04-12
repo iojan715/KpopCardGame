@@ -180,7 +180,7 @@ class ConfirmCancelView(discord.ui.View):
         new_embed, new_view = await build_missions_embed_view_for_user(self.owner_id)
         await interaction.response.edit_message(content=f"✅ Misión #{self.mission_number} cancelada.", embed=new_embed, view=new_view)
 
-    @discord.ui.button(label="Abortar", style=discord.ButtonStyle.secondary)
+    @discord.ui.button(label="Volver", style=discord.ButtonStyle.secondary)
     async def abort(self, interaction: discord.Interaction, button: discord.ui.Button):
 
         embed, view = await build_missions_embed_view_for_user(self.owner_id)
