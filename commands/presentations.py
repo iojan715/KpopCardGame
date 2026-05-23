@@ -1363,6 +1363,16 @@ class ConfirmStartPresentationView(ui.View):
                     view=view
                 )
                 return
+            
+            current_active = await conn.fetchrow("SELECT 1 FROM presentations WHERE user_id = $1 AND status = 'active'", interaction.user.id)
+            
+            if current_active:
+                view = ConfirmStartPresentationView(self.presentation_id, interaction.user.id, self.paginator)
+                await interaction.edit_original_response(
+                    content="⚠️ Ya hay una presentación en progreso",
+                    view=view
+                )
+                return
 
             group_id, song_id = pres["group_id"], pres["song_id"]
 
@@ -2053,14 +2063,13 @@ async def perform_auto_presentation(interaction: discord.Interaction, presentati
                             WHERE presentation_id = $1 AND idol_id = $2
                         """, presentation_id, new_idol['idol_id'])
 
-        # 🔸 7. Delay opcional (para que no sea instantáneo)
-        await asyncio.sleep(3)
-
-        # 🔸 8. (Opcional) actualizar embed visual
+        
         await interaction.followup.send(
-            content=f"## Sección {presentation['current_section']}\n- Idol: {idol_name} ({idol['idol_id']})\n- Puntuación: {format(score,',')} ({format(base_score,',')})\n- Hype: {round(p_totals['total_hype'],2)} ({hype})",
+            content=f"## Sección {presentation['current_section']}\n- Idol: {idol_name} ({idol['idol_id']})\n- Puntuación: {format(score,',')} ({format(base_score,',')})\n- Hype: {round(p_totals['total_hype'],2)} ({hype})\n\n{section['lyrics'].replace("\\n","\n")}",
             ephemeral=True
         )
+        
+        await asyncio.sleep(song_section["duration"])
  
 
 # - switch idol
