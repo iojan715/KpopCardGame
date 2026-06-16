@@ -932,7 +932,8 @@ class IdolButton(discord.ui.Button):
             color=discord.Color.teal()
         )
         
-        badge_id = have_it = None
+        badge_id = None
+        have_it = False
         
         if completed:
             async with pool.acquire() as conn:
