@@ -986,7 +986,7 @@ class IdolCardsView(discord.ui.View):
             label="✔️ Completar",
             style=discord.ButtonStyle.success,
             row=4,
-            disabled = False if badge_id and completed else True
+            disabled = False if badge_id and completed and not have_it else True
         )
         complete_button.callback = self.complete_button
         self.add_item(complete_button)
