@@ -1,47 +1,89 @@
 item_id,name,type,plus_vocal,plus_rap,plus_dance,plus_visual,plus_energy,max_durability,weight,value
-ACC001,Ring,accessory,0,4,0,4,0,3,150,80
-ACC002,Badge,accessory,0,0,0,2,12,3,150,80
-ACC003,Earrings,accessory,0,0,2,6,0,3,150,80
-ACC004,Choker,accessory,0,6,6,0,0,3,110,120
-ACC005,Bow Tie,accessory,2,2,0,6,4,3,110,120
-ACC006,Headband,accessory,0,0,6,4,4,3,110,120
-ACC007,Arm Band,accessory,2,4,2,0,4,3,120,100
-ACC008,Necklace,accessory,4,0,4,4,0,3,110,120
-ACC009,Sunglasses,accessory,0,0,0,6,4,3,150,80
-ACC010,Fashion Glasses,accessory,0,4,0,10,4,4,80,160
-ACC011,Belt,accessory,0,0,6,4,12,4,80,160
-ACC012,Scarf,accessory,0,0,-2,10,0,3,150,80
-ACC013,Bracalet,accessory,2,4,4,0,12,4,80,160
-CON001,Water Bottle,consumable,3,0,0,0,10,1,220,40
-CON002,Coffe,consumable,-2,0,4,0,20,1,185,60
-CON003,Sandwich,consumable,2,0,2,0,16,1,185,60
-CON004,Energy Bar,consumable,-2,4,4,-2,16,1,185,60
-CON005,Fruit Juice,consumable,0,0,0,4,16,1,185,60
-CON006,Mints,consumable,0,-2,0,4,12,1,220,40
-CON007,Yogurth Drink,consumable,0,0,0,0,20,1,200,50
-CON008,Rice Ball,consumable,0,0,4,0,12,1,200,50
-CON009,Smoothie,consumable,0,0,3,3,8,1,200,50
-CON010,Energy Drink,consumable,-2,4,6,-2,20,1,130,80
-CON011,Protein Shake,consumable,4,0,2,0,20,1,130,80
-CON012,Vitamin Drink,consumable,0,0,0,4,12,1,200,50
-CON013,Herbal Tea,consumable,0,0,0,6,8,1,200,50
-CON014,Honey Lemon Tea,consumable,2,0,0,4,12,1,185,60
-CON015,Protein Bar,consumable,3,0,2,0,14,1,185,60
-CON016,Milk Tea,consumable,0,0,-2,6,16,1,185,60
-CON017,Chewing Gum,consumable,0,2,0,2,8,1,220,40
-CON018,Capuccino ,consumable,0,0,6,2,16,1,130,80
-FIT001,Training Outfit,outfit,0,0,4,0,8,3,200,80
-FIT002,Casual Outfit,outfit,0,0,4,2,4,3,200,80
-FIT003,Stage Outfit,outfit,0,0,4,6,4,3,165,120
-FIT004,Fan Meeting Outfit,outfit,0,0,4,4,8,3,165,120
-FIT005,Formal Outfit,outfit,0,0,-1,10,-2,3,200,80
-FIT006,Rehearsal Outfit,outfit,0,0,5,2,10,3,165,120
-FIT007,Concept Outfit,outfit,0,0,2,8,4,3,165,120
-FIT008,Encore Outfit,outfit,0,0,3,3,12,3,165,120
-FIT009,Photoshoot Outfit,outfit,0,0,-2,12,-4,3,200,80
-FIT010,Suit Outfit,outfit,0,0,-2,16,-4,3,165,120
-MIC001,Hand Mic,mic,7,7,-2,-2,0,5,250,100
-MIC002,Stand Mic,mic,8,0,-4,6,0,5,250,100
-MIC003,In Ear Mic,mic,0,6,4,0,0,5,250,100
-MIC004,Lavalier Mic,mic,0,2,8,0,0,5,250,100
-MIC005,Headset Mic,mic,4,4,4,-2,0,5,250,100
+ACC001,Ring,accessory,0,5,0,5,0,4,460,100
+ACC002,Badge,accessory,0,0,0,4,12,4,460,100
+ACC003,Earrings,accessory,0,0,3,7,0,4,460,100
+ACC004,Choker,accessory,0,6,6,0,0,4,420,120
+ACC005,Bow Tie,accessory,2,2,0,6,4,4,420,120
+ACC006,Headband,accessory,0,0,6,4,4,4,420,120
+ACC007,Arm Band,accessory,2,4,2,0,4,4,460,100
+ACC008,Necklace,accessory,4,0,4,4,0,4,420,120
+ACC009,Sunglasses,accessory,0,0,0,8,4,4,460,100
+ACC010,Fashion Glasses,accessory,0,4,0,10,4,4,340,160
+ACC011,Belt,accessory,0,0,6,4,12,4,340,160
+ACC012,Scarf,accessory,0,0,-2,12,0,4,460,100
+ACC013,Bracalet,accessory,2,4,4,0,12,4,340,160
+ACC014,Tie,accessory,6,0,0,10,0,4,340,160
+ACC015,Chain,accessory,0,8,8,0,0,4,340,160
+ACC016,Brooch,accessory,0,0,0,10,12,4,340,160
+ACC017,Hat,accessory,4,4,0,4,0,4,420,120
+ACC018,Cap,accessory,0,0,4,6,0,4,460,100
+ACC019,Golden Choker,accessory,0,10,10,0,0,8,120,200
+ACC020,Golden Ring,accessory,0,10,0,10,0,8,120,200
+ACC021,Prism Earrings,accessory,0,0,8,12,0,8,120,200
+ACC022,Crystal Glasses,accessory,0,6,0,14,0,8,120,200
+ACC023,Luxury Bow,accessory,4,4,0,10,0,8,160,180
+CON001,Water Bottle,consumable,5,0,0,0,10,1,565,100
+CON002,Coffee,consumable,-2,0,4,0,20,1,525,120
+CON003,Sandwich,consumable,2,0,2,0,16,1,525,120
+CON004,Energy Bar,consumable,-2,4,4,-2,16,1,525,120
+CON005,Fruit Juice,consumable,0,0,0,4,16,1,525,120
+CON006,Mints,consumable,0,-2,0,5,14,1,565,100
+CON007,Yogurth Drink,consumable,0,0,0,4,16,1,525,120
+CON008,Rice Ball,consumable,0,0,4,0,12,1,565,100
+CON009,Smoothie,consumable,0,0,3,3,8,1,565,100
+CON010,Energy Drink,consumable,-2,4,6,-2,20,1,445,160
+CON011,Protein Shake,consumable,4,0,2,0,20,1,445,160
+CON012,Vitamin Drink,consumable,0,0,2,4,12,1,525,120
+CON013,Herbal Tea,consumable,0,0,0,6,8,1,565,100
+CON014,Honey Lemon Tea,consumable,2,0,0,4,12,1,525,120
+CON015,Protein Bar,consumable,3,0,2,0,14,1,525,120
+CON016,Milk Tea,consumable,0,0,-2,6,16,1,525,120
+CON017,Chewing Gum,consumable,0,3,0,3,8,1,565,100
+CON018,Capuccino ,consumable,0,0,6,2,16,1,445,160
+CON019,Gummy Candy,consumable,0,3,3,0,8,1,565,100
+CON020,Chocolate Bar,consumable,0,0,0,0,24,1,525,120
+CON021,Fruit Pack,consumable,0,0,0,5,10,3,495,100
+CON022,Seeds Bag,consumable,0,0,2,0,16,1,565,100
+CON023,Salad Box,consumable,0,0,0,5,14,2,490,120
+CON024,Iced Coffee,consumable,0,0,3,2,14,1,525,120
+CON025,Sports Drink,consumable,0,0,6,0,20,1,445,160
+CON026,Snack Box,consumable,-2,4,4,-2,16,6,350,120
+CON027,Idol Care Package,consumable,6,0,2,8,0,4,340,160
+CON028,Vitamin Pack,consumable,0,0,2,4,12,8,280,120
+CON029,Juice Pack,consumable,0,0,0,4,16,6,350,120
+CON030,Lunch Box,consumable,4,0,4,0,8,4,420,120
+CON031,Chocolate Box,consumable,0,0,0,0,24,6,350,120
+CON032,Water Pack,consumable,5,0,0,0,10,6,390,100
+CON033,Water Supply,consumable,5,0,0,0,10,12,180,100
+CON034,Coffee Pack,consumable,-2,0,4,0,20,6,350,120
+CON035,Yogurth Pack,consumable,0,0,0,4,16,6,350,120
+CON036,Tea Pack,consumable,0,0,0,6,8,8,320,100
+FIT001,Training Outfit,outfit,0,0,5,0,10,4,460,100
+FIT002,Casual Outfit,outfit,0,0,5,3,4,4,460,100
+FIT003,Stage Outfit,outfit,0,0,4,6,4,4,420,120
+FIT004,Fan Meeting Outfit,outfit,0,0,4,4,8,4,420,120
+FIT005,Formal Outfit,outfit,0,0,-1,12,-2,4,460,100
+FIT006,Rehearsal Outfit,outfit,0,0,5,2,10,4,420,120
+FIT007,Concept Outfit,outfit,0,0,2,8,4,4,420,120
+FIT008,Encore Outfit,outfit,0,0,3,3,12,4,420,120
+FIT009,Photoshoot Outfit,outfit,0,0,-3,14,-2,4,460,100
+FIT010,Suit Outfit,outfit,0,0,-2,16,-4,4,420,120
+FIT011,Urban Outfit,outfit,0,0,4,4,4,4,460,100
+FIT012,Music Video Outfit,outfit,0,0,4,8,8,4,340,160
+FIT013,Dance Practice Outfit,outfit,0,0,7,2,14,4,340,160
+FIT014,Red Carpet Outfit,outfit,0,0,-3,22,-6,4,340,160
+FIT015,Airport Outfit,outfit,0,0,2,6,8,4,420,120
+FIT016,Luxury Outfit,outfit,0,0,4,14,4,8,120,200
+FIT017,Superstar Outfit,outfit,0,0,8,12,0,8,120,200
+FIT018,Black Dress Outfit,outfit,0,0,-4,24,0,8,120,200
+FIT019,Funny Outfit,outfit,0,0,10,6,8,8,120,200
+MIC001,Hand Mic,mic,9,7,-2,-2,0,5,385,120
+MIC002,Stand Mic,mic,10,0,-4,6,0,5,385,120
+MIC003,In Ear Mic,mic,0,8,4,0,0,5,385,120
+MIC004,Lavalier Mic,mic,-2,4,10,0,0,5,385,120
+MIC005,Headset Mic,mic,4,4,6,-2,0,5,385,120
+MIC006,Boom Mic,mic,16,0,-4,0,0,5,385,120
+MIC007,Golden Mic,mic,10,10,0,0,0,10,50,200
+MIC008,Crystal Mic,mic,10,0,0,10,0,10,50,200
+MIC009,Platinum Mic,mic,10,0,10,0,0,10,50,200
+MIC010,Professional Mic,mic,5,5,5,5,0,10,50,200
