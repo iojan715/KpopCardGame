@@ -1959,6 +1959,49 @@ async def perform_auto_presentation(interaction: discord.Interaction, presentati
                 WHERE presentation_id = $1
             """, presentation_id)
 
+        # 🔸 6. Cambio de idol
+        if len(idols) > 1:
+            change = random.choices([True, False], weights=[70,30])
+            if presentation['free_switches'] < 0:
+                change = True
+            if change:
+                if presentation['free_switches'] != 0:
+                    async with pool.acquire() as conn:
+                        # Obtener actual activo
+                        old_active = await conn.fetchrow("""
+                            SELECT idol_id FROM presentation_members
+                            WHERE presentation_id = $1 AND current_position = 'active'
+                        """, presentation_id)
+                        
+                        n_idols = await conn.fetch("""
+                            SELECT * FROM presentation_members
+                            WHERE presentation_id = $1 AND idol_id <> $2
+                        """, presentation_id, old_active['idol_id'])
+                        
+                        weights = [
+                            max(0, idol['max_energy'] - idol['used_energy'])
+                            for idol in n_idols
+                        ]
+                        
+                        new_idol = random.choices(
+                            n_idols,
+                            weights=weights,
+                            k=1
+                            )[0]
+
+                        # Actualizar posiciones
+                        await conn.execute("""
+                            UPDATE presentation_members
+                            SET current_position = 'back'
+                            WHERE presentation_id = $1 AND current_position = 'active'
+                        """, presentation_id)
+
+                        await conn.execute("""
+                            UPDATE presentation_members
+                            SET current_position = 'active'
+                            WHERE presentation_id = $1 AND idol_id = $2
+                        """, presentation_id, new_idol['idol_id'])
+
         # 🔸 1. P. Cards
         if presentation['performance_card_uses'] > 0:
             use_pcard = random.choice([True, False])
@@ -2031,37 +2074,7 @@ async def perform_auto_presentation(interaction: discord.Interaction, presentati
         if use_support:
             pass
 
-        # 🔸 6. Cambio de idol
-        if len(idols) > 1:
-            change = random.choices([True, False], weights=[70,30])
-            if change:
-                if presentation['free_switches'] != 0:
-                    async with pool.acquire() as conn:
-                        # Obtener actual activo
-                        old_active = await conn.fetchrow("""
-                            SELECT idol_id FROM presentation_members
-                            WHERE presentation_id = $1 AND current_position = 'active'
-                        """, presentation_id)
-                        
-                        n_idols = await conn.fetch("""
-                            SELECT * FROM presentation_members
-                            WHERE presentation_id = $1 AND idol_id <> $2
-                        """, presentation_id, old_active['idol_id'])
-                        
-                        new_idol = random.choice(n_idols)
 
-                        # Actualizar posiciones
-                        await conn.execute("""
-                            UPDATE presentation_members
-                            SET current_position = 'back'
-                            WHERE presentation_id = $1 AND current_position = 'active'
-                        """, presentation_id)
-
-                        await conn.execute("""
-                            UPDATE presentation_members
-                            SET current_position = 'active'
-                            WHERE presentation_id = $1 AND idol_id = $2
-                        """, presentation_id, new_idol['idol_id'])
 
         
         await interaction.followup.send(
